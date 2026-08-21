@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Copy, Check, Download, FileCode, Terminal } from 'lucide-react';
+import { Copy, Check, Download, FileCode } from 'lucide-react';
 
 interface Props {
   headerCode: string;
   modelName: string;
-  targetHardware: string;
 }
 
-export const CodeViewer: React.FC<Props> = ({ headerCode, modelName, targetHardware }) => {
+export const CodeViewer: React.FC<Props> = ({ headerCode, modelName }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {

@@ -1,11 +1,10 @@
 import React from 'react';
 import { PRESET_MODELS } from '../services/api';
-import { Sparkles, Mic, Activity, Eye, UploadCloud } from 'lucide-react';
+import { Sparkles, Mic, Activity, Eye } from 'lucide-react';
 
 interface Props {
   selectedPreset: string;
   onSelectPreset: (presetId: string) => void;
-  onUploadCustom?: () => void;
 }
 
 export const ModelUploader: React.FC<Props> = ({ selectedPreset, onSelectPreset }) => {

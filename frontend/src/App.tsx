@@ -8,27 +8,23 @@ import { CodeViewer } from './components/CodeViewer';
 import { LiveSimulator } from './components/LiveSimulator';
 import { optimizeModel } from './services/api';
 import { OptimizationResult } from './types';
-import { Sparkles, Terminal, Cpu, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [selectedHw, setSelectedHw] = useState<string>('ESP32-S3');
   const [selectedPreset, setSelectedPreset] = useState<string>('kws');
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
-  const [isCompiling, setIsCompiling] = useState<boolean>(false);
 
   useEffect(() => {
     runCompiler(selectedPreset, selectedHw);
   }, [selectedPreset, selectedHw]);
 
   const runCompiler = async (preset: string, hw: string) => {
-    setIsCompiling(true);
     try {
       const result = await optimizeModel(preset, hw);
       setOptimizationResult(result);
     } catch (e) {
       console.error(e);
-    } finally {
-      setIsCompiling(false);
     }
   };
 
@@ -97,11 +93,9 @@ export const App: React.FC = () => {
               <CodeViewer
                 headerCode={optimizationResult.c_header_code}
                 modelName={optimizationResult.model_name}
-                targetHardware={selectedHw}
               />
               <LiveSimulator
                 presetId={selectedPreset}
-                modelName={optimizationResult.model_name}
                 latencyMs={optimizationResult.optimized_int8.estimated_latency_ms}
               />
             </div>
@@ -110,7 +104,6 @@ export const App: React.FC = () => {
               <AgentChat
                 targetHardware={selectedHw}
                 modelName={optimizationResult.model_name}
-                recommendations={optimizationResult.agent_report.recommendations}
               />
             </div>
           </div>

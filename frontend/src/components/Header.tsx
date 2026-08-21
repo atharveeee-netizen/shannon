@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Zap, Github, Terminal, ShieldCheck } from 'lucide-react';
+import { Zap, Github } from 'lucide-react';
 
 export const Header: React.FC = () => {
   return (

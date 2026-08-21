@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { askAgent } from '../services/api';
-import { Bot, Send, Sparkles, User, ShieldAlert, Cpu } from 'lucide-react';
+import { Bot, Send, Sparkles, User } from 'lucide-react';
 
 interface Props {
   targetHardware: string;
   modelName: string;
-  recommendations: string[];
 }
 
-export const AgentChat: React.FC<Props> = ({ targetHardware, modelName, recommendations }) => {
+export const AgentChat: React.FC<Props> = ({ targetHardware, modelName }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'agent'; text: string }>>([
     {

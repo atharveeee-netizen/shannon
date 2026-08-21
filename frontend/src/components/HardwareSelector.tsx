@@ -1,7 +1,6 @@
 import React from 'react';
-import { HardwareProfile } from '../types';
 import { HARDWARE_PROFILES } from '../services/api';
-import { Cpu, HardDrive, Gauge, Layers } from 'lucide-react';
+import { Cpu, HardDrive, Layers } from 'lucide-react';
 
 interface Props {
   selected: string;

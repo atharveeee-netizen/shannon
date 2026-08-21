@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Play, RotateCcw, Activity, CheckCircle, Volume2, Eye } from 'lucide-react';
+import { Play, Activity } from 'lucide-react';
 
 interface Props {
   presetId: string;
-  modelName: string;
   latencyMs: number;
 }
 
-export const LiveSimulator: React.FC<Props> = ({ presetId, modelName, latencyMs }) => {
+export const LiveSimulator: React.FC<Props> = ({ presetId, latencyMs }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [confidence, setConfidence] = useState<number>(94.8);
   const [predictionClass, setPredictionClass] = useState<string>('PERSON_DETECTED');
-  const [fps, setFps] = useState<number>(Math.round(1000 / Math.max(latencyMs, 1)));
+  const fps = Math.round(1000 / Math.max(latencyMs, 1));
 
   useEffect(() => {
     if (presetId === 'kws') {

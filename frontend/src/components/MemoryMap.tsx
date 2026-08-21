@@ -1,6 +1,6 @@
 import React from 'react';
 import { OptimizationResult } from '../types';
-import { Layers, HardDrive, Zap, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Layers, HardDrive, Zap, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   result: OptimizationResult;
