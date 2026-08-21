@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { askAgent } from '../services/api';
-import { Bot, Send, Sparkles, User } from 'lucide-react';
+import { Bot, Send, Sparkles, User, BrainCircuit } from 'lucide-react';
 
 interface Props {
   targetHardware: string;
@@ -12,7 +12,7 @@ export const AgentChat: React.FC<Props> = ({ targetHardware, modelName }) => {
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'agent'; text: string }>>([
     {
       role: 'agent',
-      text: `Hello! I am Claude-Shannon, your autonomous hardware optimization copilot. I have audited ${modelName} for ${targetHardware}. The memory footprint is verified with zero dynamic mallocs.`
+      text: `Hello! I am Claude-Shannon, your autonomous AI compiler copilot. I have audited **${modelName}** against the physical silicon constraints of the **${targetHardware}**. The memory arena is verified with 0 dynamic mallocs.`
     }
   ]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,8 @@ export const AgentChat: React.FC<Props> = ({ targetHardware, modelName }) => {
   const quickQuestions = [
     'How does Shannon eliminate SRAM memory fragmentation?',
     'Why is INT8 symmetric quantization safe for accuracy?',
-    'What SIMD vector instructions does my chip use?'
+    'What SIMD vector instructions does my chip use?',
+    'How do I flash the generated C++ header to hardware?'
   ];
 
   return (
@@ -47,14 +48,19 @@ export const AgentChat: React.FC<Props> = ({ targetHardware, modelName }) => {
       <div className="p-3.5 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/80 rounded-t-xl">
         <div className="flex items-center space-x-2">
           <div className="h-7 w-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-            <Bot className="h-4 w-4" />
+            <BrainCircuit className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold text-white font-mono">Shannon AI Copilot</h4>
-            <span className="text-[10px] text-emerald-400 font-mono">Autonomous Hardware Reasoner</span>
+            <div className="flex items-center space-x-1.5">
+              <h4 className="text-xs font-bold text-white font-mono">Shannon AI Copilot</h4>
+              <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 font-mono font-semibold">
+                Autonomous LLM Agent
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-mono">Hardware & Compiler Reasoner</span>
           </div>
         </div>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-emerald-500/20">
           Target: {targetHardware}
         </span>
       </div>
@@ -80,14 +86,14 @@ export const AgentChat: React.FC<Props> = ({ targetHardware, modelName }) => {
                   : 'bg-slate-800/80 border border-slate-700/60 text-slate-200'
               }`}
             >
-              {m.text}
+              <div dangerouslySetInnerHTML={{ __html: m.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code class="bg-slate-900 px-1 py-0.5 rounded text-emerald-300 font-mono text-[10px]">$1</code>') }} />
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex items-center space-x-2 text-slate-400 text-xs font-mono">
             <Sparkles className="h-3.5 w-3.5 animate-spin text-emerald-400" />
-            <span>Shannon is analyzing hardware constraints...</span>
+            <span>Shannon is analyzing hardware constraints & registers...</span>
           </div>
         )}
       </div>
