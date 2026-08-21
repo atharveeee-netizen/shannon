@@ -1,0 +1,49 @@
+﻿# ⚡ Shannon (Shannon AI)
+> **Autonomous TinyML Compiler & Hardware Optimization Studio**
+> *Compressing giant intelligence into micro-scale silicon.*
+
+---
+
+## 🎯 Overview
+**Shannon** is an autonomous developer platform and agentic optimization compiler designed for Edge AI and TinyML. Named in honor of **Claude Shannon**, the pioneer of Information Theory and digital compression, this studio takes standard machine learning models (PyTorch, ONNX, TensorFlow) and automatically optimizes, quantizes, and compiles them into zero-dependency, ultra-fast C/C++ firmware headers ready to run on resource-constrained microcontrollers (ESP32-S3, STM32H7, ARM Cortex-M, RISC-V).
+
+---
+
+## 🚀 Key Features
+- 🧠 **Agentic Graph Pruning & Quantization:** Autonomous search for the Pareto frontier balancing accuracy vs. SRAM/Flash memory footprint.
+- 📊 **3D Memory Arena Profiler:** Visual inspection of layer-by-layer buffer allocation, tensor arena usage, and latency estimates.
+- ⚡ **Zero-Dependency C/C++ Codegen:** Generates clean, header-only C/C++ kernels optimized for CMSIS-NN and ESP-NN.
+- 🧪 **In-Browser WebAssembly Simulator:** Test quantized model inference live in the browser using webcam or audio feeds before flashing hardware.
+
+---
+
+## 📁 Repository Structure
+`	ext
+shannon/
+├── frontend/               # Modern React + Vite + Tailwind + WebGL Dashboard
+├── compiler/               # Python-based ONNX parsing, quantization, and LLM agent
+├── templates/              # C/C++ embedded firmware templates (ESP32, STM32, CMSIS-NN)
+├── docs/                   # Architecture specs, benchmark reports, and deck slides
+└── README.md
+`
+"@ | Out-File -Encoding utf8 README.md
+
+@"
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+
+# Node / Frontend
+node_modules/
+dist/
+.next/
+
+# Environments & OS
+.env
+.env.local
+.venv
+env/
+venv/
+.DS_Store
+Thumbs.db
