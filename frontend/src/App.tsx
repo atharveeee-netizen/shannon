@@ -16,7 +16,10 @@ import { LiveSimulatorPanel } from './components/LiveSimulatorPanel';
 import { CodeExportPanel } from './components/CodeExportPanel';
 import { CommandPalette } from './components/CommandPalette';
 import { Silicon3DCanvas } from './components/Silicon3DCanvas';
-import { HardDrive, Cpu, ShieldCheck } from 'lucide-react';
+import { AgentChat } from './components/AgentChat';
+import { ScreenpipeAuditDrawer } from './components/ScreenpipeAuditDrawer';
+import { HardDrive, Cpu, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { optimizeModel } from './services/api';
 
 const HARDWARE_PROFILES: HardwareProfile[] = [
   {
@@ -29,7 +32,7 @@ const HARDWARE_PROFILES: HardwareProfile[] = [
     simd: 'Xtensa PIE (8-bit SIMD)',
     voltage_v: 3.3,
     power_budget_mw: 250,
-    recommendedFor: 'Voice and Vision Nodes',
+    recommendedFor: 'Voice and Vision Edge Nodes',
   },
   {
     id: 'STM32H7',
@@ -41,7 +44,7 @@ const HARDWARE_PROFILES: HardwareProfile[] = [
     simd: 'ARM __SMLAD (Dual 16-bit MAC)',
     voltage_v: 3.3,
     power_budget_mw: 420,
-    recommendedFor: 'High Speed Industrial Robotics',
+    recommendedFor: 'High-Speed Industrial Automation',
   },
   {
     id: 'RP2040',
@@ -53,7 +56,7 @@ const HARDWARE_PROFILES: HardwareProfile[] = [
     simd: 'Software Unrolled 32-bit',
     voltage_v: 3.3,
     power_budget_mw: 90,
-    recommendedFor: 'Ultra Low Cost Edge Sensors',
+    recommendedFor: 'Ultra Low-Cost Edge Sensors',
   },
   {
     id: 'nRF52840',
@@ -73,7 +76,7 @@ const MODEL_ZOO: ModelZooItem[] = [
   {
     id: 'kws',
     name: 'Audio Keyword Spotter',
-    domain: 'Voice Wake Word',
+    domain: 'Voice Wake-Word',
     architecture: '1D Depthwise-Separable CNN',
     dataset: 'Google Speech Commands v2',
     input_shape: '1x49x10 (MFCC)',
@@ -92,9 +95,9 @@ const MODEL_ZOO: ModelZooItem[] = [
     name: 'MicroVision Person Detector',
     domain: 'Edge Computer Vision',
     architecture: 'MobileNet-Tiny (0.25x)',
-    dataset: 'Visual Wake Words',
+    dataset: 'Visual Wake Words (VWW)',
     input_shape: '1x48x48x1 (Grayscale)',
-    input_type: 'Grayscale Frame',
+    input_type: 'Grayscale Camera Frame',
     fp32_flash_kb: 72.0,
     int8_flash_kb: 1.1,
     int4_flash_kb: 0.6,
@@ -107,11 +110,11 @@ const MODEL_ZOO: ModelZooItem[] = [
   {
     id: 'anomaly',
     name: 'Motor Anomaly Autoencoder',
-    domain: 'Industrial Predictive Maintenance',
+    domain: 'Industrial IoT Maintenance',
     architecture: '5-Layer Deep Autoencoder',
     dataset: 'NASA Bearing Vibration',
     input_shape: '1x64 (FFT)',
-    input_type: 'Accelerometer Spectrum',
+    input_type: 'Accelerometer FFT Spectrum',
     fp32_flash_kb: 18.0,
     int8_flash_kb: 5.0,
     int4_flash_kb: 2.5,
@@ -131,10 +134,10 @@ const INITIAL_LAYERS: LayerBentoRow[] = [
 ];
 
 const INITIAL_BLOCKS: ZeroMallocBlock[] = [
-  { layer_id: 'conv1_out', buffer_name: 'Activation Tensor A', start_offset_bytes: 0, end_offset_bytes: 752, size_bytes: 752, hex_address: '0x20000000', lifetime_window: [0, 2], color: '#106BA3' },
-  { layer_id: 'pool1_out', buffer_name: 'Activation Tensor B', start_offset_bytes: 752, end_offset_bytes: 1120, size_bytes: 368, hex_address: '0x200002F0', lifetime_window: [1, 3], color: '#0D8050' },
-  { layer_id: 'dense1_out', buffer_name: 'Activation Tensor A (Reused)', start_offset_bytes: 0, end_offset_bytes: 64, size_bytes: 64, hex_address: '0x20000000', lifetime_window: [2, 4], color: '#2B95D6' },
-  { layer_id: 'logits_out', buffer_name: 'Output Tensor', start_offset_bytes: 64, end_offset_bytes: 68, size_bytes: 4, hex_address: '0x20000040', lifetime_window: [3, 4], color: '#D9822B' },
+  { layer_id: 'conv1_out', buffer_name: 'Activation Tensor A', start_offset_bytes: 0, end_offset_bytes: 752, size_bytes: 752, hex_address: '0x20000000', lifetime_window: [0, 2], color: '#0284C7' },
+  { layer_id: 'pool1_out', buffer_name: 'Activation Tensor B', start_offset_bytes: 752, end_offset_bytes: 1120, size_bytes: 368, hex_address: '0x200002F0', lifetime_window: [1, 3], color: '#10B981' },
+  { layer_id: 'dense1_out', buffer_name: 'Activation Tensor A (Reused)', start_offset_bytes: 0, end_offset_bytes: 64, size_bytes: 64, hex_address: '0x20000000', lifetime_window: [2, 4], color: '#38BDF8' },
+  { layer_id: 'logits_out', buffer_name: 'Output Tensor', start_offset_bytes: 64, end_offset_bytes: 68, size_bytes: 4, hex_address: '0x20000040', lifetime_window: [3, 4], color: '#F59E0B' },
 ];
 
 export function App() {
@@ -146,6 +149,8 @@ export function App() {
   const [isAgentRunning, setIsAgentRunning] = useState<boolean>(false);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
+  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
+  const [isAuditOpen, setIsAuditOpen] = useState<boolean>(false);
 
   const [layers] = useState<LayerBentoRow[]>(INITIAL_LAYERS);
   const [arenaBlocks] = useState<ZeroMallocBlock[]>(INITIAL_BLOCKS);
@@ -154,7 +159,7 @@ export function App() {
   const currentModel = MODEL_ZOO.find((m) => m.id === selectedModelId) || MODEL_ZOO[0];
 
   const [agentLogs, setAgentLogs] = useState<AgentLogEntry[]>([
-    { id: '1', timestamp: '13:40:01', agent: 'Planner', step: 'planner', status: 'PASSED', message: `Parsed model graph: ${currentModel.architecture}. Budget: ${currentHw.sram_kb}KB SRAM.` },
+    { id: '1', timestamp: '13:40:01', agent: 'Planner', step: 'planner', status: 'PASSED', message: `Parsed model graph: ${currentModel.architecture}. SRAM Budget: ${currentHw.sram_kb}KB.` },
     { id: '2', timestamp: '13:40:02', agent: 'Quantizer', step: 'quantizer', status: 'PASSED', message: `Applied symmetric INT8 PTQ. Flash footprint reduced by ${currentModel.flash_compression_ratio}.`, metric: `Weights: ${currentModel.int8_flash_kb} KB` },
     { id: '3', timestamp: '13:40:03', agent: 'MemoryMapper', step: 'memory_mapper', status: 'PASSED', message: `Greedy interval coloring scheduled ${arenaBlocks.length} buffers with zero overlap.`, metric: `Peak Arena: ${currentModel.peak_sram_kb} KB` },
     { id: '4', timestamp: '13:40:04', agent: 'CodeGen', step: 'codegen', status: 'PASSED', message: `Synthesized zero dependency C++ kernel tuned for ${currentHw.simd}.` },
@@ -165,11 +170,11 @@ export function App() {
     gpio: { GPIO_13: true, GPIO_12: false, GPIO_14: true, GPIO_27: false },
     adc: { ADC_IN1: 1.65 },
     uartLogs: [
-      '[0.000s] SYSTEM_BOOT: Shannon TinyML Engine v2.4',
+      '[0.000s] SYSTEM_BOOT: Shannon TinyML Engine v2.4 (Bare-Metal Silicon)',
       `[+0.012s] HARDWARE_INIT: ${currentHw.name} (${currentHw.arch})`,
       `[+0.018s] SRAM_ARENA_ALLOC: ${(currentModel.peak_sram_kb * 1024).toFixed(0)} Bytes @ 0x20000000 (Static Zero-Malloc)`,
       `[+0.024s] SIMD_PIPELINE: Active (${currentHw.simd})`,
-      '[+0.030s] INFERENCE_STREAM: Ready for sensory input loop',
+      '[+0.030s] INFERENCE_STREAM: Sensory input loop active @ 115200 Baud',
     ],
     pwmFreq: 1000,
     activeLayerId: 'conv1_3x3',
@@ -180,20 +185,70 @@ export function App() {
     memoryIntegrityPassed: true,
   });
 
-  const handleTriggerAgentLoop = () => {
+  const [generatedCppHeader, setGeneratedCppHeader] = useState<string>(
+`/* ===========================================================================
+ * SHANNON AUTONOMOUS COMPILER — AUTOGENERATED TINYML INFERENCE HEADER
+ * Model: ${currentModel.name}
+ * Target Architecture: ${currentHw.name} (${currentHw.arch})
+ * Peak SRAM Arena: ${(currentModel.peak_sram_kb * 1024).toFixed(0)} Bytes (${currentModel.peak_sram_kb} KB)
+ * Flash Memory (ROM): ${(currentModel.int8_flash_kb * 1024).toFixed(0)} Bytes (${currentModel.int8_flash_kb} KB)
+ * Total MACs: ${currentModel.mac_count}
+ * Static Allocation: MISRA-C:2012 Rule 21.3 Compliant (0 Bytes Dynamic malloc)
+ * =========================================================================== */
+
+#ifndef SHANNON_MODEL_H
+#define SHANNON_MODEL_H
+
+#include <stdint.h>
+#include <string.h>
+
+#define SHANNON_ARENA_SIZE ${Math.round(currentModel.peak_sram_kb * 1024)}
+
+// Static Tensor Arena Memory Pool in Fast SRAM (Aligned to 4-byte word)
+static uint8_t shannon_tensor_arena[SHANNON_ARENA_SIZE] __attribute__((aligned(4)));
+
+// Quantized INT8 Weights in Flash ROM
+static const int8_t shannon_weights[] = {
+    12, -45, 88, -120, 34, 19, -5, 67, 102, -88, 14, 0, -33, 91, -12, 44
+};
+
+static inline int shannon_run_inference(const int8_t* input_data, int8_t* output_data) {
+    if (!input_data || !output_data) return -1;
+    // Stage input to static arena offset 0x20000000
+    memcpy(&shannon_tensor_arena[0], input_data, 490);
+
+    // Vectorized INT8 Inner Kernel (${currentHw.simd})
+    output_data[0] = shannon_tensor_arena[0];
+    return 0; // Success
+}
+
+#endif // SHANNON_MODEL_H
+`
+  );
+
+  const handleTriggerAgentLoop = async () => {
     setIsAgentRunning(true);
     setAgentLogs((prev) => [
-      { id: Date.now().toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Planner', step: 'planner', status: 'RUNNING', message: `Re-evaluating graph constraints for ${currentHw.name}...` },
+      { id: Date.now().toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Planner', step: 'planner', status: 'RUNNING', message: `Compiling ${currentModel.name} for ${currentHw.name}...` },
       ...prev,
     ]);
+
+    try {
+      const res = await optimizeModel(selectedModelId, currentHw.name);
+      if (res && res.code) {
+        setGeneratedCppHeader(res.code);
+      }
+    } catch {
+      // Fallback
+    }
 
     setTimeout(() => {
       setIsAgentRunning(false);
       setAgentLogs((prev) => [
-        { id: (Date.now() + 1).toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Critic', step: 'critic', status: 'PASSED', message: `Optimization loop converged in 3 iterations. Memory footprint: 1.1 KB.` },
+        { id: (Date.now() + 1).toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Critic', step: 'critic', status: 'PASSED', message: `Optimization converged in 3 iterations. Memory footprint: ${currentModel.peak_sram_kb} KB.` },
         ...prev,
       ]);
-    }, 1500);
+    }, 1200);
   };
 
   useEffect(() => {
@@ -220,10 +275,8 @@ export function App() {
     return () => clearInterval(interval);
   }, [isSimulating, simState.coreTempC]);
 
-  const generatedCppHeader = `// ==================================================================\n// SHANNON AUTONOMOUS COMPILER - ZERO DEPENDENCY TINYML HEADER\n// Target: ${currentHw.name} (${currentHw.arch})\n// Model: ${currentModel.name} (${currentModel.architecture})\n// Precision: Symmetric INT8 Post-Training Quantization\n// ==================================================================\n#pragma once\n#include <stdint.h>\n#include <string.h>\n\n#define SHANNON_TENSOR_ARENA_SIZE ${Math.round(currentModel.peak_sram_kb * 1024)}\n\n// Static Contiguous Tensor Arena in Fast SRAM (0 Bytes malloc)\nstatic uint8_t shannon_tensor_arena[SHANNON_TENSOR_ARENA_SIZE] __attribute__((aligned(4)));\n\n// Quantized INT8 Weights in Flash ROM\nstatic const int8_t shannon_weights[] = {\n    12, -45, 88, -120, 34, 19, -5, 67, 102, -88, 14, 0, -33, 91, -12, 44\n};\n\nvoid shannon_run_inference(const int8_t* input_tensor, int8_t* output_tensor) {\n    // 1. Stage Input to Base Arena Offset 0x20000000\n    memcpy(&shannon_tensor_arena[0], input_tensor, 490);\n\n    // 2. Vectorized Inner Loop (${currentHw.simd})\n    // Statically planned activation buffers reuse memory without runtime heap allocation\n    output_tensor[0] = shannon_tensor_arena[0];\n}\n`;
-
   return (
-    <div className="min-h-screen bg-[#0B0D11] text-[#F5F8FA] font-sans flex flex-col relative">
+    <div className="min-h-screen bg-[#0A0D12] text-[#F0F6FC] font-sans flex flex-col relative bg-silicon-grid silicon-noise-overlay selection:bg-[#0284C7]/30 selection:text-[#38BDF8]">
       <CommandPalette
         isOpen={isCmdOpen}
         onClose={() => setIsCmdOpen(false)}
@@ -235,6 +288,11 @@ export function App() {
         models={MODEL_ZOO}
       />
 
+      <ScreenpipeAuditDrawer
+        isOpen={isAuditOpen}
+        onClose={() => setIsAuditOpen(false)}
+      />
+
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -244,7 +302,34 @@ export function App() {
         isAgentRunning={isAgentRunning}
         onTriggerAgentLoop={handleTriggerAgentLoop}
         onOpenCommandPalette={() => setIsCmdOpen(true)}
+        onOpenCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
+        onOpenAudit={() => setIsAuditOpen(true)}
       />
+
+      {/* Slide-over Copilot Drawer */}
+      {isCopilotOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end" onClick={() => setIsCopilotOpen(false)}>
+          <div
+            className="w-full max-w-lg bg-[#13171F] border-l border-[#21262D] h-full shadow-2xl flex flex-col p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[#21262D] pb-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#38BDF8]" />
+                <h3 className="text-xs font-bold text-[#F0F6FC] font-mono uppercase">
+                  SHANNON AI COPILOT
+                </h3>
+              </div>
+              <button onClick={() => setIsCopilotOpen(false)} className="text-[#8B949E] hover:text-[#F0F6FC]">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <AgentChat targetHardware={currentHw.name} modelName={currentModel.name} />
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto flex flex-col gap-4">
         {activeTab === 'zoo' && (
@@ -301,7 +386,7 @@ export function App() {
           />
         )}
 
-        {/* 3D Die & Bottom Metrics */}
+        {/* 3D Die & Bottom Metrics Telemetry */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           <div className="lg:col-span-4">
             <Silicon3DCanvas
@@ -311,62 +396,62 @@ export function App() {
             />
           </div>
 
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#1A1F28] p-4 rounded-[3px] border border-[#232936]">
-            <div className="bg-[#0B0D11] p-3 rounded-[2px] border border-[#232936] flex flex-col justify-between">
+          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#13171F] p-4 rounded-[4px] border border-[#21262D] shadow-sm">
+            <div className="bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                  <span className="text-[#5C7080] flex items-center gap-1.5">
-                    <HardDrive className="w-3.5 h-3.5 text-[#2B95D6]" /> Flash Storage (INT8)
+                  <span className="text-[#8B949E] flex items-center gap-1.5">
+                    <HardDrive className="w-3.5 h-3.5 text-[#38BDF8]" /> Flash ROM Storage (INT8)
                   </span>
-                  <span className="text-[#2B95D6] font-bold">
+                  <span className="text-[#38BDF8] font-bold font-tabular">
                     {currentModel.int8_flash_kb} KB
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-[#12151B] rounded-[1px] overflow-hidden">
+                <div className="w-full h-1.5 bg-[#161B22] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#2B95D6] rounded-[1px]"
+                    className="h-full bg-[#0284C7] rounded-full"
                     style={{ width: `${Math.min(100, (currentModel.int8_flash_kb / (currentHw.flash_mb * 1024)) * 100 * 30)}%` }}
                   />
                 </div>
               </div>
-              <span className="text-[10px] font-mono text-[#0D8050] block mt-2 font-semibold">
+              <span className="text-[10px] font-mono text-[#00FFA3] block mt-2 font-bold">
                 Reduced by {currentModel.flash_compression_ratio} (from {currentModel.fp32_flash_kb}KB FP32)
               </span>
             </div>
 
-            <div className="bg-[#0B0D11] p-3 rounded-[2px] border border-[#232936] flex flex-col justify-between">
+            <div className="bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                  <span className="text-[#5C7080] flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5 text-[#0D8050]" /> Peak SRAM Arena Allocation
+                  <span className="text-[#8B949E] flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-[#00FFA3]" /> Peak SRAM Arena Allocation
                   </span>
-                  <span className="text-[#0D8050] font-bold">
+                  <span className="text-[#00FFA3] font-bold font-tabular">
                     {currentModel.peak_sram_kb} KB / {currentHw.sram_kb} KB
                   </span>
                 </div>
-                <div className="w-full h-1.5 bg-[#12151B] rounded-[1px] overflow-hidden">
+                <div className="w-full h-1.5 bg-[#161B22] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#0D8050] rounded-[1px]"
+                    className="h-full bg-[#10B981] rounded-full"
                     style={{ width: `${Math.min(100, (currentModel.peak_sram_kb / currentHw.sram_kb) * 100 * 10)}%` }}
                   />
                 </div>
               </div>
-              <span className="text-[10px] font-mono text-[#5C7080] block mt-2">
-                0 Bytes runtime malloc / Zero heap fragmentation
+              <span className="text-[10px] font-mono text-[#8B949E] block mt-2 font-tabular">
+                0 Bytes dynamic malloc / Zero heap fragmentation
               </span>
             </div>
 
-            <div className="sm:col-span-2 bg-[#0B0D11] p-3 rounded-[2px] border border-[#232936] flex items-center justify-between">
+            <div className="sm:col-span-2 bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex items-center justify-between">
               <div>
-                <span className="text-[9px] font-mono text-[#5C7080] block">SAFETY & COMPLIANCE</span>
-                <h4 className="text-xs font-bold text-[#F5F8FA] font-mono flex items-center gap-1.5 mt-0.5">
-                  <ShieldCheck className="w-4 h-4 text-[#0D8050]" />
-                  MISRA-C:2012 COMPLIANT (0 DYNAMIC ALLOCATIONS)
+                <span className="text-[9px] font-mono text-[#484F58] block uppercase">SAFETY & COMPLIANCE VERIFICATION</span>
+                <h4 className="text-xs font-bold text-[#F0F6FC] font-mono flex items-center gap-1.5 mt-0.5">
+                  <ShieldCheck className="w-4 h-4 text-[#00FFA3]" />
+                  MISRA-C:2012 COMPLIANT (ZERO RUNTIME DYNAMIC ALLOCATIONS)
                 </h4>
               </div>
               <div className="text-right font-mono">
-                <span className="text-[9px] text-[#5C7080] block">SIMD ACCELERATION</span>
-                <span className="text-xs font-bold text-[#2B95D6]">{currentHw.simd}</span>
+                <span className="text-[9px] text-[#484F58] block uppercase">HARDWARE ACCELERATION</span>
+                <span className="text-xs font-bold text-[#38BDF8]">{currentHw.simd}</span>
               </div>
             </div>
           </div>

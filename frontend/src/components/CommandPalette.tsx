@@ -44,36 +44,36 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   const actions = [
     {
-      category: 'NAVIGATION',
+      category: 'STUDIO NAVIGATION',
       items: [
-        { id: 'nav_zoo', label: 'Open Model Zoo and Benchmarks', icon: Database, action: () => { onSelectTab('zoo'); onClose(); } },
-        { id: 'nav_wb', label: 'Open Compiler Workbench', icon: Terminal, action: () => { onSelectTab('workbench'); onClose(); } },
-        { id: 'nav_arena', label: 'Open Zero Malloc SRAM Arena Map', icon: Zap, action: () => { onSelectTab('arena'); onClose(); } },
-        { id: 'nav_sim', label: 'Open Silicon Simulator', icon: Cpu, action: () => { onSelectTab('simulator'); onClose(); } },
-        { id: 'nav_export', label: 'Open C++ Header Exporter', icon: Download, action: () => { onSelectTab('export'); onClose(); } },
+        { id: 'nav_zoo', label: 'Open Model Zoo & Benchmarks', icon: Database, action: () => { onSelectTab('zoo'); onClose(); } },
+        { id: 'nav_wb', label: 'Open Compiler Workbench & Pipeline', icon: Terminal, action: () => { onSelectTab('workbench'); onClose(); } },
+        { id: 'nav_arena', label: 'Open Zero-Malloc SRAM Arena Map', icon: Zap, action: () => { onSelectTab('arena'); onClose(); } },
+        { id: 'nav_sim', label: 'Open Silicon Hardware Simulator', icon: Cpu, action: () => { onSelectTab('simulator'); onClose(); } },
+        { id: 'nav_export', label: 'Open C/C++ Firmware Exporter', icon: Download, action: () => { onSelectTab('export'); onClose(); } },
       ]
     },
     {
-      category: 'ACTIONS',
+      category: 'AUTONOMOUS COMPILER ACTIONS',
       items: [
-        { id: 'act_agent', label: 'Run 5-Agent Compiler Pipeline', icon: Terminal, action: () => { onTriggerAgentLoop(); onClose(); } },
-        { id: 'act_audit', label: 'Run MISRA-C:2012 Static Memory Audit', icon: ShieldCheck, action: () => { onSelectTab('arena'); onClose(); } },
+        { id: 'act_agent', label: 'Run 5-Agent Hardware Optimization Loop', icon: Terminal, action: () => { onTriggerAgentLoop(); onClose(); } },
+        { id: 'act_audit', label: 'Run MISRA-C:2012 Static Memory Proof', icon: ShieldCheck, action: () => { onSelectTab('arena'); onClose(); } },
       ]
     },
     {
-      category: 'TARGET SILICON',
+      category: 'TARGET SILICON (MCU)',
       items: hardwareList.map((hw) => ({
         id: `hw_${hw.id}`,
-        label: `Switch Target MCU to ${hw.name} (${hw.sram_kb}KB SRAM / ${hw.flash_mb}MB Flash)`,
+        label: `Switch Target to ${hw.name} (${hw.sram_kb}KB SRAM / ${hw.flash_mb}MB Flash)`,
         icon: Cpu,
         action: () => { onSelectHardware(hw.id); onClose(); }
       }))
     },
     {
-      category: 'MODELS',
+      category: 'TINYML MODELS',
       items: models.map((m) => ({
         id: `mod_${m.id}`,
-        label: `Load Model: ${m.name} (${m.domain} / ${m.accuracy_score} Acc)`,
+        label: `Load Model: ${m.name} (${m.domain} • ${m.accuracy_score} Acc)`,
         icon: Database,
         action: () => { onSelectModel(m.id); onClose(); }
       }))
@@ -89,28 +89,28 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-start justify-center pt-24 p-4"
+      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-start justify-center pt-24 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl bg-[#1A1F28] border border-[#232936] rounded-[3px] shadow-2xl overflow-hidden flex flex-col font-mono"
+        className="w-full max-w-2xl bg-[#13171F] border border-[#21262D] rounded-[4px] shadow-2xl overflow-hidden flex flex-col font-mono"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center px-4 py-3 border-b border-[#232936] bg-[#12151B]">
-          <Search className="w-4 h-4 text-[#2B95D6] mr-3" />
+        <div className="flex items-center px-4 py-3 border-b border-[#21262D] bg-[#0D1117]">
+          <Search className="w-4 h-4 text-[#38BDF8] mr-3" />
           <input
             type="text"
             autoFocus
-            placeholder="Type a command or search models..."
+            placeholder="Search commands, hardware profiles, models..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-xs text-[#F5F8FA] focus:outline-none placeholder-[#5C7080]"
+            className="flex-1 bg-transparent text-xs text-[#F0F6FC] focus:outline-none placeholder-[#484F58]"
           />
           <div className="flex items-center gap-2">
-            <span className="text-[9px] bg-[#0B0D11] border border-[#232936] text-[#5C7080] px-1.5 py-0.5 rounded-[2px]">
+            <span className="text-[9px] bg-[#0A0D12] border border-[#21262D] text-[#484F58] px-1.5 py-0.5 rounded-[2px]">
               ESC
             </span>
-            <button onClick={onClose} className="text-[#5C7080] hover:text-[#F5F8FA]">
+            <button onClick={onClose} className="text-[#484F58] hover:text-[#F0F6FC]">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -119,7 +119,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="max-h-96 overflow-y-auto p-2 space-y-3">
           {filtered.map((grp, idx) => (
             <div key={idx}>
-              <span className="text-[9px] text-[#5C7080] font-bold uppercase tracking-wider px-2 block mb-1">
+              <span className="text-[9px] text-[#484F58] font-bold uppercase tracking-wider px-2 block mb-1">
                 {grp.category}
               </span>
               <div className="space-y-0.5">
@@ -129,13 +129,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <button
                       key={item.id}
                       onClick={item.action}
-                      className="w-full text-left px-2.5 py-2 rounded-[2px] text-xs text-[#F5F8FA] hover:bg-[#106BA3]/20 hover:text-[#2B95D6] flex items-center justify-between transition group"
+                      className="w-full text-left px-2.5 py-2 rounded-[3px] text-xs text-[#F0F6FC] hover:bg-[#0284C7]/20 hover:text-[#38BDF8] flex items-center justify-between transition group"
                     >
                       <div className="flex items-center gap-2.5">
-                        <Icon className="w-3.5 h-3.5 text-[#A7B6C2] group-hover:text-[#2B95D6]" />
+                        <Icon className="w-3.5 h-3.5 text-[#8B949E] group-hover:text-[#38BDF8]" />
                         <span>{item.label}</span>
                       </div>
-                      <span className="text-[10px] text-[#5C7080] font-sans opacity-0 group-hover:opacity-100">
+                      <span className="text-[10px] text-[#484F58] font-sans opacity-0 group-hover:opacity-100">
                         Select
                       </span>
                     </button>
@@ -146,18 +146,18 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           ))}
 
           {filtered.length === 0 && (
-            <div className="p-8 text-center text-xs text-[#5C7080]">
+            <div className="p-8 text-center text-xs text-[#484F58]">
               No matching commands or models found for "{query}".
             </div>
           )}
         </div>
 
-        <div className="px-4 py-2 bg-[#12151B] border-t border-[#232936] flex items-center justify-between text-[10px] text-[#5C7080]">
+        <div className="px-4 py-2 bg-[#0D1117] border-t border-[#21262D] flex items-center justify-between text-[10px] text-[#484F58]">
           <div className="flex items-center gap-3">
-            <span>Navigate with arrows</span>
-            <span>Press Enter to select</span>
+            <span>Use ↑↓ to navigate</span>
+            <span>↵ to select</span>
           </div>
-          <span className="text-[#0D8050] font-semibold">SHANNON AI v2.4</span>
+          <span className="text-[#00FFA3] font-bold">SHANNON STUDIO v2.4</span>
         </div>
       </div>
     </div>

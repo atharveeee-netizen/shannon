@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { HardwareProfile } from '../types';
-import { Cpu, Activity } from 'lucide-react';
+import { Cpu, Activity, RotateCw } from 'lucide-react';
 
 interface Silicon3DCanvasProps {
   targetHw: HardwareProfile;
@@ -36,10 +36,10 @@ export const Silicon3DCanvas: React.FC<Silicon3DCanvasProps> = ({
 
       const cx = width / 2;
       const cy = height / 2;
-      const size = 110;
+      const size = 105;
 
-      const ax = angleRef.current.x + Math.sin(tick * 0.5) * 0.05;
-      const ay = angleRef.current.y + tick * 0.3;
+      const ax = angleRef.current.x + Math.sin(tick * 0.5) * 0.04;
+      const ay = angleRef.current.y + tick * 0.25;
 
       const project = (x: number, y: number, z: number) => {
         const cosY = Math.cos(ay);
@@ -61,6 +61,7 @@ export const Silicon3DCanvas: React.FC<Silicon3DCanvasProps> = ({
         };
       };
 
+      // Base Silicon Substrate
       const corners = [
         project(-size, -8, -size),
         project(size, -8, -size),
@@ -72,62 +73,66 @@ export const Silicon3DCanvas: React.FC<Silicon3DCanvasProps> = ({
       ctx.moveTo(corners[0].px, corners[0].py);
       for (let i = 1; i < 4; i++) ctx.lineTo(corners[i].px, corners[i].py);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(26, 31, 40, 0.9)';
+      ctx.fillStyle = '#13171F';
       ctx.fill();
-      ctx.strokeStyle = '#232936';
+      ctx.strokeStyle = '#21262D';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
+      // Top Die Layer
       const topCorners = [
-        project(-size * 0.7, -24, -size * 0.7),
-        project(size * 0.7, -24, -size * 0.7),
-        project(size * 0.7, -24, size * 0.7),
-        project(-size * 0.7, -24, size * 0.7),
+        project(-size * 0.72, -22, -size * 0.72),
+        project(size * 0.72, -22, -size * 0.72),
+        project(size * 0.72, -22, size * 0.72),
+        project(-size * 0.72, -22, size * 0.72),
       ];
 
       ctx.beginPath();
       ctx.moveTo(topCorners[0].px, topCorners[0].py);
       for (let i = 1; i < 4; i++) ctx.lineTo(topCorners[i].px, topCorners[i].py);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(11, 13, 17, 0.95)';
+      ctx.fillStyle = '#0A0D12';
       ctx.fill();
-      ctx.strokeStyle = '#106BA3';
+      ctx.strokeStyle = '#0284C7';
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      // Circuit Trace Grid
       const gridCount = 5;
-      ctx.strokeStyle = 'rgba(43, 149, 214, 0.35)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
       ctx.lineWidth = 1;
       for (let i = 1; i < gridCount; i++) {
         const t = (i / gridCount) * 2 - 1;
-        const p1 = project(-size * 0.7, -24, t * size * 0.7);
-        const p2 = project(size * 0.7, -24, t * size * 0.7);
+        const p1 = project(-size * 0.72, -22, t * size * 0.72);
+        const p2 = project(size * 0.72, -22, t * size * 0.72);
         ctx.beginPath();
         ctx.moveTo(p1.px, p1.py);
         ctx.lineTo(p2.px, p2.py);
         ctx.stroke();
 
-        const p3 = project(t * size * 0.7, -24, -size * 0.7);
-        const p4 = project(t * size * 0.7, -24, size * 0.7);
+        const p3 = project(t * size * 0.72, -22, -size * 0.72);
+        const p4 = project(t * size * 0.72, -22, size * 0.72);
         ctx.beginPath();
         ctx.moveTo(p3.px, p3.py);
         ctx.lineTo(p4.px, p4.py);
         ctx.stroke();
       }
 
-      const coreP = project(0, -28, 0);
+      // Silicon Core Activity Pulse
+      const coreP = project(0, -26, 0);
       const pulseSize = 18 + Math.sin(tick * 4) * 4;
       const grad = ctx.createRadialGradient(coreP.px, coreP.py, 2, coreP.px, coreP.py, pulseSize);
-      grad.addColorStop(0, '#0D8050');
-      grad.addColorStop(0.5, 'rgba(13, 128, 80, 0.4)');
-      grad.addColorStop(1, 'rgba(13, 128, 80, 0)');
+      grad.addColorStop(0, '#00FFA3');
+      grad.addColorStop(0.5, 'rgba(0, 255, 163, 0.35)');
+      grad.addColorStop(1, 'rgba(0, 255, 163, 0)');
 
       ctx.beginPath();
       ctx.arc(coreP.px, coreP.py, pulseSize, 0, Math.PI * 2);
       ctx.fillStyle = grad;
       ctx.fill();
 
-      ctx.fillStyle = '#F5F8FA';
+      // Core Text Label
+      ctx.fillStyle = '#F0F6FC';
       ctx.font = 'bold 9px "JetBrains Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(targetHw.name, coreP.px, coreP.py - 16);
@@ -168,16 +173,16 @@ export const Silicon3DCanvas: React.FC<Silicon3DCanvasProps> = ({
   }, [targetHw]);
 
   return (
-    <div className="bg-[#1A1F28] border border-[#232936] rounded-[3px] p-4 flex flex-col justify-between relative overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[#232936] pb-2 mb-2">
+    <div className="bg-[#13171F] border border-[#21262D] rounded-[4px] p-4 flex flex-col justify-between relative overflow-hidden shadow-sm">
+      <div className="flex items-center justify-between border-b border-[#21262D] pb-2 mb-2">
         <div className="flex items-center gap-2">
-          <Cpu className="w-4 h-4 text-[#2B95D6]" />
-          <span className="text-xs font-mono font-semibold text-[#F5F8FA] uppercase">
+          <Cpu className="w-4 h-4 text-[#38BDF8]" />
+          <span className="text-xs font-mono font-bold text-[#F0F6FC] uppercase">
             3D SILICON DIE PROJECTION
           </span>
         </div>
-        <span className="text-[9px] font-mono text-[#5C7080] flex items-center gap-1">
-          <Activity className="w-3 h-3 text-[#0D8050] animate-pulse" />
+        <span className="text-[9px] font-mono text-[#00FFA3] flex items-center gap-1">
+          <Activity className="w-3 h-3 text-[#00FFA3] animate-pulse" />
           INTERACTIVE
         </span>
       </div>
@@ -189,19 +194,19 @@ export const Silicon3DCanvas: React.FC<Silicon3DCanvasProps> = ({
           height={176}
           className="w-full h-full object-contain"
         />
-        <span className="absolute bottom-1 text-[8px] font-mono text-[#5C7080] pointer-events-none">
-          Click and drag to rotate silicon projection
+        <span className="absolute bottom-1 text-[8px] font-mono text-[#484F58] pointer-events-none flex items-center gap-1">
+          <RotateCw className="w-2.5 h-2.5" /> Drag to rotate silicon die
         </span>
       </div>
 
-      <div className="pt-2 border-t border-[#232936] grid grid-cols-2 gap-2 text-[10px] font-mono">
-        <div className="bg-[#0B0D11] p-1.5 rounded-[2px] border border-[#232936]">
-          <span className="text-[#5C7080] block text-[8px]">SRAM ARENA</span>
-          <span className="text-[#0D8050] font-bold">{peakSramKb} KB</span>
+      <div className="pt-2 border-t border-[#21262D] grid grid-cols-2 gap-2 text-[10px] font-mono">
+        <div className="bg-[#0A0D12] p-2 rounded-[3px] border border-[#21262D]">
+          <span className="text-[#8B949E] block text-[8px] uppercase">SRAM ARENA</span>
+          <span className="text-[#00FFA3] font-bold font-tabular">{peakSramKb} KB</span>
         </div>
-        <div className="bg-[#0B0D11] p-1.5 rounded-[2px] border border-[#232936]">
-          <span className="text-[#5C7080] block text-[8px]">FLASH ROM</span>
-          <span className="text-[#2B95D6] font-bold">{flashKb} KB</span>
+        <div className="bg-[#0A0D12] p-2 rounded-[3px] border border-[#21262D]">
+          <span className="text-[#8B949E] block text-[8px] uppercase">FLASH ROM</span>
+          <span className="text-[#38BDF8] font-bold font-tabular">{flashKb} KB</span>
         </div>
       </div>
     </div>

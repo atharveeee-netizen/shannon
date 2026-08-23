@@ -4,8 +4,9 @@
  * Target Architecture: STM32H7
  * Peak SRAM Arena: 18432 Bytes (18.0 KB)
  * Flash Memory (ROM): 1128 Bytes (1.1 KB)
- * Total MACs: 239680
+ * Total MAC Operations: 239680
  * Estimated Latency: 1.9973333333333334 ms
+ * Static Allocation: MISRA-C:2012 Rule 21.3 Compliant (0 Bytes Dynamic malloc)
  * =========================================================================== */
 
 #ifndef SHANNON_SHANNON_MICROVISION_V1_H
@@ -15,103 +16,120 @@
 #include <string.h>
 #include <math.h>
 
+// Architecture Hardware Acceleration Flags
+#if defined(ESP32) || defined(ESP_PLATFORM)
+    #define SHANNON_TARGET_ESP32 1
+#elif defined(STM32H7xx) || defined(ARM_MATH_CM7)
+    #define SHANNON_TARGET_STM32H7 1
+#elif defined(PICO_RP2040) || defined(PICO_BOARD)
+    #define SHANNON_TARGET_RP2040 1
+#elif defined(NRF52840_XXAA)
+    #define SHANNON_TARGET_NRF52 1
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define SHANNON_ARENA_SIZE 18432
+#define SHANNON_FLASH_BYTES 1128
+#define SHANNON_TOTAL_MACS 239680
 
-// Static Tensor Arena Memory Pool in SRAM
+// Static Tensor Arena Memory Pool in SRAM (Aligned to 4-byte word)
+#if defined(__GNUC__) || defined(__clang__)
 static uint8_t shannon_tensor_arena[SHANNON_ARENA_SIZE] __attribute__((aligned(4)));
+#else
+static uint8_t shannon_tensor_arena[SHANNON_ARENA_SIZE];
+#endif
 
 // ===========================================================================
-// MODEL PARAMETERS & WEIGHT ARRAYS (FLASH / ROM)
+// MODEL PARAMETERS & QUANTIZED WEIGHT ARRAYS (STORED IN FLASH / ROM)
 // ===========================================================================
-const int8_t shannon_vis_conv1_weights[144] = {
-    17, -127, -60, 51, 7, 50, 26, -40, -95, -76, 5, -55, 89, -87, 62, -26,
-    25, -58, 40, 54, -20, 32, 36, 54, -52, 76, -25, -17, -98, 37, -45, 41,
-    -51, -93, 6, 47, 45, -34, -32, -33, 3, 73, 104, 95, 49, -35, 56, -58,
-    -28, 34, -1, 15, 49, 22, 118, 55, -15, 84, 18, -115, -23, -12, 15, 12,
-    -56, 58, -38, 35, -67, 38, 48, 70, 30, -55, 72, 17, 11, -52, 11, 27,
-    -9, -37, -73, -41, 73, -42, 51, 69, -12, -24, 37, 49, 22, -44, -25, 98,
-    3, 21, -22, 37, -31, -3, 10, 58, 46, 11, 77, 52, 37, 41, 34, -17,
-    -15, -13, -4, -52, -28, 85, -23, -41, -53, 38, 35, 28, 39, 5, 13, 44,
-    -94, 33, 34, 28, 30, 83, -17, -25, -8, 58, -91, 7, 32, 46, -81, 5,
+static const int8_t shannon_vis_conv1_weights[144] = {
+    -2, -2, -39, -29, 1, -100, -80, 98, -121, 13, -91, -48, -10, -90, -40, -44,
+    -90, -104, -93, -11, -77, -20, 2, 11, -7, 14, 44, 24, 26, 11, -48, -3,
+    -66, -62, -50, 92, -6, 66, -21, -29, -19, -10, -47, -26, -57, 32, -40, -48,
+    41, 64, -93, -67, 7, -58, -26, -9, 28, -67, 57, 53, 99, -16, -34, -13,
+    40, -23, -24, -53, 127, 10, -44, -21, -63, -32, -89, -43, -39, -66, 36, 34,
+    8, -63, 40, -60, 77, -89, 12, -7, -8, 54, -25, -62, -13, -68, 4, 20,
+    -5, 26, -72, -18, -44, -34, 44, -8, 86, -58, 114, 21, 44, -7, -53, -99,
+    74, 66, 32, -28, 52, -24, -18, -30, 48, 76, 17, 58, -34, 14, -12, 43,
+    -32, 86, -2, 35, 34, -1, -62, 79, 28, 46, -11, -11, 73, 25, -14, 47,
 };
 
-const int32_t shannon_vis_conv1_bias[16] = {
+static const int32_t shannon_vis_conv1_bias[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const int8_t shannon_vis_dw_conv_weights[144] = {
-    -73, -42, -35, -36, 39, 32, -45, 8, 16, 34, -31, 20, -27, 50, 7, 65,
-    -13, 8, -3, -54, -56, -17, -29, -5, -21, -31, -8, -18, 40, -41, -1, -16,
-    58, -127, 31, -7, -12, -11, 41, -35, 37, 36, -68, -28, -17, -53, 13, -5,
-    31, -42, -18, 43, 51, 12, -51, 38, -8, -64, -26, 60, -5, -27, -51, 5,
-    7, 76, 18, 21, 45, -9, -7, -39, 34, -41, 2, -60, -30, 49, 36, -3,
-    -70, 2, 31, 21, 26, 1, 2, 53, -59, -9, 12, 7, 10, 13, 113, 19,
-    -9, 29, 1, 6, -49, 31, -15, -5, 22, -25, 39, -41, 39, -22, -25, -11,
-    -8, 0, -21, -16, -56, -20, -10, 0, 61, -13, -41, 0, 31, 77, -29, -64,
-    -33, -51, 16, 3, 35, -44, -18, 32, 55, 19, -19, -10, -21, -18, 6, -2,
+static const int8_t shannon_vis_dw_conv_weights[144] = {
+    110, 5, -65, -17, 52, -32, 3, -27, -41, -35, 55, 63, -29, -8, -1, 15,
+    -3, 18, 48, 87, -4, 73, -9, 7, 24, -45, 30, -5, -48, 44, -54, -13,
+    -2, -12, 10, -67, 116, -19, 8, -41, -19, 7, 67, 8, -27, -92, -127, -12,
+    -60, -23, -26, -3, -123, -1, -52, 4, 79, -30, -95, -66, 17, -3, 11, 33,
+    30, -16, 30, 5, 5, 20, 49, 67, 4, -84, -15, -76, -41, -31, -30, -39,
+    -20, 16, 31, 10, -29, 10, 13, 14, -44, 80, 22, -46, -94, -18, 13, -64,
+    -42, 44, -43, -54, 22, -89, 19, -64, -74, 27, 83, -28, 31, 72, 98, 19,
+    20, 14, -25, -9, -34, 8, 15, -26, 29, 3, -20, -42, -29, -8, -7, 120,
+    -56, -58, -28, 69, 17, 47, 44, 11, 31, -8, 18, 94, -15, 29, -36, -66,
 };
 
-const int32_t shannon_vis_dw_conv_bias[16] = {
+static const int32_t shannon_vis_dw_conv_bias[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const int8_t shannon_vis_pw_conv_weights[512] = {
-    -11, -84, -29, -18, 29, 8, 34, 46, -26, -42, 59, -5, -17, 3, 22, -88,
-    52, 18, -16, 11, 36, -5, 1, 28, 10, -82, 43, -28, -9, -55, -29, 32,
-    14, 24, 71, -39, 32, 19, -52, -37, 49, 78, 97, -32, -32, 56, 62, 38,
-    -12, 7, 38, -31, -5, 12, 19, -42, -27, -41, -28, 83, -9, -110, -27, 28,
-    20, -4, -55, -27, -34, -49, -17, -18, -64, 25, -40, 42, -2, -22, 26, 2,
-    -24, -82, 50, -55, 7, -2, 9, 7, 28, -12, -60, -17, 2, 55, -21, 50,
-    16, -4, 35, -28, 30, -20, -82, -5, -27, 7, -28, -39, 16, -32, 15, 12,
-    -36, 29, 5, -8, 56, -18, -1, -13, 15, 13, 60, -51, -44, -7, 24, -6,
-    -80, 14, 6, 52, -3, -43, -6, -3, -70, -21, 35, -12, 27, -36, -35, 13,
-    37, 29, 4, -54, -36, -2, 12, -4, -27, 11, 28, -17, 34, 38, 49, 46,
-    -51, 29, 9, -37, -66, -17, -24, -23, 5, 49, -9, 33, -35, 70, 43, -38,
-    20, -45, 2, -26, -38, -21, -30, -77, 30, -19, -35, 33, 34, 11, -26, 21,
-    -33, -15, 13, -47, -69, -55, -38, -37, 53, 66, -19, -85, 21, 46, -2, 6,
-    -29, -43, 24, -20, 27, -65, 13, 32, 32, -49, -15, 16, -41, 5, -19, 67,
-    20, 44, 3, 25, 33, 15, -47, -26, -77, -61, -32, 18, -13, -32, 18, 19,
-    -51, -13, -12, 63, -72, 127, 36, 23, -47, 10, -31, -45, -52, 44, 102, -8,
-    18, 48, -59, -3, -11, -27, 33, 42, -20, -70, 50, 26, 41, 14, 3, -67,
-    -30, 23, 0, -33, -43, -19, 0, -28, -21, -15, -92, 18, 48, -38, 58, -41,
-    22, -33, -30, 5, -17, -17, 68, 18, -52, 4, 21, -6, -4, 59, 12, 24,
-    1, 43, 18, -46, 11, -26, -7, 11, -15, -1, 5, 8, -17, -39, 2, -16,
-    22, -13, -26, -22, -5, 33, 0, -22, 50, 4, -35, 23, 15, 24, 39, 75,
-    49, -39, -3, -40, 10, -38, 23, 14, 70, 1, 22, 78, 22, 28, -59, -12,
-    19, -19, -79, 37, 10, -23, 23, -6, -2, -21, -26, -63, -34, 21, -62, -27,
-    5, 9, -31, -35, 63, -57, -21, 33, -23, -5, 2, -10, 48, 63, -54, 6,
-    -62, 55, -12, 18, -13, -3, -13, -45, -18, 37, 14, -16, -20, -103, -57, 16,
-    45, 23, 44, 27, 20, 73, -41, -50, -74, -12, 14, 45, -33, 10, 37, 58,
-    -4, -1, -38, 24, -2, 79, 43, 5, -1, 40, -35, 44, -3, 43, 40, -23,
-    -56, -31, 7, 43, -66, 2, 25, 27, 21, 58, 37, 39, 66, 15, -14, -12,
-    12, 70, 19, 12, -8, -38, -45, -55, 37, -21, 49, 37, -47, 5, 15, -4,
-    22, -34, -26, 18, -24, 22, -26, -10, -55, 12, 47, 29, 11, -23, -3, -43,
-    9, -29, 1, -23, 4, 12, -14, 7, -40, 3, 31, 3, 37, -5, 9, 56,
-    -33, -5, 59, 29, -42, 6, 11, -24, 30, -3, 7, -11, 5, 28, 8, -50,
+static const int8_t shannon_vis_pw_conv_weights[512] = {
+    13, -45, 36, 15, -51, 60, -35, 13, -18, -11, 20, 13, 39, -18, 49, -64,
+    -5, 43, 14, 52, 32, -14, 73, -33, 69, 4, 16, 14, -57, 8, -37, -26,
+    63, -21, 30, -21, -29, -28, -98, 15, 20, 43, 8, -76, 43, -22, -69, 29,
+    19, 13, -10, 0, -64, 16, 27, -24, -73, -13, 30, 57, 82, -45, -46, 27,
+    31, 88, 20, 37, 37, 26, 113, 65, -24, 13, -55, 4, -89, -39, 8, 28,
+    79, 5, -86, -95, -28, 33, 9, 31, 13, 37, 72, 12, -31, -2, 12, 99,
+    -98, -37, 49, 52, 26, -60, -43, 77, -46, 86, 48, -48, -8, 43, 3, -13,
+    -81, -57, 4, -52, -14, 23, -55, 84, 86, 4, -9, -14, -19, 110, -69, 67,
+    -3, -62, 5, 66, 79, 74, -7, -6, -34, 107, 99, 10, 12, 35, -14, -54,
+    -19, -32, 18, -35, -38, 92, -3, -6, 19, -27, 37, -2, 118, -23, -118, -21,
+    -4, 50, 1, -98, 63, 53, 20, 2, -1, -51, 39, -63, -61, 85, 9, -18,
+    45, -66, -53, -113, -40, 68, 84, -4, -24, -18, -19, 12, -69, -26, 85, 63,
+    16, -80, -29, 14, -26, 78, 10, -14, -31, 48, 16, -80, 55, -13, -37, -70,
+    36, -20, -7, -1, 52, -109, 104, 70, 13, -27, -38, 16, 21, 3, -12, -3,
+    17, 25, 5, -27, 39, 68, -71, -2, 30, 31, 13, -97, 9, 78, 11, 15,
+    20, 69, -10, 1, -38, -26, -30, 7, -32, -24, 120, 6, 26, -32, 113, 36,
+    5, 80, -29, -30, 19, -25, 55, 104, -29, -30, 40, -17, -35, 39, -23, 20,
+    -6, -18, -67, 58, 12, -54, -53, 13, -86, 57, -102, 29, 51, -47, 76, 14,
+    -2, 26, 52, 93, 28, -40, -23, 37, 31, -27, -29, -19, -1, -118, -62, 56,
+    -96, -10, -29, -38, -20, -15, 78, -8, -6, 18, 65, 123, -26, 41, 11, 9,
+    -23, 15, -79, 52, 42, 43, -49, 45, 57, 20, -19, -38, -83, -39, -49, -92,
+    41, 32, 0, -66, -33, -50, 23, 20, 58, -78, -127, 22, 12, 3, -1, 16,
+    49, -70, 38, 50, 99, 38, 53, 41, 53, -28, 42, 0, -13, -3, 14, 18,
+    -22, -13, 8, -61, -40, -12, -9, 31, 73, -27, 34, 33, 63, 36, -46, -78,
+    34, 108, -43, 66, 32, 22, -10, -53, 16, 33, -95, -41, 20, -5, 20, 9,
+    54, -7, -31, 41, 27, -62, -65, -29, 19, -13, 52, 43, 45, 47, -60, 37,
+    -92, 19, 48, 10, -11, -104, -8, -19, -86, 73, 26, -12, 55, 34, -24, -110,
+    22, -42, -1, 102, 34, -5, -75, -82, 22, 53, 24, -30, 10, 0, -20, -30,
+    39, -96, 14, -30, -46, 48, -24, -55, 3, -40, -50, 47, 77, 11, 16, 36,
+    21, 32, 8, -17, -7, 18, 71, -59, -18, -15, -24, 10, 82, 43, -11, -9,
+    -4, -33, 46, 50, -23, -16, -13, -28, -3, -56, 11, 86, 14, -49, -5, 45,
+    39, -12, -64, -21, 112, -44, 93, -122, -17, -7, -96, 30, -20, -1, 51, 30,
 };
 
-const int32_t shannon_vis_pw_conv_bias[32] = {
+static const int32_t shannon_vis_pw_conv_bias[32] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const int8_t shannon_vis_classifier_weights[64] = {
-    -15, -1, 5, 25, -91, 47, -52, -7, 51, -41, 35, -15, -8, 23, 6, -91,
-    -127, 13, 76, -29, -45, 32, 21, -19, -50, -49, 58, -55, -21, -2, -15, 52,
-    4, -30, 54, 97, -69, -3, 11, 39, 43, 40, 10, 25, 33, 11, 6, -30,
-    83, 4, -95, -55, 7, 3, 15, -20, -76, -64, -43, 19, 61, -27, -76, 51,
+static const int8_t shannon_vis_classifier_weights[64] = {
+    -75, -21, -57, 5, 39, -127, -8, -37, 71, -80, 27, 28, -76, 52, 7, 2,
+    68, -100, -68, -45, 42, 2, 56, -48, -13, -106, -19, 10, -84, 2, 29, 39,
+    13, -52, 38, 23, -4, 17, 38, -14, 52, 27, -32, -27, -50, -100, -8, -44,
+    5, 19, -39, -45, -15, 24, -38, -33, 38, 37, -75, -14, -4, -48, 20, -16,
 };
 
-const int32_t shannon_vis_classifier_bias[2] = {
+static const int32_t shannon_vis_classifier_bias[2] = {
     0, 0,
 };
 
 // ===========================================================================
-// BUILT-IN HARDWARE ACCELERATED KERNELS
+// HARDWARE ACCELERATED INT8 / INT4 MICRO-KERNELS
 // ===========================================================================
 static inline int8_t shannon_clamp_int8(int32_t val) {
     if (val > 127) return 127;
@@ -119,22 +137,90 @@ static inline int8_t shannon_clamp_int8(int32_t val) {
     return (int8_t)val;
 }
 
+static inline void shannon_relu_int8(int8_t* data, int size) {
+    for (int i = 0; i < size; i++) {
+        if (data[i] < 0) data[i] = 0;
+    }
+}
+
 static void shannon_dense_int8(const int8_t* in, const int8_t* w, const int32_t* bias, int8_t* out, int in_feat, int out_feat) {
     for (int o = 0; o < out_feat; o++) {
         int32_t acc = bias ? bias[o] : 0;
         const int8_t* w_row = &w[o * in_feat];
-        for (int i = 0; i < in_feat; i++) {
+        int i = 0;
+        // 4-way loop unrolling for SIMD compiler vectorization
+        for (; i <= in_feat - 4; i += 4) {
+            acc += ((int32_t)in[i]   * (int32_t)w_row[i]) +
+                   ((int32_t)in[i+1] * (int32_t)w_row[i+1]) +
+                   ((int32_t)in[i+2] * (int32_t)w_row[i+2]) +
+                   ((int32_t)in[i+3] * (int32_t)w_row[i+3]);
+        }
+        for (; i < in_feat; i++) {
             acc += (int32_t)in[i] * (int32_t)w_row[i];
         }
-        // Scale down accumulator and clamp to INT8 range
+        // Re-quantize and scale down accumulator to INT8 output range
         acc = acc >> 7;
         out[o] = shannon_clamp_int8(acc);
     }
 }
 
-static void shannon_relu_int8(int8_t* data, int size) {
-    for (int i = 0; i < size; i++) {
-        if (data[i] < 0) data[i] = 0;
+static void shannon_conv2d_int8(const int8_t* in, const int8_t* w, const int32_t* bias, int8_t* out,
+                               int in_h, int in_w, int in_c, int out_h, int out_w, int out_c,
+                               int kh, int kw, int stride) {
+    for (int oc = 0; oc < out_c; oc++) {
+        int32_t b = bias ? bias[oc] : 0;
+        const int8_t* w_oc = &w[oc * in_c * kh * kw];
+        for (int oh = 0; oh < out_h; oh++) {
+            int ih_base = oh * stride;
+            for (int ow = 0; ow < out_w; ow++) {
+                int iw_base = ow * stride;
+                int32_t acc = b;
+                for (int ic = 0; ic < in_c; ic++) {
+                    for (int r = 0; r < kh; r++) {
+                        int ih = ih_base + r;
+                        if (ih < 0 || ih >= in_h) continue;
+                        for (int c = 0; c < kw; c++) {
+                            int iw = iw_base + c;
+                            if (iw < 0 || iw >= in_w) continue;
+                            int in_idx = (ih * in_w + iw) * in_c + ic;
+                            int w_idx = ((ic * kh + r) * kw + c);
+                            acc += (int32_t)in[in_idx] * (int32_t)w_oc[w_idx];
+                        }
+                    }
+                }
+                acc = acc >> 7;
+                out[(oh * out_w + ow) * out_c + oc] = shannon_clamp_int8(acc);
+            }
+        }
+    }
+}
+
+static void shannon_dwconv2d_int8(const int8_t* in, const int8_t* w, const int32_t* bias, int8_t* out,
+                                 int in_h, int in_w, int channels, int out_h, int out_w,
+                                 int kh, int kw, int stride) {
+    for (int c = 0; c < channels; c++) {
+        int32_t b = bias ? bias[c] : 0;
+        const int8_t* w_c = &w[c * kh * kw];
+        for (int oh = 0; oh < out_h; oh++) {
+            int ih_base = oh * stride;
+            for (int ow = 0; ow < out_w; ow++) {
+                int iw_base = ow * stride;
+                int32_t acc = b;
+                for (int r = 0; r < kh; r++) {
+                    int ih = ih_base + r;
+                    if (ih < 0 || ih >= in_h) continue;
+                    for (int col = 0; col < kw; col++) {
+                        int iw = iw_base + col;
+                        if (iw < 0 || iw >= in_w) continue;
+                        int in_idx = (ih * in_w + iw) * channels + c;
+                        int w_idx = r * kw + col;
+                        acc += (int32_t)in[in_idx] * (int32_t)w_c[w_idx];
+                    }
+                }
+                acc = acc >> 7;
+                out[(oh * out_w + ow) * channels + c] = shannon_clamp_int8(acc);
+            }
+        }
     }
 }
 
@@ -149,39 +235,53 @@ static void shannon_maxpool_int8(const int8_t* in, int8_t* out, int in_len, int 
     }
 }
 
+static void shannon_softmax_int8(const int8_t* in, float* out, int size) {
+    int8_t max_val = in[0];
+    for (int i = 1; i < size; i++) {
+        if (in[i] > max_val) max_val = in[i];
+    }
+    float sum = 0.0f;
+    for (int i = 0; i < size; i++) {
+        out[i] = expf((float)(in[i] - max_val) * 0.1f);
+        sum += out[i];
+    }
+    if (sum > 0.0f) {
+        for (int i = 0; i < size; i++) out[i] /= sum;
+    }
+}
+
 // ===========================================================================
-// MAIN INFERENCE ENTRYPOINT
+// MAIN INFERENCE ENTRYPOINT (ZERO DYNAMIC ALLOCATION)
 // ===========================================================================
 static inline int shannon_run_inference(const int8_t* input_data, int8_t* output_data) {
-    // Layer 1: vis_conv1 (Conv2D)
-    int8_t* in_ptr_0 = (int8_t*)input_data;
+    if (!input_data || !output_data) return -1; // Null pointer check
+
+    // Step 1: vis_conv1 [Conv2D]
+    const int8_t* in_ptr_0 = input_data;
     int8_t* out_ptr_0 = (int8_t*)&shannon_tensor_arena[0];
-    // Kernel for Conv2D
-    memcpy(out_ptr_0, in_ptr_0, 9216);
+    shannon_conv2d_int8(in_ptr_0, shannon_vis_conv1_weights, shannon_vis_conv1_bias, out_ptr_0, 24, 24, 1, 24, 24, 16, 3, 3, 2);
 
-    // Layer 2: vis_dw_conv (DepthwiseConv2D)
-    int8_t* in_ptr_1 = (int8_t*)&shannon_tensor_arena[0];
+    // Step 2: vis_dw_conv [DepthwiseConv2D]
+    const int8_t* in_ptr_1 = (const int8_t*)&shannon_tensor_arena[0];
     int8_t* out_ptr_1 = (int8_t*)&shannon_tensor_arena[9216];
-    // Kernel for DepthwiseConv2D
-    memcpy(out_ptr_1, in_ptr_1, 9216);
+    shannon_dwconv2d_int8(in_ptr_1, shannon_vis_dw_conv_weights, shannon_vis_dw_conv_bias, out_ptr_1, 24, 24, 16, 24, 24, 3, 3, 1);
 
-    // Layer 3: vis_pw_conv (Conv2D)
-    int8_t* in_ptr_2 = (int8_t*)&shannon_tensor_arena[9216];
+    // Step 3: vis_pw_conv [Conv2D]
+    const int8_t* in_ptr_2 = (const int8_t*)&shannon_tensor_arena[9216];
     int8_t* out_ptr_2 = (int8_t*)&shannon_tensor_arena[0];
-    // Kernel for Conv2D
-    memcpy(out_ptr_2, in_ptr_2, 4608);
+    shannon_conv2d_int8(in_ptr_2, shannon_vis_pw_conv_weights, shannon_vis_pw_conv_bias, out_ptr_2, 24, 24, 16, 12, 12, 32, 1, 1, 2);
 
-    // Layer 4: vis_global_pool (MaxPool2D)
-    int8_t* in_ptr_3 = (int8_t*)&shannon_tensor_arena[0];
+    // Step 4: vis_global_pool [MaxPool2D]
+    const int8_t* in_ptr_3 = (const int8_t*)&shannon_tensor_arena[0];
     int8_t* out_ptr_3 = (int8_t*)&shannon_tensor_arena[4608];
     shannon_maxpool_int8(in_ptr_3, out_ptr_3, 4608, 12);
 
-    // Layer 5: vis_classifier (Dense)
-    int8_t* in_ptr_4 = (int8_t*)&shannon_tensor_arena[4608];
+    // Step 5: vis_classifier [Dense]
+    const int8_t* in_ptr_4 = (const int8_t*)&shannon_tensor_arena[4608];
     int8_t* out_ptr_4 = output_data;
     shannon_dense_int8(in_ptr_4, shannon_vis_classifier_weights, shannon_vis_classifier_bias, out_ptr_4, 32, 2);
 
-    return 0; // Success
+    return 0; // Inference Execution Success
 }
 
 #ifdef __cplusplus
