@@ -3,16 +3,59 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --bg: #F7F7F5;
+    --surface: #FFFFFF;
+    --surface-raised: #F0F0EC;
+    --surface-hover: #EAEAE5;
+    --border: #E0E0DC;
+    --border-strong: #C8C8C2;
+    --text: #121212;
+    --text-secondary: #5C5C58;
+    --text-muted: #8C8C87;
+    --accent: #106BA3;
+    --accent-hover: #0E5A8A;
+    --success: #0D8050;
+    --success-bg: rgba(13, 128, 80, 0.10);
+    --warning: #D9822B;
+    --warning-bg: rgba(217, 130, 43, 0.10);
+    --danger: #C23030;
+    --danger-bg: rgba(194, 48, 48, 0.10);
+    --code-bg: #EAEAE5;
+  }
+
+  .dark {
+    --bg: #0B0B0B;
+    --surface: #121212;
+    --surface-raised: #1A1A1A;
+    --surface-hover: #222222;
+    --border: #292929;
+    --border-strong: #3D3D3D;
+    --text: #F3F3EF;
+    --text-secondary: #8A8A84;
+    --text-muted: #5C5C58;
+    --accent: #2B95D6;
+    --accent-hover: #48AFF0;
+    --success: #0D8050;
+    --success-bg: rgba(13, 128, 80, 0.15);
+    --warning: #D9822B;
+    --warning-bg: rgba(217, 130, 43, 0.15);
+    --danger: #C23030;
+    --danger-bg: rgba(194, 48, 48, 0.15);
+    --code-bg: #0B0B0B;
+  }
+
   body {
-    background-color: #0B0B0B;
-    color: #F3F3EF;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.15s ease, color 0.15s ease;
   }
 }
 
-/* Monospace with tabular numerals for data tables */
+/* Monospace with tabular numerals for data tables, hex offsets, and code */
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-variant-numeric: tabular-nums;
@@ -24,12 +67,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0B0B;
+  background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #292929;
+  background: var(--border);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3D3D3D;
+  background: var(--border-strong);
 }

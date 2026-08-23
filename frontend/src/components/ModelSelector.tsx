@@ -25,8 +25,8 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-xs font-mono text-[#8A8A84]">
-        <span>SELECT NEURAL NETWORK MODEL</span>
+      <div className="flex items-center justify-between text-xs font-mono text-text-secondary">
+        <span>1. SELECT NEURAL NETWORK MODEL</span>
         <span>Preset or custom ONNX</span>
       </div>
 
@@ -39,23 +39,23 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
               onClick={() => onSelectModel(m.id)}
               className={`p-3 rounded-[3px] border text-left transition flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-[#1A1A1A] border-[#F3F3EF] text-[#F3F3EF]'
-                  : 'bg-[#111111] border-[#292929] text-[#8A8A84] hover:border-[#3D3D3D] hover:text-[#F3F3EF]'
+                  ? 'bg-surface-raised border-border-strong text-text-primary ring-1 ring-border-strong'
+                  : 'bg-surface border-border text-text-secondary hover:border-border-strong hover:text-text-primary'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-mono text-[#8A8A84] uppercase">
+                  <span className="text-[10px] font-mono text-text-secondary uppercase">
                     {m.domain}
                   </span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-[#0D8050]" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-success" />}
                 </div>
-                <h4 className="font-medium text-xs text-[#F3F3EF] leading-snug">
+                <h4 className="font-medium text-xs text-text-primary leading-snug">
                   {m.name}
                 </h4>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-[#292929] flex items-center justify-between text-[10px] font-mono text-[#8A8A84]">
+              <div className="mt-3 pt-2 border-t border-border flex items-center justify-between text-[10px] font-mono text-text-secondary">
                 <span>Input: {m.input_shape}</span>
                 <span>{m.architecture.split(' ')[0]}</span>
               </div>
@@ -63,27 +63,27 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           );
         })}
 
-        {/* Custom ONNX Drop Area */}
+        {/* Custom ONNX Upload Card */}
         <label
           className={`p-3 rounded-[3px] border border-dashed text-left cursor-pointer transition flex flex-col justify-between ${
             customFilename
-              ? 'bg-[#1A1A1A] border-[#0D8050] text-[#F3F3EF]'
-              : 'bg-[#111111] border-[#292929] text-[#8A8A84] hover:border-[#3D3D3D] hover:text-[#F3F3EF]'
+              ? 'bg-surface-raised border-success text-text-primary ring-1 ring-success'
+              : 'bg-surface border-border text-text-secondary hover:border-border-strong hover:text-text-primary'
           }`}
         >
           <input type="file" accept=".onnx,.tflite,.pt" onChange={handleFileChange} className="hidden" />
           <div>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-mono text-[#8A8A84] uppercase">CUSTOM GRAPH</span>
-              <UploadCloud className="w-3.5 h-3.5 text-[#8A8A84]" />
+              <span className="text-[10px] font-mono text-text-secondary uppercase">CUSTOM GRAPH</span>
+              <UploadCloud className="w-3.5 h-3.5 text-text-secondary" />
             </div>
-            <h4 className="font-medium text-xs text-[#F3F3EF] truncate">
+            <h4 className="font-medium text-xs text-text-primary truncate">
               {customFilename || 'Upload .ONNX'}
             </h4>
           </div>
 
-          <div className="mt-3 pt-2 border-t border-[#292929] text-[10px] font-mono text-[#8A8A84]">
-            {customFilename ? 'Custom model parsed' : 'Drop model file here'}
+          <div className="mt-3 pt-2 border-t border-border text-[10px] font-mono text-text-secondary">
+            {customFilename ? 'Custom graph parsed' : 'Drop model file here'}
           </div>
         </label>
       </div>

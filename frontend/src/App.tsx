@@ -17,6 +17,12 @@ import { TechnicalInspector } from './components/TechnicalInspector';
 import { CommandPalette } from './components/CommandPalette';
 
 export function App() {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('shannon_theme');
+    if (saved) return saved === 'dark';
+    return true; // Default to dark mode for developer tooling
+  });
+
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
   const [models] = useState<PresetModel[]>(PRESET_MODELS);
   const [selectedHwId, setSelectedHwId] = useState<string>('ESP32-S3');
@@ -26,6 +32,16 @@ export function App() {
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
   const [compilationResult, setCompilationResult] = useState<CompilationResult | null>(null);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('shannon_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('shannon_theme', 'light');
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     fetchHardware().then((hw) => setHardwareList(hw));
@@ -68,16 +84,23 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   const currentHw = hardwareList.find((h) => h.id === selectedHwId) || hardwareList[0];
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-[#F3F3EF] font-sans flex flex-col antialiased">
+    <div className="min-h-screen bg-canvas text-text-primary font-sans flex flex-col antialiased">
       <CommandPalette
         isOpen={isCmdOpen}
         onClose={() => setIsCmdOpen(false)}
         onSelectHardware={setSelectedHwId}
         onSelectModel={handleSelectModel}
         onTriggerCompile={() => runCompilation(selectedModelId, selectedHwId)}
+        onDownloadHeader={handleDownloadHeader}
+        onToggleTheme={handleToggleTheme}
+        isDarkMode={isDarkMode}
         hardwareList={hardwareList}
         models={models}
       />
@@ -87,6 +110,8 @@ export function App() {
         selectedHwId={selectedHwId}
         onSelectHardware={setSelectedHwId}
         onOpenCommandPalette={() => setIsCmdOpen(true)}
+        isDarkMode={isDarkMode}
+        onToggleTheme={handleToggleTheme}
       />
 
       <main className="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
@@ -126,7 +151,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#292929] py-4 px-6 text-center text-xs font-mono text-[#8A8A84]">
+      <footer className="border-t border-border py-4 px-6 text-center text-xs font-mono text-text-secondary">
         <span>Shannon TinyML Compiler • Zero Runtime Dynamic Allocations (MISRA-C:2012 Rule 21.3)</span>
       </footer>
     </div>

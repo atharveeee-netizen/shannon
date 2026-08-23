@@ -8,15 +8,39 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0B0B0B',
-        surface: '#111111',
-        card: '#161616',
-        border: '#292929',
-        borderLight: '#3D3D3D',
-        textPrimary: '#F3F3EF',
-        textSecondary: '#8A8A84',
-        accent: '#106BA3',
-        success: '#0D8050',
+        canvas: 'var(--bg)',
+        surface: {
+          DEFAULT: 'var(--surface)',
+          raised: 'var(--surface-raised)',
+          hover: 'var(--surface-hover)',
+        },
+        border: {
+          DEFAULT: 'var(--border)',
+          strong: 'var(--border-strong)',
+        },
+        text: {
+          primary: 'var(--text)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+          accent: 'var(--accent)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          hover: 'var(--accent-hover)',
+        },
+        success: {
+          DEFAULT: 'var(--success)',
+          subtle: 'var(--success-bg)',
+        },
+        warning: {
+          DEFAULT: 'var(--warning)',
+          subtle: 'var(--warning-bg)',
+        },
+        danger: {
+          DEFAULT: 'var(--danger)',
+          subtle: 'var(--danger-bg)',
+        },
+        code: 'var(--code-bg)',
       },
       borderRadius: {
         DEFAULT: '3px',
