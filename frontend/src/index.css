@@ -4,15 +4,31 @@
 
 @layer base {
   :root {
-    --cosmic-obsidian: #070A0F;
-    --cosmic-surface: #0B0F17;
-    --cosmic-subsurface: #111622;
-    --cosmic-elevated: #151C2C;
+    /* Foundation (60%): Deep Cosmic Ink */
+    --cosmic-ink: #070A0F;
+    --cosmic-canvas: #070A0F;
+    --cosmic-surface: #0B0F19;
+    
+    /* Surface (30%): Obsidian Slate */
+    --obsidian-subsurface: #111827;
+    --obsidian-elevated: #1F2937;
+    --obsidian-border: #1E293B;
+    --obsidian-border-highlight: #334155;
+    
+    /* Bright Human Accents (10%) */
+    --laser-cyan: #00F0FF;
+    --hyper-cobalt: #2563EB;
+    --acid-lime: #10B981;
+    --vivid-lime: #10B981;
     --silicon-blue: #38BDF8;
-    --electric-cobalt: #2563EB;
-    --neon-emerald: #10B981;
     --luminous-amber: #F59E0B;
     --signal-crimson: #EF4444;
+
+    /* Glow Matrix Tokens */
+    --glow-cyan-tight: 0 0 12px rgba(0, 240, 255, 0.45);
+    --glow-cyan-wide: 0 0 28px -2px rgba(0, 240, 255, 0.55);
+    --glow-cobalt-wide: 0 0 28px -2px rgba(37, 99, 235, 0.55);
+    --glow-lime-wide: 0 0 24px -2px rgba(16, 185, 129, 0.55);
   }
 
   body {
