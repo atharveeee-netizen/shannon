@@ -1,41 +1,25 @@
 export interface HardwareProfile {
   id: string;
   name: string;
-  vendor?: string;
   sram_kb: number;
   flash_mb: number;
   clock_mhz: number;
   arch: string;
   simd: string;
-  memory_banks?: {
-    sram_regions: Array<{ name: string; address_hex: string; size_kb: number }>;
-    flash_regions: Array<{ name: string; address_hex: string; size_mb: number }>;
-  };
-  voltage_v: number;
-  power_budget_mw: number;
-  recommendedFor: string;
 }
 
-export interface ModelZooItem {
+export interface PresetModel {
   id: string;
   name: string;
   domain: string;
   architecture: string;
   dataset: string;
+  description: string;
   input_shape: string;
   input_type: string;
-  fp32_flash_kb: number;
-  int8_flash_kb: number;
-  int4_flash_kb: number;
-  peak_sram_kb: number;
-  mac_count: number;
-  flash_compression_ratio: string;
-  target_mcu: string;
-  accuracy_score: string;
-  weight_distribution?: number[];
 }
 
-export interface LayerBentoRow {
+export interface LayerData {
   layer_id: string;
   op_type: string;
   in_shape: string;
@@ -46,112 +30,45 @@ export interface LayerBentoRow {
   scale_factor: number;
   zero_point: number;
   sram_offset_hex: string;
-  lifetime_start: number;
-  lifetime_end: number;
-  is_quantized: boolean;
+  lifetime: [number, number];
   bitwidth: 4 | 8 | 16 | 32;
 }
 
-export type AgentStepId = 'planner' | 'quantizer' | 'memory_mapper' | 'codegen' | 'critic';
-
-export interface AgentLogEntry {
-  id: string;
-  timestamp: string;
-  agent: string;
-  step: AgentStepId;
-  status: 'PENDING' | 'RUNNING' | 'PASSED' | 'FAILED' | 'REFINING';
-  message: string;
-  metric?: string;
-}
-
-export interface ZeroMallocBlock {
+export interface ArenaBlock {
   layer_id: string;
-  buffer_name: string;
-  start_offset_bytes: number;
-  end_offset_bytes: number;
+  name: string;
+  start_bytes: number;
+  end_bytes: number;
   size_bytes: number;
   hex_address: string;
-  lifetime_window: [number, number];
+  lifetime: [number, number];
   color: string;
 }
 
-export interface SimulatedSiliconState {
-  gpio: Record<string, boolean>;
-  adc: Record<string, number>;
-  uartLogs: string[];
-  pwmFreq: number;
-  activeLayerId: string;
-  coreTempC: number;
-  powerMw: number;
-  latencyMicros: number;
-  fps: number;
-  memoryIntegrityPassed: boolean;
-}
-
-export type TargetLanguage = 'cpp_esp32' | 'cpp_stm32' | 'rust_embedded' | 'micropython';
-
-export interface PresetModel {
-  id: string;
-  name: string;
-  domain: string;
-  description: string;
-  input_shape: number[];
-  input_type: string;
-}
-
-export interface LayerStat {
-  layer_id: string;
-  op_type: string;
-  macs: number;
-  flash_bytes: number;
-  sram_bytes?: number;
-}
-
-export interface OptimizationResult {
+export interface CompilationResult {
   model_name: string;
   target_hardware: string;
   fits_hardware: boolean;
-  total_macs: number;
-  estimated_latency_ms: number;
-  flash_usage_bytes: number;
-  flash_capacity_bytes: number;
-  flash_utilization_pct: number;
-  sram_usage_bytes: number;
-  sram_capacity_bytes: number;
-  sram_utilization_pct: number;
-  code: string;
-  bottlenecks: string[];
+  zero_malloc_verified: boolean;
+  quantization_bits: 4 | 8;
+  mixed_precision: boolean;
+  baseline_fp32: {
+    flash_bytes: number;
+    peak_sram_bytes: number;
+    total_macs: number;
+    estimated_latency_ms: number;
+  };
+  optimized_int8: {
+    flash_bytes: number;
+    peak_sram_bytes: number;
+    total_macs: number;
+    estimated_latency_ms: number;
+    compression_ratio: number;
+    flash_reduction_pct: number;
+  };
+  layers: LayerData[];
+  arena_blocks: ArenaBlock[];
+  c_header_code: string;
   recommendations: string[];
-  layer_breakdown?: LayerStat[];
-}
-
-export interface GraphNode {
-  id: string;
-  name: string;
-  type: string;
-  x: number;
-  y: number;
-  shape: string;
-  macs: number;
-  sram_bytes: number;
-  flash_bytes: number;
-}
-
-export interface GraphEdge {
-  id: string;
-  sourceNodeId: string;
-  targetNodeId: string;
-  tensorShape?: string;
-}
-
-export interface StaticAnalysisIssue {
-  id: string;
-  severity: 'CRITICAL' | 'WARNING' | 'INFO' | 'error' | 'warning' | 'info';
-  title: string;
-  description: string;
-  remediation?: string;
-  fixSuggestion?: string;
-  autoFixable?: boolean;
-  applied?: boolean;
-  nodeId?: string;
+  bottlenecks: string[];
 }

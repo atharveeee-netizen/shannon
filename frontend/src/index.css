@@ -3,267 +3,33 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* 70% Deep Void Canvas */
-    --cosmic-void: #05050A;
-    --cosmic-void-deep: #080914;
-    --cosmic-surface: #0D1122;
-    
-    /* 20% Nebula Midtones & Structural Accents */
-    --nebula-indigo: #4B1886;
-    --nebula-violet: #5C24A4;
-    --marine-teal: #0E3B43;
-    --navy-card: #131930;
-    --border-violet: #241E45;
-    --border-highlight: #4B1886;
-    
-    /* 10% Bioluminescent Dual-Accent System */
-    --bioluminescent-cyan: #5CF2E7;
-    --vaporwave-sakura: #FF7AC6;
-    --sakura-glow: #FF88D2;
-    --starlight-white: #E6FFFF;
-    
-    /* Glow Matrix Tokens */
-    --glow-cyan: 0 0 16px rgba(92, 242, 231, 0.45);
-    --glow-sakura: 0 0 18px rgba(255, 122, 198, 0.5);
-    --glow-dual: 0 0 24px -2px rgba(92, 242, 231, 0.4), 0 0 32px -4px rgba(255, 122, 198, 0.35);
-  }
-
   body {
-    background-color: #05050A;
-    color: #E6FFFF;
-    font-family: 'Plus Jakarta Sans', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    overflow: hidden;
+    background-color: #0B0B0B;
+    color: #F3F3EF;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Cosmic Cyber Matrix & Halftone Stardust Dither Backgrounds */
-.bg-stardust-dither {
-  background-image: 
-    radial-gradient(rgba(92, 242, 231, 0.14) 1px, transparent 1px), 
-    radial-gradient(rgba(255, 122, 198, 0.10) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: 0 0, 12px 12px;
-}
-
-.bg-obsidian-dots {
-  background-image: radial-gradient(rgba(92, 242, 231, 0.15) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-.bg-circuit-grid {
-  background-image: 
-    linear-gradient(to right, rgba(75, 24, 134, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(75, 24, 134, 0.35) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-.bg-circuit-dense {
-  background-image: 
-    linear-gradient(to right, rgba(92, 242, 231, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(92, 242, 231, 0.08) 1px, transparent 1px);
-  background-size: 14px 14px;
-}
-
-/* React Bits: Cyber-Sakura ShinyText */
-@keyframes shinyText {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.shiny-text, .shiny-text-cyber {
-  background: linear-gradient(
-    90deg,
-    #E6FFFF 0%,
-    #5CF2E7 25%,
-    #FF7AC6 50%,
-    #5CF2E7 75%,
-    #E6FFFF 100%
-  );
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shinyText 4s linear infinite;
-}
-
-/* Custom Sleek Glowing Scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #05050A;
-}
-::-webkit-scrollbar-thumb {
-  background: #1A2138;
-  border-radius: 3px;
-  transition: all 0.2s ease;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #5CF2E7;
-  box-shadow: 0 0 12px #5CF2E7;
-}
-
-/* Tabular Numerals */
-.font-tabular {
+/* Monospace with tabular numerals for data tables */
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* Animations */
-@keyframes pulseGlowCyan {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: drop-shadow(0 0 6px rgba(92, 242, 231, 0.7));
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 14px rgba(92, 242, 231, 1));
-  }
+/* Minimal subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-@keyframes pulseGlowPink {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: drop-shadow(0 0 6px rgba(255, 122, 198, 0.7));
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-    filter: drop-shadow(0 0 14px rgba(255, 122, 198, 1));
-  }
+::-webkit-scrollbar-track {
+  background: #0B0B0B;
 }
-
-@keyframes shimmerSakura {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.animate-pulse-cyan {
-  animation: pulseGlowCyan 2.5s infinite ease-in-out;
-}
-
-.animate-pulse-pink {
-  animation: pulseGlowPink 2.5s infinite ease-in-out;
-}
-
-.animate-shimmer-sakura {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255, 122, 198, 0.25) 50%, rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
-  animation: shimmerSakura 2s infinite;
-}
-
-/* Tactile Micro-Physics Buttons (21st.dev / Origin UI Standard) */
-.btn-tactile {
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.btn-tactile:hover {
-  filter: brightness(1.15);
-  transform: translateY(-1px) scale(1.008);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.6);
-}
-
-.btn-tactile:active {
-  transform: scale(0.975) translateY(1px);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
-}
-
-.btn-tactile-primary {
-  background: linear-gradient(180deg, #0E3B43 0%, #08252B 100%);
-  border: 1px solid #5CF2E7;
-  color: #E6FFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(92, 242, 231, 0.45);
-}
-
-.btn-tactile-primary:hover {
-  background: linear-gradient(180deg, #14525C 0%, #0E3B43 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(92, 242, 231, 0.7);
-}
-
-.btn-tactile-primary:active {
-  transform: scale(0.975);
-}
-
-.btn-tactile-pink {
-  background: linear-gradient(180deg, #4B1886 0%, #2C0E52 100%);
-  border: 1px solid #FF7AC6;
-  color: #FFFFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(255, 122, 198, 0.45);
-}
-
-.btn-tactile-pink:hover {
-  background: linear-gradient(180deg, #5E1F9E 0%, #4B1886 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(255, 122, 198, 0.7);
-}
-
-.btn-tactile-pink:active {
-  transform: scale(0.975);
-}
-
-.btn-tactile-secondary {
-  background: #080914;
-  border: 1px solid #1A2138;
-  color: #E6FFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.btn-tactile-secondary:hover {
-  background: #0D1122;
-  border-color: #5CF2E7;
-  color: #FFFFFF;
-  box-shadow: 0 0 14px -2px rgba(92, 242, 231, 0.3);
-}
-
-/* Sliding Pill Tab Active Highlights */
-.tab-pill-active {
-  position: relative;
-  background: #0D1122;
-  color: #E6FFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.tab-pill-active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 12%;
-  right: 12%;
-  height: 2px;
-  background: linear-gradient(90deg, #5CF2E7, #FF7AC6);
-  box-shadow: 0 0 8px #FF7AC6;
+::-webkit-scrollbar-thumb {
+  background: #292929;
   border-radius: 2px;
 }
-
-/* Luminous Glow Tokens */
-.glow-cyan {
-  box-shadow: 0 0 22px -2px rgba(92, 242, 231, 0.4);
-}
-
-.glow-pink {
-  box-shadow: 0 0 22px -2px rgba(255, 122, 198, 0.4);
-}
-
-.border-glow-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.border-glow-hover:hover {
-  border-color: #5CF2E7;
-  box-shadow: 0 0 18px -2px rgba(92, 242, 231, 0.35);
+::-webkit-scrollbar-thumb:hover {
+  background: #3D3D3D;
 }
