@@ -3,6 +3,18 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --cosmic-obsidian: #070A0F;
+    --cosmic-surface: #0B0F17;
+    --cosmic-subsurface: #111622;
+    --cosmic-elevated: #151C2C;
+    --silicon-blue: #38BDF8;
+    --electric-cobalt: #2563EB;
+    --neon-emerald: #10B981;
+    --luminous-amber: #F59E0B;
+    --signal-crimson: #EF4444;
+  }
+
   body {
     background-color: #070A0F;
     color: #F8FAFC;
@@ -13,15 +25,22 @@
 
 /* Cyber Matrix & Micro-Grid Backgrounds */
 .bg-obsidian-dots {
-  background-image: radial-gradient(rgba(56, 189, 248, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .bg-circuit-grid {
   background-image: 
-    linear-gradient(to right, rgba(30, 41, 59, 0.35) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.35) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, rgba(30, 41, 59, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.45) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.bg-circuit-dense {
+  background-image: 
+    linear-gradient(to right, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 14px 14px;
 }
 
 /* Custom Sleek Glowing Scrollbars */
@@ -39,7 +58,7 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #38BDF8;
-  box-shadow: 0 0 8px #38BDF8;
+  box-shadow: 0 0 10px #38BDF8;
 }
 
 /* Tabular Numerals */
@@ -52,27 +71,42 @@
   0%, 100% {
     opacity: 1;
     transform: scale(1);
-    filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6));
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
   }
   50% {
-    opacity: 0.65;
-    transform: scale(1.08);
-    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9));
+    opacity: 0.7;
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 14px rgba(56, 189, 248, 1));
   }
 }
 
-@keyframes pulseRing {
+@keyframes pulseRingEmerald {
   0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.85);
   }
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
   }
   100% {
-    transform: scale(0.95);
+    transform: scale(0.9);
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes pulseRingCyan {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.85);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
   }
 }
 
@@ -85,11 +119,30 @@
   }
 }
 
-@keyframes equalizerWave {
-  0%, 100% { height: 15%; }
-  25% { height: 75%; }
-  50% { height: 40%; }
-  75% { height: 95%; }
+@keyframes scanlineSweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes tracerPulse {
+  0%, 100% {
+    opacity: 0.4;
+    stroke-width: 1.5;
+  }
+  50% {
+    opacity: 1;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 8px #38BDF8);
+  }
 }
 
 .animate-pulse-glow {
@@ -97,29 +150,41 @@
 }
 
 .animate-pulse-ring {
-  animation: pulseRing 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  animation: pulseRingEmerald 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.animate-pulse-ring-cyan {
+  animation: pulseRingCyan 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(56,189,248,0.15) 50%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(56,189,248,0.2) 50%, rgba(255,255,255,0) 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
-/* Tactile Micro-Physics Buttons (21st.dev Standard) */
+.animate-scanline {
+  animation: scanlineSweep 4s infinite linear;
+}
+
+.animate-tracer-pulse {
+  animation: tracerPulse 1.8s infinite ease-in-out;
+}
+
+/* Tactile Micro-Physics Buttons & Tabs (21st.dev Standard) */
 .btn-tactile {
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .btn-tactile:hover {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 12px rgba(0, 0, 0, 0.6);
+  filter: brightness(1.15);
+  transform: translateY(-1px) scale(1.008);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.6);
 }
 
 .btn-tactile:active {
-  transform: scale(0.98) translateY(1px);
+  transform: scale(0.975) translateY(1px);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7);
 }
 
@@ -127,12 +192,12 @@
   background: linear-gradient(180deg, #0284C7 0%, #0369A1 100%);
   border: 1px solid #38BDF8;
   color: #FFFFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(56, 189, 248, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(56, 189, 248, 0.45);
 }
 
 .btn-tactile-primary:hover {
   background: linear-gradient(180deg, #0369A1 0%, #075985 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 24px 0px rgba(56, 189, 248, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(56, 189, 248, 0.7);
 }
 
 .btn-tactile-primary:active {
@@ -143,7 +208,16 @@
   background: linear-gradient(180deg, #059669 0%, #047857 100%);
   border: 1px solid #10B981;
   color: #FFFFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(16, 185, 129, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(16, 185, 129, 0.45);
+}
+
+.btn-tactile-emerald:hover {
+  background: linear-gradient(180deg, #047857 0%, #065F46 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(16, 185, 129, 0.7);
+}
+
+.btn-tactile-emerald:active {
+  transform: scale(0.975);
 }
 
 .btn-tactile-secondary {
@@ -157,16 +231,41 @@
   background: #141C2E;
   border-color: #38BDF8;
   color: #FFFFFF;
-  box-shadow: 0 0 12px -3px rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 14px -2px rgba(56, 189, 248, 0.3);
+}
+
+/* Sliding Pill Tab Active Highlights */
+.tab-pill-active {
+  position: relative;
+  background: #111622;
+  color: #F8FAFC;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tab-pill-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(90deg, #2563EB, #38BDF8);
+  box-shadow: 0 0 8px #38BDF8;
+  border-radius: 2px;
+  animation: shimmer 2s infinite;
 }
 
 /* Luminous Glow Tokens */
 .glow-cyan {
-  box-shadow: 0 0 20px -3px rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 22px -2px rgba(56, 189, 248, 0.4);
 }
 
 .glow-emerald {
-  box-shadow: 0 0 20px -3px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 22px -2px rgba(16, 185, 129, 0.4);
+}
+
+.glow-amber {
+  box-shadow: 0 0 22px -2px rgba(245, 158, 11, 0.4);
 }
 
 .border-glow-hover {
@@ -175,5 +274,5 @@
 
 .border-glow-hover:hover {
   border-color: #38BDF8;
-  box-shadow: 0 0 16px -2px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 18px -2px rgba(56, 189, 248, 0.35);
 }

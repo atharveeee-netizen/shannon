@@ -95,43 +95,43 @@ shannon_dense_int8_simd:
   const lines = displayedContent.split('\n');
 
   return (
-    <div className="bg-[#111622] border border-[#1E293B] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-      {/* Header Tabs & Actions */}
-      <div className="p-2 border-b border-[#1E293B] bg-[#0B0E14] flex items-center justify-between">
+    <div className="bg-[#0B0F17] border border-[#1E293B] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] border-glow-hover">
+      {/* Header with React Bits Animated Pill Tab Indicators & Action Buttons */}
+      <div className="p-2 border-b border-[#1E293B] bg-[#070A0F] flex items-center justify-between">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setActiveTab('header')}
-            className={`px-2.5 py-1 text-xs font-mono rounded-[2px] transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'header'
-                ? 'bg-[#151B28] text-[#F8FAFC] font-bold border border-[#1E293B]'
-                : 'text-[#64748B] hover:text-[#94A3B8]'
+                ? 'tab-pill-active border border-[#38BDF8]/40'
+                : 'text-[#64748B] hover:text-[#F8FAFC]'
             }`}
           >
-            <FileCode className="w-3.5 h-3.5 text-[#3B82F6]" />
+            <FileCode className="w-3.5 h-3.5 text-[#38BDF8] group-hover:scale-110 transition-transform" />
             <span>shannon_model.h</span>
           </button>
 
           <button
             onClick={() => setActiveTab('main')}
-            className={`px-2.5 py-1 text-xs font-mono rounded-[2px] transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'main'
-                ? 'bg-[#151B28] text-[#F8FAFC] font-bold border border-[#1E293B]'
-                : 'text-[#64748B] hover:text-[#94A3B8]'
+                ? 'tab-pill-active border border-[#10B981]/40'
+                : 'text-[#64748B] hover:text-[#F8FAFC]'
             }`}
           >
-            <Code className="w-3.5 h-3.5 text-[#10B981]" />
+            <Code className="w-3.5 h-3.5 text-[#10B981] group-hover:scale-110 transition-transform" />
             <span>main.cpp</span>
           </button>
 
           <button
             onClick={() => setActiveTab('asm')}
-            className={`px-2.5 py-1 text-xs font-mono rounded-[2px] transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'asm'
-                ? 'bg-[#151B28] text-[#F8FAFC] font-bold border border-[#1E293B]'
-                : 'text-[#64748B] hover:text-[#94A3B8]'
+                ? 'tab-pill-active border border-[#F59E0B]/40'
+                : 'text-[#64748B] hover:text-[#F8FAFC]'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5 text-[#F59E0B]" />
+            <Terminal className="w-3.5 h-3.5 text-[#F59E0B] group-hover:scale-110 transition-transform" />
             <span>disasm.s</span>
           </button>
         </div>
@@ -140,35 +140,35 @@ shannon_dense_int8_simd:
           <button
             onClick={handleRunCompileTest}
             disabled={isTestBuilding}
-            className="px-2.5 py-1 bg-[#151B28] hover:bg-[#1A2234] text-[#10B981] border border-[#1E293B] hover:border-[#26344A] rounded-[3px] flex items-center gap-1 transition-all active:scale-[0.98]"
+            className="px-2.5 py-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#10B981] border border-[#1E293B] hover:border-[#10B981]/60 rounded-[3px] flex items-center gap-1.5 transition-all btn-tactile group shadow-[0_0_10px_rgba(16,185,129,0.15)]"
           >
-            <Play className={`w-3 h-3 ${isTestBuilding ? 'animate-spin' : ''}`} />
+            <Play className={`w-3.5 h-3.5 text-[#10B981] group-hover:translate-x-0.5 transition-transform ${isTestBuilding ? 'animate-spin' : ''}`} />
             <span>{isTestBuilding ? 'Linking...' : 'Compile Test'}</span>
           </button>
 
           <button
             onClick={handleCopy}
-            className="p-1.5 bg-[#151B28] hover:bg-[#1A2234] text-[#94A3B8] hover:text-[#F8FAFC] border border-[#1E293B] hover:border-[#26344A] rounded-[3px] transition-all active:scale-[0.98]"
+            className="p-1.5 bg-[#0E1420] hover:bg-[#141C2E] text-[#94A3B8] hover:text-[#F8FAFC] border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile group"
             title="Copy Code"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-[#10B981]" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#10B981]" /> : <Copy className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />}
           </button>
 
           <button
             onClick={handleDownload}
-            className="p-1.5 btn-tactile-primary text-white rounded-[3px] transition-all active:scale-[0.98]"
+            className="p-1.5 btn-tactile-primary text-white rounded-[3px] transition-all group"
             title="Download File"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
           </button>
         </div>
       </div>
 
       {/* Build Feedback Banner */}
       {testBuildResult && (
-        <div className="px-3 py-1.5 bg-[#10B981]/10 border-b border-[#10B981]/25 text-[#10B981] text-[11px] font-mono flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5" /> {testBuildResult}
+        <div className="px-3 py-1.5 bg-[#10B981]/15 border-b border-[#10B981]/30 text-[#10B981] text-[11px] font-mono flex items-center justify-between shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+          <span className="flex items-center gap-1.5 font-bold">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" /> {testBuildResult}
           </span>
           <button onClick={() => setTestBuildResult(null)} className="text-[#64748B] hover:text-[#F8FAFC]">
             ✕
@@ -176,8 +176,8 @@ shannon_dense_int8_simd:
         </div>
       )}
 
-      {/* Editor Body */}
-      <div className="flex-1 bg-[#0B0E14] overflow-auto font-mono text-xs text-[#F8FAFC] p-3 leading-relaxed select-text flex">
+      {/* Editor Body with Monospace Glow */}
+      <div className="flex-1 bg-[#070A0F] overflow-auto font-mono text-xs text-[#F8FAFC] p-3 leading-relaxed select-text flex">
         {/* Line Numbers */}
         <div className="text-[#475569] pr-3 select-none text-right border-r border-[#1E293B] mr-3 font-tabular">
           {lines.map((_, i) => (
@@ -192,9 +192,9 @@ shannon_dense_int8_simd:
       </div>
 
       {/* Footer Status */}
-      <div className="p-2 bg-[#0B0E14] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B] font-tabular">
+      <div className="p-2 bg-[#070A0F] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B] font-tabular">
         <span>Lines: <strong className="text-[#F8FAFC]">{lines.length}</strong></span>
-        <span>Standard: <strong className="text-[#3B82F6]">C99 / C++11 Compatible</strong></span>
+        <span>Standard: <strong className="text-[#38BDF8]">C99 / C++11 Compatible</strong></span>
         <span>Target: <strong className="text-[#10B981]">{targetHw.simd}</strong></span>
       </div>
     </div>
