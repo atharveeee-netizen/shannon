@@ -4,49 +4,64 @@ const API_BASE = 'http://localhost:8000/api';
 
 export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'ESP32-S3': {
+    id: 'ESP32-S3',
     name: 'ESP32-S3',
     sram_kb: 512,
     flash_mb: 8,
     clock_mhz: 240,
     arch: 'Xtensa LX7 + Vector AI Ext',
     recommendedFor: 'Voice & Smart Vision Nodes',
-    simd: 'Xtensa PIE (8-bit SIMD)'
+    simd: 'Xtensa PIE (8-bit SIMD)',
+    voltage_v: 3.3,
+    power_budget_mw: 250,
   },
   'STM32H7': {
+    id: 'STM32H7',
     name: 'STM32H7',
     sram_kb: 1024,
     flash_mb: 2,
     clock_mhz: 480,
     arch: 'ARM Cortex-M7 (CMSIS-NN)',
     recommendedFor: 'Industrial Automation & Robotics',
-    simd: 'ARM __SMLAD (Dual 16-bit MAC)'
+    simd: 'ARM __SMLAD (Dual 16-bit MAC)',
+    voltage_v: 3.3,
+    power_budget_mw: 420,
   },
   'RP2040 (Pico)': {
+    id: 'RP2040',
     name: 'RP2040 (Pico)',
     sram_kb: 264,
     flash_mb: 2,
     clock_mhz: 133,
     arch: 'Dual ARM Cortex-M0+',
     recommendedFor: 'Ultra-low Cost Sensors',
-    simd: 'Software unrolled 32-bit'
+    simd: 'Software unrolled 32-bit',
+    voltage_v: 3.3,
+    power_budget_mw: 90,
   },
   'nRF52840': {
+    id: 'nRF52840',
     name: 'nRF52840',
     sram_kb: 256,
     flash_mb: 1,
     clock_mhz: 64,
     arch: 'ARM Cortex-M4F (BLE / Mesh)',
     recommendedFor: 'Wearables & Health Monitors',
-    simd: 'ARMv7E-M DSP instructions'
+    simd: 'ARMv7E-M DSP instructions',
+    voltage_v: 3.0,
+    power_budget_mw: 45,
   },
   'Arduino Portenta H7': {
+    id: 'PortentaH7',
     name: 'Arduino Portenta H7',
     sram_kb: 1024,
     flash_mb: 16,
     clock_mhz: 480,
     arch: 'Dual M7/M4 + 64MB SDRAM',
     recommendedFor: 'High-speed Vision & Audio',
-    simd: 'CMSIS-NN 4-way SIMD'
+    simd: 'CMSIS-NN 4-way SIMD',
+    voltage_v: 3.3,
+    power_budget_mw: 500,
   }
 };
 
