@@ -95,19 +95,19 @@ shannon_dense_int8_simd:
   const lines = displayedContent.split('\n');
 
   return (
-    <div className="bg-[#0B0F17] border border-[#1E293B] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] border-glow-hover">
+    <div className="bg-[#080914] border border-[#1A2138] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] border-glow-hover">
       {/* Header with React Bits Animated Pill Tab Indicators & Action Buttons */}
-      <div className="p-2 border-b border-[#1E293B] bg-[#070A0F] flex items-center justify-between">
+      <div className="p-2 border-b border-[#1A2138] bg-[#05050A] flex items-center justify-between">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setActiveTab('header')}
             className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'header'
-                ? 'tab-pill-active border border-[#38BDF8]/40'
-                : 'text-[#64748B] hover:text-[#F8FAFC]'
+                ? 'tab-pill-active border border-[#5CF2E7]/40'
+                : 'text-[#E6FFFF]/60 hover:text-[#E6FFFF]'
             }`}
           >
-            <FileCode className="w-3.5 h-3.5 text-[#38BDF8] group-hover:scale-110 transition-transform" />
+            <FileCode className="w-3.5 h-3.5 text-[#5CF2E7] group-hover:scale-110 transition-transform" />
             <span>shannon_model.h</span>
           </button>
 
@@ -115,11 +115,11 @@ shannon_dense_int8_simd:
             onClick={() => setActiveTab('main')}
             className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'main'
-                ? 'tab-pill-active border border-[#10B981]/40'
-                : 'text-[#64748B] hover:text-[#F8FAFC]'
+                ? 'tab-pill-active border border-[#FF7AC6]/40'
+                : 'text-[#E6FFFF]/60 hover:text-[#E6FFFF]'
             }`}
           >
-            <Code className="w-3.5 h-3.5 text-[#10B981] group-hover:scale-110 transition-transform" />
+            <Code className="w-3.5 h-3.5 text-[#FF7AC6] group-hover:scale-110 transition-transform" />
             <span>main.cpp</span>
           </button>
 
@@ -127,11 +127,11 @@ shannon_dense_int8_simd:
             onClick={() => setActiveTab('asm')}
             className={`px-3 py-1 text-xs font-mono rounded-[3px] transition-all flex items-center gap-1.5 btn-tactile group ${
               activeTab === 'asm'
-                ? 'tab-pill-active border border-[#F59E0B]/40'
-                : 'text-[#64748B] hover:text-[#F8FAFC]'
+                ? 'tab-pill-active border border-[#5CF2E7]/40'
+                : 'text-[#E6FFFF]/60 hover:text-[#E6FFFF]'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5 text-[#F59E0B] group-hover:scale-110 transition-transform" />
+            <Terminal className="w-3.5 h-3.5 text-[#5CF2E7] group-hover:scale-110 transition-transform" />
             <span>disasm.s</span>
           </button>
         </div>
@@ -140,23 +140,23 @@ shannon_dense_int8_simd:
           <button
             onClick={handleRunCompileTest}
             disabled={isTestBuilding}
-            className="px-2.5 py-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#10B981] border border-[#1E293B] hover:border-[#10B981]/60 rounded-[3px] flex items-center gap-1.5 transition-all btn-tactile group shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+            className="px-2.5 py-1 bg-[#0E3B43]/30 hover:bg-[#0E3B43]/50 text-[#5CF2E7] border border-[#5CF2E7]/40 rounded-[3px] flex items-center gap-1.5 transition-all btn-tactile group shadow-[0_0_10px_rgba(92,242,231,0.2)]"
           >
-            <Play className={`w-3.5 h-3.5 text-[#10B981] group-hover:translate-x-0.5 transition-transform ${isTestBuilding ? 'animate-spin' : ''}`} />
+            <Play className={`w-3.5 h-3.5 text-[#5CF2E7] group-hover:translate-x-0.5 transition-transform ${isTestBuilding ? 'animate-spin' : ''}`} />
             <span>{isTestBuilding ? 'Linking...' : 'Compile Test'}</span>
           </button>
 
           <button
             onClick={handleCopy}
-            className="p-1.5 bg-[#0E1420] hover:bg-[#141C2E] text-[#94A3B8] hover:text-[#F8FAFC] border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile group"
+            className="p-1.5 bg-[#080914] hover:bg-[#0D1122] text-[#E6FFFF]/70 hover:text-[#E6FFFF] border border-[#1A2138] hover:border-[#5CF2E7]/40 rounded-[3px] transition-all btn-tactile group"
             title="Copy Code"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-[#10B981]" /> : <Copy className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#5CF2E7]" /> : <Copy className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />}
           </button>
 
           <button
             onClick={handleDownload}
-            className="p-1.5 btn-tactile-primary text-white rounded-[3px] transition-all group"
+            className="p-1.5 btn-tactile-primary text-[#E6FFFF] rounded-[3px] transition-all group"
             title="Download File"
           >
             <Download className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
@@ -166,20 +166,20 @@ shannon_dense_int8_simd:
 
       {/* Build Feedback Banner */}
       {testBuildResult && (
-        <div className="px-3 py-1.5 bg-[#10B981]/15 border-b border-[#10B981]/30 text-[#10B981] text-[11px] font-mono flex items-center justify-between shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+        <div className="px-3 py-1.5 bg-[#0E3B43]/40 border-b border-[#5CF2E7]/40 text-[#5CF2E7] text-[11px] font-mono flex items-center justify-between shadow-[0_0_12px_rgba(92,242,231,0.25)]">
           <span className="flex items-center gap-1.5 font-bold">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981]" /> {testBuildResult}
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#5CF2E7]" /> {testBuildResult}
           </span>
-          <button onClick={() => setTestBuildResult(null)} className="text-[#64748B] hover:text-[#F8FAFC]">
+          <button onClick={() => setTestBuildResult(null)} className="text-[#E6FFFF]/50 hover:text-[#E6FFFF]">
             ✕
           </button>
         </div>
       )}
 
-      {/* Editor Body with Monospace Glow */}
-      <div className="flex-1 bg-[#070A0F] overflow-auto font-mono text-xs text-[#F8FAFC] p-3 leading-relaxed select-text flex">
+      {/* Editor Body with Cyber-Sakura Monospace Glow */}
+      <div className="flex-1 bg-[#05050A] overflow-auto font-mono text-xs text-[#E6FFFF] p-3 leading-relaxed select-text flex">
         {/* Line Numbers */}
-        <div className="text-[#475569] pr-3 select-none text-right border-r border-[#1E293B] mr-3 font-tabular">
+        <div className="text-[#1A2138] pr-3 select-none text-right border-r border-[#1A2138] mr-3 font-tabular">
           {lines.map((_, i) => (
             <div key={i}>{i + 1}</div>
           ))}
@@ -192,10 +192,10 @@ shannon_dense_int8_simd:
       </div>
 
       {/* Footer Status */}
-      <div className="p-2 bg-[#070A0F] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B] font-tabular">
-        <span>Lines: <strong className="text-[#F8FAFC]">{lines.length}</strong></span>
-        <span>Standard: <strong className="text-[#38BDF8]">C99 / C++11 Compatible</strong></span>
-        <span>Target: <strong className="text-[#10B981]">{targetHw.simd}</strong></span>
+      <div className="p-2 bg-[#05050A] border-t border-[#1A2138] flex items-center justify-between text-[10px] font-mono text-[#64748B] font-tabular">
+        <span>Lines: <strong className="text-[#E6FFFF]">{lines.length}</strong></span>
+        <span>Standard: <strong className="text-[#5CF2E7]">C99 / C++11 Compatible</strong></span>
+        <span>Target: <strong className="text-[#FF7AC6]">{targetHw.simd}</strong></span>
       </div>
     </div>
   );

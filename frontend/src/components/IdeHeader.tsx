@@ -37,25 +37,25 @@ export const IdeHeader: React.FC<IdeHeaderProps> = ({
   onChangeQuantBits,
 }) => {
   return (
-    <header className="h-11 bg-[#070A0F] border-b border-[#1E293B] px-3 flex items-center justify-between select-none shrink-0 z-30 relative shadow-sm">
-      {/* Ambient Top Glow Line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#38BDF8]/40 to-transparent pointer-events-none" />
+    <header className="h-11 bg-[#05050A] border-b border-[#1A2138] px-3 flex items-center justify-between select-none shrink-0 z-30 relative shadow-sm">
+      {/* Ambient Top Glow Line with Cyber-Cyan to Sakura-Pink Gradient */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#5CF2E7]/50 to-[#FF7AC6]/50 pointer-events-none" />
 
       {/* Left: Brand & React Bits CardNav (Models, Silicon, Compiler) */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded-[3px] bg-[#0284C7]/20 border border-[#38BDF8]/50 flex items-center justify-center text-[#38BDF8] font-bold text-xs shadow-[0_0_10px_rgba(56,189,248,0.35)]">
+          <div className="h-6 w-6 rounded-[3px] bg-gradient-to-br from-[#0E3B43] to-[#4B1886] border border-[#5CF2E7]/60 flex items-center justify-center text-[#5CF2E7] font-bold text-xs shadow-[0_0_12px_rgba(92,242,231,0.4)]">
             ⚡
           </div>
-          <span className="font-bold text-xs tracking-tight text-[#F8FAFC] font-mono">
+          <span className="font-bold text-xs tracking-tight text-[#E6FFFF] font-mono">
             SHANNON
           </span>
-          <span className="text-[10px] font-mono text-[#38BDF8] bg-[#0284C7]/15 px-1.5 py-0.2 rounded border border-[#38BDF8]/30 font-bold">
-            IDE
+          <span className="text-[10px] font-mono text-[#5CF2E7] bg-[#0E3B43]/40 px-1.5 py-0.2 rounded border border-[#5CF2E7]/40 font-bold shadow-[0_0_8px_rgba(92,242,231,0.2)]">
+            IDE v2.4
           </span>
         </div>
 
-        <div className="h-3.5 w-px bg-[#1E293B]" />
+        <div className="h-3.5 w-px bg-[#1A2138]" />
 
         {/* React Bits CardNav Interactive Expandable Navigation */}
         <CardNav
@@ -75,35 +75,35 @@ export const IdeHeader: React.FC<IdeHeaderProps> = ({
         {/* Command Search */}
         <button
           onClick={onOpenCommandPalette}
-          className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#94A3B8] hover:text-[#F8FAFC] px-2 py-1 border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile"
+          className="flex items-center gap-1 bg-[#080914] hover:bg-[#0D1122] text-[#E6FFFF]/70 hover:text-[#E6FFFF] px-2 py-1 border border-[#1A2138] hover:border-[#5CF2E7]/50 rounded-[3px] transition-all btn-tactile"
         >
-          <Search className="w-3 h-3 text-[#38BDF8]" />
-          <kbd className="text-[9px] bg-[#070A0F] px-1 py-0.2 rounded border border-[#1E293B] text-[#64748B]">
+          <Search className="w-3 h-3 text-[#5CF2E7]" />
+          <kbd className="text-[9px] bg-[#05050A] px-1 py-0.2 rounded border border-[#1A2138] text-[#5CF2E7]/60">
             ⌘K
           </kbd>
         </button>
 
         {/* MISRA-C Compliance Badge */}
-        <div className="hidden xl:flex items-center gap-1 bg-[#10B981]/15 px-2 py-0.5 rounded-[3px] border border-[#10B981]/40 text-[#10B981] text-[10px] font-mono font-bold shadow-[0_0_8px_rgba(16,185,129,0.2)]">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+        <div className="hidden xl:flex items-center gap-1 bg-[#0E3B43]/30 px-2 py-0.5 rounded-[3px] border border-[#5CF2E7]/40 text-[#5CF2E7] text-[10px] font-mono font-bold shadow-[0_0_10px_rgba(92,242,231,0.25)]">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#5CF2E7]" />
           <span>MISRA-C:2012 {zeroMallocVerified ? 'VERIFIED' : 'PASS'}</span>
         </div>
 
         {/* Copilot Trigger */}
         <button
           onClick={onOpenCopilot}
-          className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#38BDF8] hover:text-[#F8FAFC] px-2.5 py-1 border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile shadow-[0_0_12px_rgba(56,189,248,0.15)]"
+          className="flex items-center gap-1 bg-[#080914] hover:bg-[#0D1122] text-[#FF7AC6] hover:text-[#E6FFFF] px-2.5 py-1 border border-[#1A2138] hover:border-[#FF7AC6]/50 rounded-[3px] transition-all btn-tactile shadow-[0_0_12px_rgba(255,122,198,0.2)]"
         >
-          <Sparkles className="w-3.5 h-3.5 text-[#38BDF8] animate-pulse" />
+          <Sparkles className="w-3.5 h-3.5 text-[#FF7AC6] animate-pulse" />
           <span className="hidden sm:inline font-bold">Copilot</span>
         </button>
 
         {/* Export Header */}
         <button
           onClick={onExportCode}
-          className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#E2E8F0] px-2.5 py-1 border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile"
+          className="flex items-center gap-1 bg-[#080914] hover:bg-[#0D1122] text-[#E6FFFF] px-2.5 py-1 border border-[#1A2138] hover:border-[#5CF2E7]/50 rounded-[3px] transition-all btn-tactile"
         >
-          <Download className="w-3.5 h-3.5 text-[#94A3B8]" />
+          <Download className="w-3.5 h-3.5 text-[#5CF2E7]" />
           <span>Export (.h)</span>
         </button>
 
@@ -112,7 +112,7 @@ export const IdeHeader: React.FC<IdeHeaderProps> = ({
           href="https://github.com/atharveeee-netizen/shannon"
           target="_blank"
           rel="noreferrer"
-          className="p-1.5 text-[#94A3B8] hover:text-[#F8FAFC] bg-[#0E1420] hover:bg-[#141C2E] border border-[#1E293B] hover:border-[#38BDF8]/40 rounded-[3px] transition-all btn-tactile"
+          className="p-1.5 text-[#E6FFFF]/70 hover:text-[#E6FFFF] bg-[#080914] hover:bg-[#0D1122] border border-[#1A2138] hover:border-[#5CF2E7]/50 rounded-[3px] transition-all btn-tactile"
           title="GitHub Repo"
         >
           <Github className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ export const IdeHeader: React.FC<IdeHeaderProps> = ({
           disabled={isCompiling}
           className={`px-3 py-1 text-xs font-mono font-bold rounded-[3px] flex items-center gap-1.5 transition-all btn-tactile-primary ${
             isCompiling
-              ? 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/50 animate-pulse'
+              ? 'bg-[#FF7AC6]/20 text-[#FF7AC6] border border-[#FF7AC6]/50 animate-pulse'
               : ''
           }`}
         >

@@ -4,59 +4,94 @@
 
 @layer base {
   :root {
-    /* Foundation (60%): Deep Cosmic Ink */
-    --cosmic-ink: #070A0F;
-    --cosmic-canvas: #070A0F;
-    --cosmic-surface: #0B0F19;
+    /* 70% Deep Void Canvas */
+    --cosmic-void: #05050A;
+    --cosmic-void-deep: #080914;
+    --cosmic-surface: #0D1122;
     
-    /* Surface (30%): Obsidian Slate */
-    --obsidian-subsurface: #111827;
-    --obsidian-elevated: #1F2937;
-    --obsidian-border: #1E293B;
-    --obsidian-border-highlight: #334155;
+    /* 20% Nebula Midtones & Structural Accents */
+    --nebula-indigo: #4B1886;
+    --nebula-violet: #5C24A4;
+    --marine-teal: #0E3B43;
+    --navy-card: #131930;
+    --border-violet: #241E45;
+    --border-highlight: #4B1886;
     
-    /* Bright Human Accents (10%) */
-    --laser-cyan: #00F0FF;
-    --hyper-cobalt: #2563EB;
-    --acid-lime: #10B981;
-    --vivid-lime: #10B981;
-    --silicon-blue: #38BDF8;
-    --luminous-amber: #F59E0B;
-    --signal-crimson: #EF4444;
-
+    /* 10% Bioluminescent Dual-Accent System */
+    --bioluminescent-cyan: #5CF2E7;
+    --vaporwave-sakura: #FF7AC6;
+    --sakura-glow: #FF88D2;
+    --starlight-white: #E6FFFF;
+    
     /* Glow Matrix Tokens */
-    --glow-cyan-tight: 0 0 12px rgba(0, 240, 255, 0.45);
-    --glow-cyan-wide: 0 0 28px -2px rgba(0, 240, 255, 0.55);
-    --glow-cobalt-wide: 0 0 28px -2px rgba(37, 99, 235, 0.55);
-    --glow-lime-wide: 0 0 24px -2px rgba(16, 185, 129, 0.55);
+    --glow-cyan: 0 0 16px rgba(92, 242, 231, 0.45);
+    --glow-sakura: 0 0 18px rgba(255, 122, 198, 0.5);
+    --glow-dual: 0 0 24px -2px rgba(92, 242, 231, 0.4), 0 0 32px -4px rgba(255, 122, 198, 0.35);
   }
 
   body {
-    background-color: #070A0F;
-    color: #F8FAFC;
+    background-color: #05050A;
+    color: #E6FFFF;
     font-family: 'Plus Jakarta Sans', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow: hidden;
   }
 }
 
-/* Cyber Matrix & Micro-Grid Backgrounds */
+/* Cosmic Cyber Matrix & Halftone Stardust Dither Backgrounds */
+.bg-stardust-dither {
+  background-image: 
+    radial-gradient(rgba(92, 242, 231, 0.14) 1px, transparent 1px), 
+    radial-gradient(rgba(255, 122, 198, 0.10) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
 .bg-obsidian-dots {
-  background-image: radial-gradient(rgba(56, 189, 248, 0.15) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(92, 242, 231, 0.15) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .bg-circuit-grid {
   background-image: 
-    linear-gradient(to right, rgba(30, 41, 59, 0.45) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.45) 1px, transparent 1px);
+    linear-gradient(to right, rgba(75, 24, 134, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(75, 24, 134, 0.35) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 .bg-circuit-dense {
   background-image: 
-    linear-gradient(to right, rgba(56, 189, 248, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+    linear-gradient(to right, rgba(92, 242, 231, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(92, 242, 231, 0.08) 1px, transparent 1px);
   background-size: 14px 14px;
+}
+
+/* React Bits: Cyber-Sakura ShinyText */
+@keyframes shinyText {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.shiny-text, .shiny-text-cyber {
+  background: linear-gradient(
+    90deg,
+    #E6FFFF 0%,
+    #5CF2E7 25%,
+    #FF7AC6 50%,
+    #5CF2E7 75%,
+    #E6FFFF 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shinyText 4s linear infinite;
 }
 
 /* Custom Sleek Glowing Scrollbars */
@@ -65,16 +100,16 @@
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #070A0F;
+  background: #05050A;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #1A2138;
   border-radius: 3px;
   transition: all 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #38BDF8;
-  box-shadow: 0 0 10px #38BDF8;
+  background: #5CF2E7;
+  box-shadow: 0 0 12px #5CF2E7;
 }
 
 /* Tabular Numerals */
@@ -82,51 +117,34 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Animations from Curated Reels (21st.dev / Magic Animator / Variant Motion) */
-@keyframes pulseGlow {
+/* Animations */
+@keyframes pulseGlowCyan {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
-    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.7));
+    filter: drop-shadow(0 0 6px rgba(92, 242, 231, 0.7));
   }
   50% {
     opacity: 0.7;
-    transform: scale(1.06);
-    filter: drop-shadow(0 0 14px rgba(56, 189, 248, 1));
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 14px rgba(92, 242, 231, 1));
   }
 }
 
-@keyframes pulseRingEmerald {
-  0% {
-    transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.85);
-  }
-  70% {
+@keyframes pulseGlowPink {
+  0%, 100% {
+    opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    filter: drop-shadow(0 0 6px rgba(255, 122, 198, 0.7));
   }
-  100% {
-    transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-}
-
-@keyframes pulseRingCyan {
-  0% {
-    transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.85);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
-  }
-  100% {
-    transform: scale(0.9);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 14px rgba(255, 122, 198, 1));
   }
 }
 
-@keyframes shimmer {
+@keyframes shimmerSakura {
   0% {
     background-position: -200% 0;
   }
@@ -135,59 +153,21 @@
   }
 }
 
-@keyframes scanlineSweep {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
+.animate-pulse-cyan {
+  animation: pulseGlowCyan 2.5s infinite ease-in-out;
 }
 
-@keyframes tracerPulse {
-  0%, 100% {
-    opacity: 0.4;
-    stroke-width: 1.5;
-  }
-  50% {
-    opacity: 1;
-    stroke-width: 3;
-    filter: drop-shadow(0 0 8px #38BDF8);
-  }
+.animate-pulse-pink {
+  animation: pulseGlowPink 2.5s infinite ease-in-out;
 }
 
-.animate-pulse-glow {
-  animation: pulseGlow 2.5s infinite ease-in-out;
-}
-
-.animate-pulse-ring {
-  animation: pulseRingEmerald 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-.animate-pulse-ring-cyan {
-  animation: pulseRingCyan 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(56,189,248,0.2) 50%, rgba(255,255,255,0) 100%);
+.animate-shimmer-sakura {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255, 122, 198, 0.25) 50%, rgba(255,255,255,0) 100%);
   background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+  animation: shimmerSakura 2s infinite;
 }
 
-.animate-scanline {
-  animation: scanlineSweep 4s infinite linear;
-}
-
-.animate-tracer-pulse {
-  animation: tracerPulse 1.8s infinite ease-in-out;
-}
-
-/* Tactile Micro-Physics Buttons & Tabs (21st.dev Standard) */
+/* Tactile Micro-Physics Buttons (21st.dev / Origin UI Standard) */
 .btn-tactile {
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 1px 3px rgba(0, 0, 0, 0.5);
@@ -205,56 +185,56 @@
 }
 
 .btn-tactile-primary {
-  background: linear-gradient(180deg, #0284C7 0%, #0369A1 100%);
-  border: 1px solid #38BDF8;
-  color: #FFFFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(56, 189, 248, 0.45);
+  background: linear-gradient(180deg, #0E3B43 0%, #08252B 100%);
+  border: 1px solid #5CF2E7;
+  color: #E6FFFF;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(92, 242, 231, 0.45);
 }
 
 .btn-tactile-primary:hover {
-  background: linear-gradient(180deg, #0369A1 0%, #075985 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(56, 189, 248, 0.7);
+  background: linear-gradient(180deg, #14525C 0%, #0E3B43 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(92, 242, 231, 0.7);
 }
 
 .btn-tactile-primary:active {
   transform: scale(0.975);
 }
 
-.btn-tactile-emerald {
-  background: linear-gradient(180deg, #059669 0%, #047857 100%);
-  border: 1px solid #10B981;
+.btn-tactile-pink {
+  background: linear-gradient(180deg, #4B1886 0%, #2C0E52 100%);
+  border: 1px solid #FF7AC6;
   color: #FFFFFF;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(16, 185, 129, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(255, 122, 198, 0.45);
 }
 
-.btn-tactile-emerald:hover {
-  background: linear-gradient(180deg, #047857 0%, #065F46 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(16, 185, 129, 0.7);
+.btn-tactile-pink:hover {
+  background: linear-gradient(180deg, #5E1F9E 0%, #4B1886 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px 0px rgba(255, 122, 198, 0.7);
 }
 
-.btn-tactile-emerald:active {
+.btn-tactile-pink:active {
   transform: scale(0.975);
 }
 
 .btn-tactile-secondary {
-  background: #0E1420;
-  border: 1px solid #1E293B;
-  color: #E2E8F0;
+  background: #080914;
+  border: 1px solid #1A2138;
+  color: #E6FFFF;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .btn-tactile-secondary:hover {
-  background: #141C2E;
-  border-color: #38BDF8;
+  background: #0D1122;
+  border-color: #5CF2E7;
   color: #FFFFFF;
-  box-shadow: 0 0 14px -2px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 14px -2px rgba(92, 242, 231, 0.3);
 }
 
 /* Sliding Pill Tab Active Highlights */
 .tab-pill-active {
   position: relative;
-  background: #111622;
-  color: #F8FAFC;
+  background: #0D1122;
+  color: #E6FFFF;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -265,23 +245,18 @@
   left: 12%;
   right: 12%;
   height: 2px;
-  background: linear-gradient(90deg, #2563EB, #38BDF8);
-  box-shadow: 0 0 8px #38BDF8;
+  background: linear-gradient(90deg, #5CF2E7, #FF7AC6);
+  box-shadow: 0 0 8px #FF7AC6;
   border-radius: 2px;
-  animation: shimmer 2s infinite;
 }
 
 /* Luminous Glow Tokens */
 .glow-cyan {
-  box-shadow: 0 0 22px -2px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 22px -2px rgba(92, 242, 231, 0.4);
 }
 
-.glow-emerald {
-  box-shadow: 0 0 22px -2px rgba(16, 185, 129, 0.4);
-}
-
-.glow-amber {
-  box-shadow: 0 0 22px -2px rgba(245, 158, 11, 0.4);
+.glow-pink {
+  box-shadow: 0 0 22px -2px rgba(255, 122, 198, 0.4);
 }
 
 .border-glow-hover {
@@ -289,116 +264,6 @@
 }
 
 .border-glow-hover:hover {
-  border-color: #38BDF8;
-  box-shadow: 0 0 18px -2px rgba(56, 189, 248, 0.35);
-}
-
-/* ==========================================================================
-   REACT BITS ADVANCED COMPONENT TOKENS (reactbits.dev / pro / agent-kit)
-   ========================================================================== */
-
-/* React Bits: SpotlightCard Dynamic Radial Illumination */
-.spotlight-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.spotlight-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    400px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
-    rgba(56, 189, 248, 0.14),
-    transparent 80%
-  );
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  z-index: 1;
-}
-
-.spotlight-card:hover::before {
-  opacity: 1;
-}
-
-/* React Bits: ShinyText & Shimmer Gradients */
-@keyframes shinyText {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.shiny-text {
-  background: linear-gradient(
-    90deg,
-    #F8FAFC 0%,
-    #38BDF8 30%,
-    #10B981 70%,
-    #F8FAFC 100%
-  );
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shinyText 5s linear infinite;
-}
-
-/* React Bits: CardNav Component Deck */
-.card-nav-container {
-  position: relative;
-}
-
-.card-nav-deck {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  z-index: 50;
-  display: grid;
-  grid-template-columns: repeat(3, 200px);
-  gap: 10px;
-  padding: 12px;
-  background: rgba(11, 15, 23, 0.96);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-radius: 5px;
-  box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.85), 0 0 24px -2px rgba(56, 189, 248, 0.25);
-  animation: cardNavDrop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes cardNavDrop {
-  0% {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.card-nav-item {
-  padding: 10px;
-  background: #070A0F;
-  border: 1px solid #1E293B;
-  border-radius: 4px;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  text-align: left;
-}
-
-.card-nav-item:hover {
-  background: #111622;
-  border-color: #38BDF8;
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 4px 16px -2px rgba(56, 189, 248, 0.35);
+  border-color: #5CF2E7;
+  box-shadow: 0 0 18px -2px rgba(92, 242, 231, 0.35);
 }
