@@ -84,7 +84,6 @@ export interface SimulatedSiliconState {
 
 export type TargetLanguage = 'cpp_esp32' | 'cpp_stm32' | 'rust_embedded' | 'micropython';
 
-// Compatibility types
 export interface PresetModel {
   id: string;
   name: string;

@@ -68,73 +68,73 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Top Header & Simulation Controls */}
-      <div className="flex items-center justify-between border-b border-palantir-border pb-3">
+      {/* Title */}
+      <div className="flex items-center justify-between border-b border-[#232936] pb-3">
         <div>
-          <h2 className="text-lg font-semibold text-palantir-textPrimary font-mono flex items-center gap-2">
-            <Activity className="w-4 h-4 text-palantir-cobalt" />
-            IN-BROWSER WEBASSEMBLY HARDWARE SILICON BENCH
+          <h2 className="text-sm font-semibold text-[#F5F8FA] font-mono flex items-center gap-2 uppercase tracking-wide">
+            <Activity className="w-4 h-4 text-[#2B95D6]" />
+            SILICON BENCH AND HARDWARE SIMULATOR
           </h2>
-          <p className="text-xs text-palantir-textSecondary font-sans">
+          <p className="text-xs text-[#A7B6C2]">
             Real-time sensory loop execution running on virtual {targetHw.name} ({targetHw.arch}).
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-palantir-card px-2.5 py-1 border border-palantir-border rounded-[3px] text-xs font-mono">
-            <Flame className="w-3.5 h-3.5 text-palantir-warn" />
-            <span className="text-palantir-textPrimary">{simState.coreTempC}°C</span>
-            <span className="text-palantir-borderLight">|</span>
-            <Zap className="w-3.5 h-3.5 text-palantir-pass" />
-            <span className="text-palantir-pass font-bold">{simState.powerMw} mW</span>
+          <div className="flex items-center gap-1.5 bg-[#1A1F28] px-2.5 py-1 border border-[#232936] rounded-[3px] text-xs font-mono">
+            <Flame className="w-3.5 h-3.5 text-[#D9822B]" />
+            <span className="text-[#F5F8FA]">{simState.coreTempC}°C</span>
+            <span className="text-[#303846]">|</span>
+            <Zap className="w-3.5 h-3.5 text-[#0D8050]" />
+            <span className="text-[#0D8050] font-bold">{simState.powerMw} mW</span>
           </div>
 
           <button
             onClick={onToggleSim}
-            className={`px-3.5 py-1.5 text-xs font-mono font-semibold rounded-[3px] flex items-center gap-1.5 transition border ${
+            className={`px-3 py-1 text-xs font-mono font-semibold rounded-[3px] flex items-center gap-1.5 transition border ${
               isSimulating
-                ? 'bg-palantir-dangerLight text-palantir-danger border-palantir-danger/50'
-                : 'bg-palantir-passLight text-palantir-pass border-palantir-pass/50 hover:bg-palantir-pass/30'
+                ? 'bg-[#C23030]/20 text-[#C23030] border-[#C23030]/50'
+                : 'bg-[#0D8050]/20 text-[#0D8050] border-[#0D8050]/50 hover:bg-[#0D8050]/30'
             }`}
           >
             {isSimulating ? (
               <>
-                <Square className="w-3.5 h-3.5 fill-current" /> Stop Hardware Loop
+                <Square className="w-3 h-3 fill-current" /> Stop Clock
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5 fill-current" /> Run Clock Simulation
+                <Play className="w-3 h-3 fill-current" /> Run Clock
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Main Grid: Sensory & Pinout Inputs (5 cols) + UART Terminal (7 cols) */}
+      {/* Grid: Inputs (5 cols) + UART (7 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-5 space-y-3">
-          {/* Sensory Mode Selection */}
-          <div className="bg-palantir-card border border-palantir-border rounded-[3px] p-3.5">
+          {/* Sensory Inputs */}
+          <div className="bg-[#1A1F28] border border-[#232936] rounded-[3px] p-3.5">
             <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-mono text-palantir-textPrimary uppercase font-semibold">
+              <span className="text-[11px] font-mono text-[#F5F8FA] uppercase font-semibold">
                 SENSORY INPUT STREAM
               </span>
-              <div className="flex items-center gap-1 bg-palantir-canvas p-0.5 rounded-[2px] border border-palantir-border text-[9px] font-mono">
+              <div className="flex items-center gap-1 bg-[#0B0D11] p-0.5 rounded-[2px] border border-[#232936] text-[9px] font-mono">
                 <button
                   onClick={stopSensors}
-                  className={`px-2 py-0.5 rounded-[2px] ${sensorMode === 'synthetic' ? 'bg-palantir-action text-palantir-textPrimary' : 'text-palantir-textSecondary'}`}
+                  className={`px-2 py-0.5 rounded-[2px] ${sensorMode === 'synthetic' ? 'bg-[#106BA3] text-[#F5F8FA]' : 'text-[#A7B6C2]'}`}
                 >
                   Synthetic
                 </button>
                 <button
                   onClick={startCamera}
-                  className={`px-2 py-0.5 rounded-[2px] flex items-center gap-1 ${sensorMode === 'camera' ? 'bg-palantir-action text-palantir-textPrimary' : 'text-palantir-textSecondary'}`}
+                  className={`px-2 py-0.5 rounded-[2px] flex items-center gap-1 ${sensorMode === 'camera' ? 'bg-[#106BA3] text-[#F5F8FA]' : 'text-[#A7B6C2]'}`}
                 >
                   <Camera className="w-3 h-3" /> Cam
                 </button>
                 <button
                   onClick={startMic}
-                  className={`px-2 py-0.5 rounded-[2px] flex items-center gap-1 ${sensorMode === 'mic' ? 'bg-palantir-action text-palantir-textPrimary' : 'text-palantir-textSecondary'}`}
+                  className={`px-2 py-0.5 rounded-[2px] flex items-center gap-1 ${sensorMode === 'mic' ? 'bg-[#106BA3] text-[#F5F8FA]' : 'text-[#A7B6C2]'}`}
                 >
                   <Mic className="w-3 h-3" /> Mic
                 </button>
@@ -142,23 +142,23 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
             </div>
 
             {sensorMode === 'camera' && isLiveActive && (
-              <div className="relative rounded-[2px] overflow-hidden border border-palantir-border bg-black h-32 flex items-center justify-center">
+              <div className="relative rounded-[2px] overflow-hidden border border-[#232936] bg-black h-32 flex items-center justify-center">
                 <video ref={videoRef} className="h-full w-full object-cover grayscale opacity-90" autoPlay muted playsInline />
-                <div className="absolute inset-0 border border-palantir-pass p-1.5 flex items-start justify-between pointer-events-none">
-                  <span className="text-[8px] font-mono bg-black/80 text-palantir-pass px-1 py-0.5 rounded-[2px]">
-                    48x48 Downsample • Live Frame
+                <div className="absolute inset-0 border border-[#0D8050] p-1.5 flex items-start justify-between pointer-events-none">
+                  <span className="text-[8px] font-mono bg-black/80 text-[#0D8050] px-1 py-0.5 rounded-[2px]">
+                    48x48 Downsample [Live]
                   </span>
-                  <span className="h-2 w-2 rounded-full bg-palantir-danger animate-pulse"></span>
+                  <span className="h-2 w-2 rounded-full bg-[#C23030] animate-pulse"></span>
                 </div>
               </div>
             )}
 
             {sensorMode === 'mic' && isLiveActive && (
-              <div className="h-24 bg-palantir-canvas rounded-[2px] border border-palantir-border p-2.5 flex items-center justify-center gap-1.5">
+              <div className="h-24 bg-[#0B0D11] rounded-[2px] border border-[#232936] p-2.5 flex items-center justify-center gap-1.5">
                 {[30, 70, 90, 40, 85, 60, 95, 20, 75, 45, 65, 80].map((h, i) => (
                   <div
                     key={i}
-                    className="w-2 bg-gradient-to-t from-palantir-warn to-palantir-pass rounded-full animate-pulse"
+                    className="w-2 bg-[#0D8050] rounded-full animate-pulse"
                     style={{ height: `${h}%`, animationDuration: `${0.3 + (i % 3) * 0.1}s` }}
                   />
                 ))}
@@ -166,17 +166,17 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
             )}
 
             {sensorMode === 'synthetic' && (
-              <div className="p-3 bg-palantir-canvas rounded-[2px] border border-palantir-border text-xs font-mono text-palantir-textSecondary flex items-center justify-between">
+              <div className="p-3 bg-[#0B0D11] rounded-[2px] border border-[#232936] text-xs font-mono text-[#A7B6C2] flex items-center justify-between">
                 <span>Synthetic Generator: 64-FFT Spectrum</span>
-                <span className="text-palantir-pass font-semibold">STREAMING</span>
+                <span className="text-[#0D8050] font-semibold">STREAMING</span>
               </div>
             )}
           </div>
 
-          {/* GPIO Digital Pins */}
-          <div className="bg-palantir-card border border-palantir-border rounded-[3px] p-3.5">
-            <label className="text-[10px] font-mono text-palantir-textMuted uppercase tracking-wider block mb-2 font-semibold">
-              GPIO DIGITAL I/O PINS
+          {/* GPIO Pins */}
+          <div className="bg-[#1A1F28] border border-[#232936] rounded-[3px] p-3.5">
+            <label className="text-[10px] font-mono text-[#5C7080] uppercase tracking-wider block mb-2 font-semibold">
+              GPIO DIGITAL PINS
             </label>
             <div className="grid grid-cols-2 gap-2 font-mono text-xs">
               {Object.entries(simState.gpio).map(([pin, isHigh]) => (
@@ -185,15 +185,15 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
                   onClick={() => onUpdateGpio(pin, !isHigh)}
                   className={`p-2 rounded-[2px] border flex items-center justify-between cursor-pointer transition select-none ${
                     isHigh
-                      ? 'bg-palantir-passLight border-palantir-pass/50 text-palantir-textPrimary'
-                      : 'bg-palantir-canvas border-palantir-border text-palantir-textSecondary'
+                      ? 'bg-[#0D8050]/20 border-[#0D8050]/50 text-[#F5F8FA]'
+                      : 'bg-[#0B0D11] border-[#232936] text-[#A7B6C2]'
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isHigh ? 'bg-palantir-pass shadow-[0_0_8px_#0D8050]' : 'bg-palantir-border'}`} />
+                    <span className={`w-2 h-2 rounded-full ${isHigh ? 'bg-[#0D8050]' : 'bg-[#232936]'}`} />
                     <span>{pin}</span>
                   </div>
-                  <span className={`text-[10px] font-bold ${isHigh ? 'text-palantir-pass' : 'text-palantir-textMuted'}`}>
+                  <span className={`text-[10px] font-bold ${isHigh ? 'text-[#0D8050]' : 'text-[#5C7080]'}`}>
                     {isHigh ? 'HIGH' : 'LOW'}
                   </span>
                 </div>
@@ -201,13 +201,13 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
             </div>
           </div>
 
-          {/* ADC Potentiometer Slider */}
-          <div className="bg-palantir-card border border-palantir-border rounded-[3px] p-3.5">
+          {/* ADC Potentiometer */}
+          <div className="bg-[#1A1F28] border border-[#232936] rounded-[3px] p-3.5">
             <div className="flex items-center justify-between mb-1.5 text-xs font-mono">
-              <span className="text-palantir-textMuted flex items-center gap-1">
-                <Activity className="w-3.5 h-3.5 text-palantir-cobalt" /> ADC ANALOG VOLTAGE (ADC_CH1)
+              <span className="text-[#5C7080] flex items-center gap-1">
+                <Activity className="w-3.5 h-3.5 text-[#2B95D6]" /> ADC ANALOG VOLTAGE (ADC_CH1)
               </span>
-              <span className="text-palantir-cobalt font-bold">
+              <span className="text-[#2B95D6] font-bold">
                 {(simState.adc['ADC_IN1'] || 1.65).toFixed(2)} V / 3.3V
               </span>
             </div>
@@ -218,32 +218,32 @@ export const LiveSimulatorPanel: React.FC<LiveSimulatorPanelProps> = ({
               step="0.05"
               value={simState.adc['ADC_IN1'] || 1.65}
               onChange={(e) => onUpdateAdc('ADC_IN1', parseFloat(e.target.value))}
-              className="w-full h-1 bg-palantir-canvas rounded appearance-none cursor-pointer accent-palantir-cobalt"
+              className="w-full h-1 bg-[#0B0D11] rounded appearance-none cursor-pointer accent-[#2B95D6]"
             />
           </div>
         </div>
 
-        {/* Live UART Serial Console */}
-        <div className="lg:col-span-7 bg-palantir-card border border-palantir-border rounded-[3px] flex flex-col h-[460px] overflow-hidden">
-          <div className="px-3.5 py-2.5 border-b border-palantir-border bg-palantir-nav flex items-center justify-between">
+        {/* Live UART Terminal */}
+        <div className="lg:col-span-7 bg-[#1A1F28] border border-[#232936] rounded-[3px] flex flex-col h-[460px] overflow-hidden">
+          <div className="px-3.5 py-2.5 border-b border-[#232936] bg-[#12151B] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-palantir-pass" />
-              <span className="text-xs font-mono font-semibold text-palantir-textPrimary">
-                UART SERIAL CONSOLE @ 115200 BAUD (VIRTUAL SILICON)
+              <Terminal className="w-4 h-4 text-[#0D8050]" />
+              <span className="text-xs font-mono font-semibold text-[#F5F8FA]">
+                UART SERIAL TERMINAL @ 115200 BAUD
               </span>
             </div>
-            <span className="text-[9px] font-mono px-1.5 py-0.5 bg-palantir-passLight text-palantir-pass rounded-[2px] font-bold">
-              RX/TX LIVE
+            <span className="text-[9px] font-mono px-1.5 py-0.5 bg-[#0D8050]/20 text-[#0D8050] rounded-[2px] font-bold">
+              RX/TX READY
             </span>
           </div>
 
-          <div className="flex-1 p-3.5 overflow-y-auto font-mono text-[11px] leading-relaxed space-y-1 select-text bg-palantir-canvas">
+          <div className="flex-1 p-3.5 overflow-y-auto font-mono text-[11px] leading-relaxed space-y-1 select-text bg-[#0B0D11]">
             {simState.uartLogs.map((log, i) => {
-              let textColor = 'text-palantir-textSecondary';
-              if (log.includes('CRITICAL') || log.includes('ERR')) textColor = 'text-palantir-danger font-bold';
-              if (log.includes('WARN')) textColor = 'text-palantir-warn font-semibold';
-              if (log.includes('INFERENCE') || log.includes('SHANNON') || log.includes('SUCCESS')) textColor = 'text-palantir-pass';
-              if (log.includes('SRAM') || log.includes('ARENA')) textColor = 'text-palantir-cobalt';
+              let textColor = 'text-[#A7B6C2]';
+              if (log.includes('CRITICAL') || log.includes('ERR')) textColor = 'text-[#C23030] font-bold';
+              if (log.includes('WARN')) textColor = 'text-[#D9822B] font-semibold';
+              if (log.includes('INFERENCE') || log.includes('SHANNON') || log.includes('SUCCESS')) textColor = 'text-[#0D8050]';
+              if (log.includes('SRAM') || log.includes('ARENA')) textColor = 'text-[#2B95D6]';
 
               return (
                 <div key={i} className={textColor}>
