@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ZeroMallocBlock, HardwareProfile } from '../types';
-import { Layers, CheckCircle2 } from 'lucide-react';
+import { Layers, CheckCircle2, Zap } from 'lucide-react';
 
 interface SramArenaTimelineProps {
   blocks: ZeroMallocBlock[];
@@ -35,11 +35,11 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
   const chartH = svgHeight - paddingTop - paddingBottom;
 
   return (
-    <div className="bg-[#111622] border border-[#1E293B] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+    <div className="bg-[#0B0F17] border border-[#1E293B] rounded-[3px] flex flex-col h-full overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] border-glow-hover">
       {/* Timeline Header */}
-      <div className="p-2.5 border-b border-[#1E293B] bg-[#0B0E14] flex items-center justify-between">
+      <div className="p-2.5 border-b border-[#1E293B] bg-[#070A0F] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-[#3B82F6]" />
+          <Layers className="w-4 h-4 text-[#38BDF8]" />
           <h3 className="text-xs font-bold text-[#F8FAFC] font-mono tracking-tight">
             SRAM MEMORY ARENA INTERVAL TIMELINE
           </h3>
@@ -48,10 +48,10 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
         <div className="flex items-center gap-3 text-xs font-mono font-tabular">
           <div className="flex items-center gap-1.5 text-[#94A3B8]">
             <span>Peak Arena:</span>
-            <strong className="text-[#10B981]">{(totalArenaBytes / 1024).toFixed(2)} KB</strong>
+            <strong className="text-[#10B981] font-bold">{(totalArenaBytes / 1024).toFixed(2)} KB</strong>
           </div>
           <span className="text-[#1E293B]">|</span>
-          <span className="text-[10px] text-[#10B981] bg-[#10B981]/10 px-1.5 py-0.2 rounded-[2px] border border-[#10B981]/25 font-bold">
+          <span className="text-[10px] text-[#10B981] bg-[#10B981]/15 px-2 py-0.5 rounded-[2px] border border-[#10B981]/35 font-bold shadow-[0_0_8px_rgba(16,185,129,0.2)]">
             0.00% FRAGMENTATION
           </span>
         </div>
@@ -59,12 +59,14 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
 
       {/* Main Workspace: Scrubber + SVG Chart + Tensor Details */}
       <div className="flex-1 flex flex-col p-3 space-y-2.5 overflow-y-auto">
-        {/* Step Scrubber Bar */}
-        <div className="bg-[#0B0E14] p-2 rounded-[3px] border border-[#1E293B] flex items-center justify-between text-xs font-mono">
+        {/* Step Scrubber Bar with Tactile Spring Buttons */}
+        <div className="bg-[#070A0F] p-2 rounded-[3px] border border-[#1E293B] flex items-center justify-between text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-[#64748B]">LIFETIME SCRUBBER:</span>
+            <span className="text-[#64748B] flex items-center gap-1">
+              <Zap className="w-3 h-3 text-[#38BDF8]" /> LIFETIME SCRUBBER:
+            </span>
             <span className="text-[#10B981] font-bold">STEP {activeStep} / {maxStep}</span>
-            <span className="text-[#475569] font-tabular">({activeSramBytesAtStep} Bytes In Use)</span>
+            <span className="text-[#475569] font-tabular">({activeSramBytesAtStep} Bytes Active)</span>
           </div>
 
           <div className="flex items-center gap-1">
@@ -72,10 +74,10 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
               <button
                 key={stepIdx}
                 onClick={() => setActiveStep(stepIdx)}
-                className={`px-2 py-0.5 rounded-[2px] text-[11px] font-bold transition-all ${
+                className={`px-2 py-0.5 rounded-[2px] text-[11px] font-bold transition-all btn-tactile ${
                   activeStep === stepIdx
                     ? 'btn-tactile-primary text-white'
-                    : 'bg-[#151B28] hover:bg-[#1A2234] text-[#94A3B8] border border-[#1E293B]'
+                    : 'bg-[#0E1420] hover:bg-[#141C2E] text-[#94A3B8] border border-[#1E293B]'
                 }`}
               >
                 L{stepIdx}
@@ -84,10 +86,10 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
           </div>
         </div>
 
-        {/* SVG Interval Graph */}
-        <div className="bg-[#0B0E14] rounded-[3px] border border-[#1E293B] p-2 flex items-center justify-center relative">
+        {/* SVG Interval Graph with Laser Tracer */}
+        <div className="bg-[#070A0F] rounded-[3px] border border-[#1E293B] p-2 flex items-center justify-center relative overflow-hidden">
           <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-40 select-none">
-            {/* Vertical Grid Lines */}
+            {/* Ambient Background Grid */}
             {Array.from({ length: maxStep + 1 }).map((_, stepIdx) => {
               const x = paddingLeft + (stepIdx / maxStep) * chartW;
               const isCurrent = activeStep === stepIdx;
@@ -99,9 +101,21 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
                     x2={x}
                     y2={paddingTop + chartH}
                     stroke={isCurrent ? '#10B981' : '#1E293B'}
-                    strokeWidth={isCurrent ? 1.5 : 1}
+                    strokeWidth={isCurrent ? 2 : 1}
                     strokeDasharray={isCurrent ? 'none' : '2 2'}
                   />
+                  {isCurrent && (
+                    <line
+                      x1={x}
+                      y1={paddingTop}
+                      x2={x}
+                      y2={paddingTop + chartH}
+                      stroke="#38BDF8"
+                      strokeWidth={4}
+                      opacity={0.3}
+                      className="animate-pulse"
+                    />
+                  )}
                   <text
                     x={x}
                     y={svgHeight - 8}
@@ -154,10 +168,10 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
                     width={width}
                     height={height}
                     rx="2"
-                    fill={block.color || '#2563EB'}
-                    fillOpacity={isSelected ? 0.95 : isActiveNow ? 0.8 : 0.35}
-                    stroke={isSelected ? '#F8FAFC' : isActiveNow ? '#10B981' : '#1E293B'}
-                    strokeWidth={isSelected ? 1.5 : 1}
+                    fill={block.color || '#0284C7'}
+                    fillOpacity={isSelected ? 0.95 : isActiveNow ? 0.85 : 0.4}
+                    stroke={isSelected ? '#38BDF8' : isActiveNow ? '#10B981' : '#1E293B'}
+                    strokeWidth={isSelected ? 2 : 1}
                   />
                   <text
                     x={x1 + 5}
@@ -178,14 +192,14 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
 
         {/* Selected Tensor Detailed Inspector */}
         {selectedBlock && (
-          <div className="bg-[#0B0E14] p-2.5 rounded-[3px] border border-[#1E293B] font-mono text-xs space-y-2">
+          <div className="bg-[#070A0F] p-2.5 rounded-[3px] border border-[#1E293B] font-mono text-xs space-y-2">
             <div className="flex items-center justify-between border-b border-[#1E293B] pb-1.5">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-[2px]" style={{ backgroundColor: selectedBlock.color }} />
                 <span className="font-bold text-[#F8FAFC]">{selectedBlock.layer_id}</span>
                 <span className="text-[10px] text-[#64748B]">({selectedBlock.buffer_name})</span>
               </div>
-              <span className="text-[#3B82F6] font-bold font-tabular">{selectedBlock.size_bytes} Bytes</span>
+              <span className="text-[#38BDF8] font-bold font-tabular">{selectedBlock.size_bytes} Bytes</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-tabular">
@@ -199,7 +213,7 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
               </div>
               <div>
                 <span className="text-[#64748B] block">BUFFER REUSE STATE</span>
-                <span className="text-[#3B82F6] font-bold">Greedy In-Place Reuse</span>
+                <span className="text-[#38BDF8] font-bold">Greedy In-Place Reuse</span>
               </div>
               <div>
                 <span className="text-[#64748B] block">ALIGNMENT</span>
@@ -211,11 +225,11 @@ export const SramArenaTimeline: React.FC<SramArenaTimelineProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div className="p-2 bg-[#0B0E14] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B]">
-        <span className="flex items-center gap-1 text-[#10B981] font-bold">
+      <div className="p-2 bg-[#070A0F] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B]">
+        <span className="flex items-center gap-1.5 text-[#10B981] font-bold">
           <CheckCircle2 className="w-3.5 h-3.5" /> 100% COLLISION FREE FORMAL PROOF PASS
         </span>
-        <span>Base Offset: <strong className="text-[#F8FAFC] font-tabular">0x20000000</strong></span>
+        <span>Base Offset: <strong className="text-[#38BDF8] font-tabular">0x20000000</strong></span>
       </div>
     </div>
   );
