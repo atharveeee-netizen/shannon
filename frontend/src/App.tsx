@@ -14,11 +14,14 @@ import { CommandPalette } from './components/CommandPalette';
 import { AgentChat } from './components/AgentChat';
 import { ScreenpipeAuditDrawer } from './components/ScreenpipeAuditDrawer';
 import { SpotlightCard } from './components/SpotlightCard';
+import { BorderBeam } from './components/BorderBeam';
+import { DynamicNotch } from './components/DynamicNotch';
 import { optimizeModel } from './services/api';
 import {
   Layers,
   Sparkles,
   X,
+  Sliders,
 } from 'lucide-react';
 
 const HARDWARE_PROFILES: HardwareProfile[] = [
@@ -314,7 +317,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
         onClose={() => setIsAuditOpen(false)}
       />
 
-      {/* Top IDE Header (44px) with React Bits CardNav & Cyber-Sakura Styling */}
+      {/* Top IDE Header (44px) with React Bits CardNav */}
       <IdeHeader
         currentHw={currentHw}
         currentModel={currentModel}
@@ -339,6 +342,15 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
         quantBits={quantBits}
         onChangeQuantBits={setQuantBits}
       />
+
+      {/* 21st.dev Dynamic Island Floating Status Notch */}
+      <div className="relative z-20 -mb-4 mt-1">
+        <DynamicNotch
+          currentHw={currentHw}
+          currentModel={currentModel}
+          isCompiling={isCompiling}
+        />
+      </div>
 
       {/* Slide-over Shannon AI Copilot Drawer */}
       {isCopilotOpen && (
@@ -366,14 +378,14 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
       )}
 
       {/* CLEAN 3-PANE SPLIT: Tensor Layers (Left) | C++ Code Viewer (Center) | Live SRAM Timeline & Bench (Right) */}
-      <div className="flex-1 flex overflow-hidden p-2 gap-2">
-        {/* PANE 1: TENSOR LAYERS & ARCHITECTURE BENTO (320px) WITH REACT BITS SPOTLIGHT CARDS */}
+      <div className="flex-1 flex overflow-hidden p-2 gap-2 mt-2">
+        {/* PANE 1: MAGIC UI BENTO TENSOR LAYERS & ARCHITECTURE (320px) */}
         <aside className="w-80 bg-[#080914] border border-[#1A2138] rounded-[3px] flex flex-col shrink-0 select-none overflow-hidden shadow-sm">
           {/* Header */}
           <div className="p-2.5 border-b border-[#1A2138] bg-[#05050A] flex items-center justify-between font-mono text-xs">
             <div className="flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-[#5CF2E7]" />
-              <span className="font-bold text-[#E6FFFF]">TENSOR LAYERS</span>
+              <span className="font-bold text-[#E6FFFF]">TENSOR BENTO AST</span>
             </div>
             <span className="text-[10px] text-[#5CF2E7] font-bold font-tabular bg-[#0E3B43]/40 px-1.5 py-0.2 rounded border border-[#5CF2E7]/40 shadow-[0_0_8px_rgba(92,242,231,0.2)]">
               {layers.length} LAYERS
@@ -404,36 +416,33 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
               </SpotlightCard>
             ))}
 
-            {/* Precision Controls Card with Sakura Glow */}
+            {/* Origin UI Tactile Precision Sliders & Toggles */}
             <SpotlightCard
-              className="p-2 border-[#1A2138] space-y-2 mt-2"
+              className="p-2.5 border-[#1A2138] space-y-2 mt-2"
               spotlightColor="rgba(255, 122, 198, 0.12)"
             >
-              <div className="text-[10px] text-[#FF7AC6] uppercase font-bold tracking-wider">
-                PRECISION TUNING
+              <div className="flex items-center justify-between text-[10px] text-[#FF7AC6] uppercase font-bold tracking-wider">
+                <span className="flex items-center gap-1">
+                  <Sliders className="w-3 h-3 text-[#FF7AC6]" /> ORIGIN UI PRECISION
+                </span>
+                <span className="text-[9px] text-[#5CF2E7]">INT{quantBits} ACTIVE</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-1 font-mono text-xs">
-                <button
-                  onClick={() => setQuantBits(8)}
-                  className={`py-1 rounded-[2px] text-xs font-bold transition-all btn-tactile ${
-                    quantBits === 8
-                      ? 'btn-tactile-primary'
-                      : 'bg-[#05050A] text-[#64748B] border border-[#1A2138]'
-                  }`}
-                >
-                  INT8 Symmetric
-                </button>
-                <button
-                  onClick={() => setQuantBits(4)}
-                  className={`py-1 rounded-[2px] text-xs font-bold transition-all btn-tactile ${
-                    quantBits === 4
-                      ? 'btn-tactile-pink'
-                      : 'bg-[#05050A] text-[#64748B] border border-[#1A2138]'
-                  }`}
-                >
-                  INT4 Packed
-                </button>
+              {/* Tactile Bitwidth Slider */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[9px] text-[#E6FFFF]/60">
+                  <span>INT4 Packed</span>
+                  <span>INT8 Symmetric</span>
+                </div>
+                <input
+                  type="range"
+                  min="4"
+                  max="8"
+                  step="4"
+                  value={quantBits}
+                  onChange={(e) => setQuantBits(Number(e.target.value))}
+                  className="w-full accent-[#5CF2E7] h-1.5 bg-[#05050A] rounded cursor-pointer"
+                />
               </div>
 
               <label className="flex items-center justify-between text-[11px] text-[#E6FFFF]/70 bg-[#05050A] p-1.5 rounded border border-[#1A2138] cursor-pointer">
@@ -455,8 +464,9 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
           </div>
         </aside>
 
-        {/* PANE 2: C/C++ CODE VIEWER & DISASSEMBLY (Flexible Center) */}
-        <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        {/* PANE 2: C/C++ CODE VIEWER WITH ACETERNITY BORDER BEAM (Flexible Center) */}
+        <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
+          <BorderBeam size={180} duration={6} borderWidth={1.5} colorFrom="#5CF2E7" colorTo="#FF7AC6" />
           <CodeViewerPanel
             code={generatedCppHeader}
             targetHw={currentHw}

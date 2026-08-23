@@ -46,6 +46,16 @@ export default {
         lg: '4px',
         xl: '6px',
       },
+      animation: {
+        'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
+      },
+      keyframes: {
+        'border-beam': {
+          '100%': {
+            'offset-distance': '100%',
+          },
+        },
+      },
       boxShadow: {
         'tactile-primary': 'inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(92, 242, 231, 0.45)',
         'tactile-pink': 'inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 16px -2px rgba(255, 122, 198, 0.45)',
