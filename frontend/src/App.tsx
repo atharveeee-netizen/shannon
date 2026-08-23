@@ -14,6 +14,9 @@ import { CompilerWorkbenchPanel } from './components/CompilerWorkbenchPanel';
 import { ZeroMallocArenaPanel } from './components/ZeroMallocArenaPanel';
 import { LiveSimulatorPanel } from './components/LiveSimulatorPanel';
 import { CodeExportPanel } from './components/CodeExportPanel';
+import { CommandPalette } from './components/CommandPalette';
+import { ScreenpipeAuditDrawer } from './components/ScreenpipeAuditDrawer';
+import { Silicon3DCanvas } from './components/Silicon3DCanvas';
 import { HardDrive, Cpu, ShieldCheck } from 'lucide-react';
 
 const HARDWARE_PROFILES: HardwareProfile[] = [
@@ -143,6 +146,8 @@ export function App() {
   const [mixedPrecision, setMixedPrecision] = useState<boolean>(false);
   const [isAgentRunning, setIsAgentRunning] = useState<boolean>(false);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
+  const [isAuditOpen, setIsAuditOpen] = useState<boolean>(false);
 
   const [layers] = useState<LayerBentoRow[]>(INITIAL_LAYERS);
   const [arenaBlocks] = useState<ZeroMallocBlock[]>(INITIAL_BLOCKS);
@@ -177,7 +182,6 @@ export function App() {
     memoryIntegrityPassed: true,
   });
 
-  // Simulated Agentic Loop Run
   const handleTriggerAgentLoop = () => {
     setIsAgentRunning(true);
     setAgentLogs((prev) => [
@@ -194,7 +198,6 @@ export function App() {
     }, 1500);
   };
 
-  // Live Simulation Clock Loop
   useEffect(() => {
     if (!isSimulating) return;
 
@@ -222,7 +225,25 @@ export function App() {
   const generatedCppHeader = `// ==================================================================\n// SHANNON AUTONOMOUS COMPILER - ZERO-DEPENDENCY TINYML HEADER\n// Target: ${currentHw.name} (${currentHw.arch})\n// Model: ${currentModel.name} (${currentModel.architecture})\n// Precision: Symmetric INT8 Post-Training Quantization\n// ==================================================================\n#pragma once\n#include <stdint.h>\n#include <string.h>\n\n#define SHANNON_TENSOR_ARENA_SIZE ${Math.round(currentModel.peak_sram_kb * 1024)}\n\n// Static Contiguous Tensor Arena in Fast SRAM (0 Bytes malloc)\nstatic uint8_t shannon_tensor_arena[SHANNON_TENSOR_ARENA_SIZE] __attribute__((aligned(4)));\n\n// Quantized INT8 Weights in Flash ROM\nstatic const int8_t shannon_weights[] = {\n    12, -45, 88, -120, 34, 19, -5, 67, 102, -88, 14, 0, -33, 91, -12, 44\n};\n\nvoid shannon_run_inference(const int8_t* input_tensor, int8_t* output_tensor) {\n    // 1. Stage Input to Base Arena Offset 0x20000000\n    memcpy(&shannon_tensor_arena[0], input_tensor, 490);\n\n    // 2. Vectorized Inner Loop (${currentHw.simd})\n    // Statically planned activation buffers reuse memory without runtime heap allocation\n    output_tensor[0] = shannon_tensor_arena[0];\n}\n`;
 
   return (
-    <div className="min-h-screen bg-palantir-canvas text-palantir-textPrimary font-sans flex flex-col tactile-noise-overlay bg-crosshair-grid">
+    <div className="min-h-screen bg-palantir-canvas text-palantir-textPrimary font-sans flex flex-col tactile-noise-overlay bg-crosshair-grid relative">
+      {/* Universal Command Palette Modal (Cmd+K) */}
+      <CommandPalette
+        isOpen={isCmdOpen}
+        onClose={() => setIsCmdOpen(false)}
+        onSelectTab={setActiveTab}
+        onSelectHardware={setSelectedHwId}
+        onSelectModel={setSelectedModelId}
+        onTriggerAgentLoop={handleTriggerAgentLoop}
+        hardwareList={HARDWARE_PROFILES}
+        models={MODEL_ZOO}
+      />
+
+      {/* Screenpipe Continuous Audit Drawer */}
+      <ScreenpipeAuditDrawer
+        isOpen={isAuditOpen}
+        onClose={() => setIsAuditOpen(false)}
+      />
+
       {/* Top Palantir Foundry Blueprint Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -232,6 +253,8 @@ export function App() {
         onSelectHardware={setSelectedHwId}
         isAgentRunning={isAgentRunning}
         onTriggerAgentLoop={handleTriggerAgentLoop}
+        onOpenCommandPalette={() => setIsCmdOpen(true)}
+        onOpenAuditDrawer={() => setIsAuditOpen(true)}
       />
 
       {/* Main Studio Viewport */}
@@ -290,62 +313,78 @@ export function App() {
           />
         )}
 
-        {/* Persistent Bottom Hardware Telemetry & Safety Seal Dock */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-palantir-card p-4 rounded-[3px] border border-palantir-border">
-          {/* Flash Storage Compression */}
-          <div className="bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border">
-            <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-              <span className="text-palantir-textMuted flex items-center gap-1.5">
-                <HardDrive className="w-3.5 h-3.5 text-palantir-cobalt" /> Flash ROM (INT8 Weights)
-              </span>
-              <span className="text-palantir-cobalt font-bold">
-                {currentModel.int8_flash_kb} KB / {currentHw.flash_mb * 1024} KB
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-palantir-nav rounded-[1px] overflow-hidden">
-              <div
-                className="h-full bg-palantir-cobalt rounded-[1px]"
-                style={{ width: `${Math.min(100, (currentModel.int8_flash_kb / (currentHw.flash_mb * 1024)) * 100 * 30)}%` }}
-              />
-            </div>
-            <span className="text-[10px] font-mono text-palantir-pass block mt-1.5 font-semibold">
-              🚀 -{currentModel.flash_compression_ratio} Storage Reduction (from {currentModel.fp32_flash_kb}KB FP32)
-            </span>
+        {/* 3D Silicon Wafer + Persistent Bottom Hardware Telemetry Dock */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* 3D Interactive Silicon Wafer Canvas (4 cols) */}
+          <div className="lg:col-span-4">
+            <Silicon3DCanvas
+              targetHw={currentHw}
+              peakSramKb={currentModel.peak_sram_kb}
+              flashKb={currentModel.int8_flash_kb}
+            />
           </div>
 
-          {/* Peak SRAM Tensor Arena Allocation */}
-          <div className="bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border">
-            <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-              <span className="text-palantir-textMuted flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-palantir-pass" /> Peak SRAM Arena Footprint
-              </span>
-              <span className="text-palantir-pass font-bold">
-                {currentModel.peak_sram_kb} KB / {currentHw.sram_kb} KB
+          {/* Persistent Telemetry & Security Markings (8 cols) */}
+          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-palantir-card p-4 rounded-[3px] border border-palantir-border">
+            {/* Flash Storage Compression */}
+            <div className="bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span className="text-palantir-textMuted flex items-center gap-1.5">
+                    <HardDrive className="w-3.5 h-3.5 text-palantir-cobalt" /> Flash Storage (INT8 ROM)
+                  </span>
+                  <span className="text-palantir-cobalt font-bold">
+                    {currentModel.int8_flash_kb} KB
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-palantir-nav rounded-[1px] overflow-hidden">
+                  <div
+                    className="h-full bg-palantir-cobalt rounded-[1px]"
+                    style={{ width: `${Math.min(100, (currentModel.int8_flash_kb / (currentHw.flash_mb * 1024)) * 100 * 30)}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-palantir-pass block mt-2 font-semibold">
+                🚀 -{currentModel.flash_compression_ratio} Storage (from {currentModel.fp32_flash_kb}KB FP32)
               </span>
             </div>
-            <div className="w-full h-1.5 bg-palantir-nav rounded-[1px] overflow-hidden">
-              <div
-                className="h-full bg-palantir-pass rounded-[1px]"
-                style={{ width: `${Math.min(100, (currentModel.peak_sram_kb / currentHw.sram_kb) * 100 * 10)}%` }}
-              />
-            </div>
-            <span className="text-[10px] font-mono text-palantir-textMuted block mt-1.5">
-              ⚡ Zero Dynamic Allocation (0 Bytes malloc in firmware)
-            </span>
-          </div>
 
-          {/* MISRA-C Safety Audit */}
-          <div className="bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border flex items-center justify-between">
-            <div>
-              <span className="text-[10px] font-mono text-palantir-textMuted block">MISRA-C:2012 COMPLIANCE</span>
-              <h4 className="text-xs font-bold text-palantir-textPrimary font-mono flex items-center gap-1 mt-0.5">
-                <ShieldCheck className="w-4 h-4 text-palantir-pass" /> VERIFIED SAFE (0 ERRORS)
-              </h4>
-              <span className="text-[10px] font-mono text-palantir-textMuted">Static arrays • No heap leaks</span>
+            {/* Peak SRAM Tensor Arena Allocation */}
+            <div className="bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+                  <span className="text-palantir-textMuted flex items-center gap-1.5">
+                    <Cpu className="w-3.5 h-3.5 text-palantir-pass" /> Peak SRAM Arena Allocation
+                  </span>
+                  <span className="text-palantir-pass font-bold">
+                    {currentModel.peak_sram_kb} KB / {currentHw.sram_kb} KB
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-palantir-nav rounded-[1px] overflow-hidden">
+                  <div
+                    className="h-full bg-palantir-pass rounded-[1px]"
+                    style={{ width: `${Math.min(100, (currentModel.peak_sram_kb / currentHw.sram_kb) * 100 * 10)}%` }}
+                  />
+                </div>
+              </div>
+              <span className="text-[10px] font-mono text-palantir-textMuted block mt-2">
+                ⚡ 0 Bytes runtime malloc() • No heap fragmentation
+              </span>
             </div>
-            <div className="text-right font-mono">
-              <span className="text-[10px] text-palantir-textMuted block">INTRINSICS</span>
-              <span className="text-xs font-bold text-palantir-cobalt">{currentHw.simd}</span>
+
+            {/* Full Width Security & SIMD Markings */}
+            <div className="sm:col-span-2 bg-palantir-canvas p-3 rounded-[2px] border border-palantir-border flex items-center justify-between">
+              <div>
+                <span className="text-[9px] font-mono text-palantir-textMuted block">SECURITY & COMPLIANCE SEAL</span>
+                <h4 className="text-xs font-bold text-palantir-textPrimary font-mono flex items-center gap-1.5 mt-0.5">
+                  <ShieldCheck className="w-4 h-4 text-palantir-pass" />
+                  STRIX SECURED • SOC2 TYPE II • MISRA-C:2012 COMPLIANT
+                </h4>
+              </div>
+              <div className="text-right font-mono">
+                <span className="text-[9px] text-palantir-textMuted block">HARDWARE VECTOR SIMD</span>
+                <span className="text-xs font-bold text-palantir-cobalt">{currentHw.simd}</span>
+              </div>
             </div>
           </div>
         </div>

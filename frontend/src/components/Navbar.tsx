@@ -1,6 +1,6 @@
 import React from 'react';
 import { HardwareProfile } from '../types';
-import { Cpu, ShieldCheck, Play, Square, Activity, Database, Layers, Terminal, Code } from 'lucide-react';
+import { Cpu, Play, Square, Database, Layers, Terminal, Code, Activity, Search, FileText } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: 'zoo' | 'workbench' | 'arena' | 'simulator' | 'export';
@@ -10,6 +10,8 @@ interface NavbarProps {
   onSelectHardware: (id: string) => void;
   isAgentRunning: boolean;
   onTriggerAgentLoop: () => void;
+  onOpenCommandPalette: () => void;
+  onOpenAuditDrawer: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,6 +22,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectHardware,
   isAgentRunning,
   onTriggerAgentLoop,
+  onOpenCommandPalette,
+  onOpenAuditDrawer,
 }) => {
   const tabs: { id: 'zoo' | 'workbench' | 'arena' | 'simulator' | 'export'; label: string; num: string; icon: any }[] = [
     { id: 'zoo', label: 'Model Zoo', num: '01', icon: Database },
@@ -30,8 +34,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="h-14 bg-palantir-nav border-b border-palantir-border px-5 flex items-center justify-between sticky top-0 z-50 select-none">
-      {/* Left: Brand Crest & Metadata */}
+    <header className="h-14 bg-palantir-nav border-b border-palantir-border px-5 flex items-center justify-between sticky top-0 z-40 select-none">
+      {/* Brand & MCU Selector */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2.5">
           <div className="h-7 w-7 bg-palantir-action/20 border border-palantir-action rounded-[3px] flex items-center justify-center text-palantir-cobalt font-bold text-sm shadow-sm">
@@ -87,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   : 'text-palantir-textSecondary hover:text-palantir-textPrimary hover:bg-palantir-card'
               }`}
             >
-              <span className={`text-[10px] opacity-60`}>{t.num}</span>
+              <span className="text-[10px] opacity-60">{t.num}</span>
               <Icon className="w-3.5 h-3.5" />
               <span>{t.label}</span>
             </button>
@@ -95,21 +99,35 @@ export const Navbar: React.FC<NavbarProps> = ({
         })}
       </nav>
 
-      {/* Right: Security Seal & Agentic Run Button */}
-      <div className="flex items-center gap-3">
-        {/* Strix Security Seal */}
-        <div className="hidden sm:flex items-center gap-1.5 bg-palantir-passLight px-2 py-1 rounded-[2px] border border-palantir-pass/40">
-          <ShieldCheck className="w-3.5 h-3.5 text-palantir-pass" />
-          <span className="text-[10px] font-mono font-bold text-palantir-pass tracking-wide">
-            MISRA-C:2012 PASSED
-          </span>
-        </div>
+      {/* Right: Search (Cmd+K), Screenpipe Audit & Agent Loop */}
+      <div className="flex items-center gap-2.5">
+        {/* Command Palette Button */}
+        <button
+          onClick={onOpenCommandPalette}
+          className="hidden md:flex items-center gap-2 bg-palantir-card hover:bg-palantir-border/60 text-palantir-textSecondary hover:text-palantir-textPrimary px-2.5 py-1 border border-palantir-border rounded-[3px] text-xs font-mono transition"
+        >
+          <Search className="w-3.5 h-3.5 text-palantir-cobalt" />
+          <span className="text-[11px]">Command</span>
+          <kbd className="text-[9px] bg-palantir-canvas px-1.5 py-0.5 rounded-[2px] border border-palantir-border text-palantir-textMuted">
+            ⌘K
+          </kbd>
+        </button>
+
+        {/* Screenpipe Continuous Audit Trigger */}
+        <button
+          onClick={onOpenAuditDrawer}
+          className="hidden sm:flex items-center gap-1.5 bg-palantir-passLight hover:bg-palantir-pass/30 px-2 py-1 rounded-[2px] border border-palantir-pass/40 text-palantir-pass transition text-[10px] font-mono font-bold"
+          title="Open Screenpipe Audit Feed"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>AUDIT FEED</span>
+        </button>
 
         {/* Karpathy/DeepSeek Agent Loop Button */}
         <button
           onClick={onTriggerAgentLoop}
           disabled={isAgentRunning}
-          className={`px-3.5 py-1.5 text-xs font-mono font-semibold rounded-[3px] flex items-center gap-1.5 transition border ${
+          className={`px-3 py-1.5 text-xs font-mono font-semibold rounded-[3px] flex items-center gap-1.5 transition border ${
             isAgentRunning
               ? 'bg-palantir-warnLight text-palantir-warn border-palantir-warn/50 animate-pulse'
               : 'bg-palantir-action hover:bg-palantir-actionHover text-palantir-textPrimary border-palantir-cobalt/50 shadow-sm'
@@ -121,7 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </>
           ) : (
             <>
-              <Play className="w-3.5 h-3.5 fill-current" /> RUN AGENTIC LOOP
+              <Play className="w-3.5 h-3.5 fill-current" /> RUN AGENT LOOP
             </>
           )}
         </button>
