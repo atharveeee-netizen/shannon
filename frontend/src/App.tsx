@@ -11,8 +11,9 @@ import {
   compileModel,
 } from './services/api';
 import { AppHeader } from './components/AppHeader';
-import { ModelSelector } from './components/ModelSelector';
-import { TransformationView } from './components/TransformationView';
+import { CompilerControls } from './components/CompilerControls';
+import { CompileResult } from './components/CompileResult';
+import { OptimizationTable } from './components/OptimizationTable';
 import { TechnicalInspector } from './components/TechnicalInspector';
 import { CommandPalette } from './components/CommandPalette';
 
@@ -20,7 +21,7 @@ export function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('shannon_theme');
     if (saved) return saved === 'dark';
-    return true; // Default to dark mode for developer tooling
+    return true; // Default to dark theme for developer software
   });
 
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
@@ -106,54 +107,44 @@ export function App() {
       />
 
       <AppHeader
-        hardwareList={hardwareList}
-        selectedHwId={selectedHwId}
-        onSelectHardware={setSelectedHwId}
         onOpenCommandPalette={() => setIsCmdOpen(true)}
         isDarkMode={isDarkMode}
         onToggleTheme={handleToggleTheme}
       />
 
-      <main className="flex-1 p-4 sm:p-6 max-w-5xl w-full mx-auto space-y-6">
-        {/* Step 1: Model Selection */}
-        <section>
-          <ModelSelector
-            models={models}
-            selectedModelId={selectedModelId}
-            onSelectModel={handleSelectModel}
-            customFilename={customFilename}
-            onUploadCustom={handleUploadCustom}
-          />
-        </section>
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <CompilerControls
+          models={models}
+          selectedModelId={selectedModelId}
+          onSelectModel={handleSelectModel}
+          customFilename={customFilename}
+          onUploadCustom={handleUploadCustom}
+          hardwareList={hardwareList}
+          selectedHwId={selectedHwId}
+          onSelectHardware={setSelectedHwId}
+          isCompiling={isCompiling}
+          onCompile={() => runCompilation(selectedModelId, selectedHwId)}
+        />
 
-        {/* Step 2: The Transformation (Before vs After) */}
         {compilationResult && (
-          <section>
-            <TransformationView
+          <>
+            <CompileResult
               result={compilationResult}
               targetHw={currentHw}
-              isCompiling={isCompiling}
-              onCompile={() => runCompilation(selectedModelId, selectedHwId)}
-              onDownloadHeader={handleDownloadHeader}
             />
-          </section>
-        )}
 
-        {/* Step 3: Technical Inspector (Progressive Disclosure) */}
-        {compilationResult && (
-          <section>
+            <OptimizationTable
+              result={compilationResult}
+            />
+
             <TechnicalInspector
               result={compilationResult}
               targetHw={currentHw}
+              onDownloadHeader={handleDownloadHeader}
             />
-          </section>
+          </>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border py-4 px-6 text-center text-xs font-mono text-text-secondary">
-        <span>Shannon TinyML Compiler • Zero Runtime Dynamic Allocations (MISRA-C:2012 Rule 21.3)</span>
-      </footer>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Cpu, Database, Download, Sun, Moon, Play, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { HardwareProfile, PresetModel } from '../types';
 
 interface CommandPaletteProps {
@@ -48,12 +48,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   const actions = [
     {
-      category: 'ACTIONS',
+      category: 'Actions',
       items: [
         {
           id: 'act_compile',
-          label: 'Recompile and optimize current model',
-          icon: Play,
+          label: 'Compile model',
           action: () => {
             onTriggerCompile();
             onClose();
@@ -61,8 +60,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         },
         {
           id: 'act_download',
-          label: 'Download standalone C/C++ firmware header (shannon_model.h)',
-          icon: Download,
+          label: 'Download shannon_model.h',
           action: () => {
             onDownloadHeader();
             onClose();
@@ -70,8 +68,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         },
         {
           id: 'act_theme',
-          label: isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
-          icon: isDarkMode ? Sun : Moon,
+          label: isDarkMode ? 'Toggle theme (Light)' : 'Toggle theme (Dark)',
           action: () => {
             onToggleTheme();
             onClose();
@@ -80,11 +77,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       ],
     },
     {
-      category: 'SELECT TARGET HARDWARE',
+      category: 'Target Hardware',
       items: hardwareList.map((hw) => ({
         id: `hw_${hw.id}`,
-        label: `Switch target to ${hw.name} (${hw.sram_kb}KB SRAM / ${hw.flash_mb}MB Flash)`,
-        icon: Cpu,
+        label: `Target: ${hw.name} (${hw.sram_kb} KB SRAM, ${hw.flash_mb} MB Flash)`,
         action: () => {
           onSelectHardware(hw.id);
           onClose();
@@ -92,11 +88,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       })),
     },
     {
-      category: 'SELECT PRESET MODEL',
+      category: 'Preset Models',
       items: models.map((m) => ({
         id: `mod_${m.id}`,
-        label: `Load ${m.name} (${m.domain})`,
-        icon: Database,
+        label: `Model: ${m.name} (${m.input_shape})`,
         action: () => {
           onSelectModel(m.id);
           onClose();
@@ -116,11 +111,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl bg-surface border border-border rounded-[3px] shadow-2xl overflow-hidden flex flex-col font-mono"
+        className="w-full max-w-lg bg-surface border border-border rounded-[3px] shadow-lg overflow-hidden flex flex-col font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center px-4 py-3 border-b border-border bg-surface-raised">
@@ -128,57 +123,43 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           <input
             type="text"
             autoFocus
-            placeholder="Type a command, model, or hardware..."
+            placeholder="Type a command or search..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-xs text-text-primary focus:outline-none placeholder-text-muted"
           />
-          <div className="flex items-center gap-2">
-            <span className="text-[9px] bg-canvas border border-border text-text-secondary px-1.5 py-0.5 rounded-[2px]">
-              ESC
-            </span>
-            <button
-              onClick={onClose}
-              className="text-text-secondary hover:text-text-primary"
-              aria-label="Close Command Palette"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            onClick={onClose}
+            className="text-text-secondary hover:text-text-primary p-1"
+            aria-label="Close"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        <div className="max-h-80 overflow-y-auto p-2 space-y-3">
+        <div className="max-h-72 overflow-y-auto p-2 space-y-3 text-xs">
           {filtered.map((grp, idx) => (
             <div key={idx}>
-              <span className="text-[9px] text-text-muted font-bold uppercase tracking-wider px-2 block mb-1">
+              <span className="text-[11px] text-text-muted font-medium px-2 block mb-1">
                 {grp.category}
               </span>
               <div className="space-y-0.5">
-                {grp.items.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={item.action}
-                      className="w-full text-left px-2.5 py-2 rounded-[2px] text-xs text-text-primary hover:bg-surface-hover flex items-center justify-between transition group"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Icon className="w-3.5 h-3.5 text-text-secondary group-hover:text-text-primary" />
-                        <span>{item.label}</span>
-                      </div>
-                      <span className="text-[10px] text-text-secondary opacity-0 group-hover:opacity-100">
-                        Select
-                      </span>
-                    </button>
-                  );
-                })}
+                {grp.items.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={item.action}
+                    className="w-full text-left px-2.5 py-1.5 rounded-[2px] text-text-primary hover:bg-surface-hover flex items-center justify-between transition"
+                  >
+                    <span>{item.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
           ))}
 
           {filtered.length === 0 && (
-            <div className="p-6 text-center text-xs text-text-secondary">
-              No matching commands found for "{query}".
+            <div className="p-6 text-center text-text-muted">
+              No matching commands.
             </div>
           )}
         </div>
