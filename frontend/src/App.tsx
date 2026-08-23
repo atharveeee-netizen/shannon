@@ -164,10 +164,10 @@ const INITIAL_LAYERS: LayerBentoRow[] = [
 ];
 
 const INITIAL_BLOCKS: ZeroMallocBlock[] = [
-  { layer_id: 'conv1_out', buffer_name: 'Activation Tensor A', start_offset_bytes: 0, end_offset_bytes: 752, size_bytes: 752, hex_address: '0x20000000', lifetime_window: [0, 2], color: '#0284C7' },
-  { layer_id: 'pool1_out', buffer_name: 'Activation Tensor B', start_offset_bytes: 752, end_offset_bytes: 1120, size_bytes: 368, hex_address: '0x200002F0', lifetime_window: [1, 3], color: '#10B981' },
-  { layer_id: 'dense1_out', buffer_name: 'Activation Tensor A (Reused)', start_offset_bytes: 0, end_offset_bytes: 64, size_bytes: 64, hex_address: '0x20000000', lifetime_window: [2, 4], color: '#38BDF8' },
-  { layer_id: 'logits_out', buffer_name: 'Output Tensor', start_offset_bytes: 64, end_offset_bytes: 68, size_bytes: 4, hex_address: '0x20000040', lifetime_window: [3, 4], color: '#F59E0B' },
+  { layer_id: 'conv1_out', buffer_name: 'Activation Tensor A', start_offset_bytes: 0, end_offset_bytes: 752, size_bytes: 752, hex_address: '0x20000000', lifetime_window: [0, 2], color: '#0E3B43' },
+  { layer_id: 'pool1_out', buffer_name: 'Activation Tensor B', start_offset_bytes: 752, end_offset_bytes: 1120, size_bytes: 368, hex_address: '0x200002F0', lifetime_window: [1, 3], color: '#4B1886' },
+  { layer_id: 'dense1_out', buffer_name: 'Activation Tensor A (Reused)', start_offset_bytes: 0, end_offset_bytes: 64, size_bytes: 64, hex_address: '0x20000000', lifetime_window: [2, 4], color: '#5CF2E7' },
+  { layer_id: 'logits_out', buffer_name: 'Output Tensor', start_offset_bytes: 64, end_offset_bytes: 68, size_bytes: 4, hex_address: '0x20000040', lifetime_window: [3, 4], color: '#FF7AC6' },
 ];
 
 export function App() {
@@ -295,7 +295,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
   }, [isSimulating, simState.coreTempC]);
 
   return (
-    <div className="h-screen w-screen bg-[#070A0F] text-[#F8FAFC] font-sans flex flex-col overflow-hidden select-none selection:bg-[#0284C7]/30 selection:text-[#38BDF8]">
+    <div className="h-screen w-screen bg-[#05050A] text-[#E6FFFF] font-sans flex flex-col overflow-hidden select-none selection:bg-[#5CF2E7]/30 selection:text-[#5CF2E7]">
       {/* Command Palette Overlay (⌘K) */}
       <CommandPalette
         isOpen={isCmdOpen}
@@ -314,7 +314,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
         onClose={() => setIsAuditOpen(false)}
       />
 
-      {/* Top IDE Header (44px) with React Bits CardNav */}
+      {/* Top IDE Header (44px) with React Bits CardNav & Cyber-Sakura Styling */}
       <IdeHeader
         currentHw={currentHw}
         currentModel={currentModel}
@@ -344,17 +344,17 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
       {isCopilotOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end" onClick={() => setIsCopilotOpen(false)}>
           <div
-            className="w-full max-w-lg bg-[#0B0F17] border-l border-[#1E293B] h-full shadow-2xl flex flex-col p-4"
+            className="w-full max-w-lg bg-[#080914] border-l border-[#1A2138] h-full shadow-2xl flex flex-col p-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-[#1E293B] pb-3 mb-3">
+            <div className="flex items-center justify-between border-b border-[#1A2138] pb-3 mb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#38BDF8]" />
-                <h3 className="text-xs font-bold text-[#F8FAFC] font-mono uppercase">
+                <Sparkles className="w-4 h-4 text-[#5CF2E7]" />
+                <h3 className="text-xs font-bold text-[#E6FFFF] font-mono uppercase">
                   SHANNON AI COPILOT
                 </h3>
               </div>
-              <button onClick={() => setIsCopilotOpen(false)} className="text-[#8B949E] hover:text-[#F8FAFC]">
+              <button onClick={() => setIsCopilotOpen(false)} className="text-[#E6FFFF]/60 hover:text-[#E6FFFF]">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -368,14 +368,14 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
       {/* CLEAN 3-PANE SPLIT: Tensor Layers (Left) | C++ Code Viewer (Center) | Live SRAM Timeline & Bench (Right) */}
       <div className="flex-1 flex overflow-hidden p-2 gap-2">
         {/* PANE 1: TENSOR LAYERS & ARCHITECTURE BENTO (320px) WITH REACT BITS SPOTLIGHT CARDS */}
-        <aside className="w-80 bg-[#0B0F17] border border-[#1E293B] rounded-[3px] flex flex-col shrink-0 select-none overflow-hidden shadow-sm">
+        <aside className="w-80 bg-[#080914] border border-[#1A2138] rounded-[3px] flex flex-col shrink-0 select-none overflow-hidden shadow-sm">
           {/* Header */}
-          <div className="p-2.5 border-b border-[#1E293B] bg-[#070A0F] flex items-center justify-between font-mono text-xs">
+          <div className="p-2.5 border-b border-[#1A2138] bg-[#05050A] flex items-center justify-between font-mono text-xs">
             <div className="flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-[#38BDF8]" />
-              <span className="font-bold text-[#F8FAFC]">TENSOR LAYERS</span>
+              <Layers className="w-3.5 h-3.5 text-[#5CF2E7]" />
+              <span className="font-bold text-[#E6FFFF]">TENSOR LAYERS</span>
             </div>
-            <span className="text-[10px] text-[#10B981] font-bold font-tabular bg-[#10B981]/15 px-1.5 py-0.2 rounded border border-[#10B981]/30">
+            <span className="text-[10px] text-[#5CF2E7] font-bold font-tabular bg-[#0E3B43]/40 px-1.5 py-0.2 rounded border border-[#5CF2E7]/40 shadow-[0_0_8px_rgba(92,242,231,0.2)]">
               {layers.length} LAYERS
             </span>
           </div>
@@ -385,31 +385,31 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
             {layers.map((l) => (
               <SpotlightCard
                 key={l.layer_id}
-                className="p-2 border-[#1E293B] hover:border-[#38BDF8] rounded-[2px] transition-all flex flex-col gap-1 group cursor-pointer"
-                spotlightColor="rgba(56, 189, 248, 0.12)"
+                className="p-2 border-[#1A2138] hover:border-[#5CF2E7] rounded-[2px] transition-all flex flex-col gap-1 group cursor-pointer"
+                spotlightColor="rgba(92, 242, 231, 0.14)"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-[#F8FAFC] group-hover:text-[#38BDF8] transition-colors">{l.layer_id}</span>
-                  <span className="text-[9px] text-[#38BDF8] bg-[#0284C7]/15 px-1 rounded font-bold">
+                  <span className="font-bold text-[#E6FFFF] group-hover:text-[#5CF2E7] transition-colors">{l.layer_id}</span>
+                  <span className="text-[9px] text-[#5CF2E7] bg-[#0E3B43]/40 px-1 rounded font-bold border border-[#5CF2E7]/30">
                     {l.op_type}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-1 text-[10px] text-[#64748B] font-tabular">
-                  <div>In: <strong className="text-[#94A3B8]">{l.in_shape}</strong></div>
-                  <div>Out: <strong className="text-[#94A3B8]">{l.out_shape}</strong></div>
-                  <div>MACs: <strong className="text-[#38BDF8]">{l.macs.toLocaleString()}</strong></div>
-                  <div>Offset: <strong className="text-[#10B981]">{l.sram_offset_hex}</strong></div>
+                  <div>In: <strong className="text-[#E6FFFF]/80">{l.in_shape}</strong></div>
+                  <div>Out: <strong className="text-[#E6FFFF]/80">{l.out_shape}</strong></div>
+                  <div>MACs: <strong className="text-[#5CF2E7]">{l.macs.toLocaleString()}</strong></div>
+                  <div>Offset: <strong className="text-[#FF7AC6]">{l.sram_offset_hex}</strong></div>
                 </div>
               </SpotlightCard>
             ))}
 
-            {/* Precision Controls Card */}
+            {/* Precision Controls Card with Sakura Glow */}
             <SpotlightCard
-              className="p-2 border-[#1E293B] space-y-2 mt-2"
-              spotlightColor="rgba(245, 158, 11, 0.1)"
+              className="p-2 border-[#1A2138] space-y-2 mt-2"
+              spotlightColor="rgba(255, 122, 198, 0.12)"
             >
-              <div className="text-[10px] text-[#64748B] uppercase font-bold tracking-wider">
+              <div className="text-[10px] text-[#FF7AC6] uppercase font-bold tracking-wider">
                 PRECISION TUNING
               </div>
 
@@ -419,7 +419,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
                   className={`py-1 rounded-[2px] text-xs font-bold transition-all btn-tactile ${
                     quantBits === 8
                       ? 'btn-tactile-primary'
-                      : 'bg-[#070A0F] text-[#94A3B8] border border-[#1E293B]'
+                      : 'bg-[#05050A] text-[#64748B] border border-[#1A2138]'
                   }`}
                 >
                   INT8 Symmetric
@@ -428,30 +428,30 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
                   onClick={() => setQuantBits(4)}
                   className={`py-1 rounded-[2px] text-xs font-bold transition-all btn-tactile ${
                     quantBits === 4
-                      ? 'btn-tactile-primary'
-                      : 'bg-[#070A0F] text-[#94A3B8] border border-[#1E293B]'
+                      ? 'btn-tactile-pink'
+                      : 'bg-[#05050A] text-[#64748B] border border-[#1A2138]'
                   }`}
                 >
                   INT4 Packed
                 </button>
               </div>
 
-              <label className="flex items-center justify-between text-[11px] text-[#94A3B8] bg-[#070A0F] p-1.5 rounded border border-[#1E293B] cursor-pointer">
+              <label className="flex items-center justify-between text-[11px] text-[#E6FFFF]/70 bg-[#05050A] p-1.5 rounded border border-[#1A2138] cursor-pointer">
                 <span>Mixed Precision (HAWQ)</span>
                 <input
                   type="checkbox"
                   checked={mixedPrecision}
                   onChange={(e) => setMixedPrecision(e.target.checked)}
-                  className="accent-[#0284C7] rounded"
+                  className="accent-[#5CF2E7] rounded"
                 />
               </label>
             </SpotlightCard>
           </div>
 
           {/* Footer Footprint Summary */}
-          <div className="p-2 bg-[#070A0F] border-t border-[#1E293B] flex items-center justify-between font-mono text-[10px] text-[#64748B] font-tabular">
-            <span>Flash: <strong className="text-[#38BDF8]">{currentModel.int8_flash_kb} KB</strong></span>
-            <span>Peak SRAM: <strong className="text-[#10B981]">{currentModel.peak_sram_kb} KB</strong></span>
+          <div className="p-2 bg-[#05050A] border-t border-[#1A2138] flex items-center justify-between font-mono text-[10px] text-[#64748B] font-tabular">
+            <span>Flash: <strong className="text-[#5CF2E7]">{currentModel.int8_flash_kb} KB</strong></span>
+            <span>Peak SRAM: <strong className="text-[#FF7AC6]">{currentModel.peak_sram_kb} KB</strong></span>
           </div>
         </aside>
 
