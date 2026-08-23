@@ -6,23 +6,18 @@ import {
   ZeroMallocBlock,
   SimulatedSiliconState,
 } from './types';
+import { IdeHeader } from './components/IdeHeader';
 import { SramArenaTimeline } from './components/SramArenaTimeline';
 import { CodeViewerPanel } from './components/CodeViewerPanel';
 import { SensorWorkbench } from './components/SensorWorkbench';
 import { CommandPalette } from './components/CommandPalette';
 import { AgentChat } from './components/AgentChat';
 import { ScreenpipeAuditDrawer } from './components/ScreenpipeAuditDrawer';
+import { SpotlightCard } from './components/SpotlightCard';
 import { optimizeModel } from './services/api';
 import {
-  Play,
-  Square,
-  Download,
-  Search,
-  Github,
-  Sparkles,
   Layers,
-  Cpu,
-  Database,
+  Sparkles,
   X,
 } from 'lucide-react';
 
@@ -319,123 +314,31 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
         onClose={() => setIsAuditOpen(false)}
       />
 
-      {/* Top IDE Header (44px) - Clean, Uncluttered, High-Density */}
-      <header className="h-11 bg-[#070A0F] border-b border-[#1E293B] px-3 flex items-center justify-between select-none shrink-0 z-30">
-        {/* Left: Brand & Model / Hardware Selectors */}
-        <div className="flex items-center gap-2.5 text-xs font-mono">
-          <div className="flex items-center gap-1.5">
-            <div className="h-6 w-6 rounded-[3px] bg-[#0284C7]/20 border border-[#38BDF8]/50 flex items-center justify-center text-[#38BDF8] font-bold text-xs shadow-[0_0_10px_rgba(56,189,248,0.35)]">
-              ⚡
-            </div>
-            <span className="font-bold text-xs text-[#F8FAFC]">SHANNON</span>
-            <span className="text-[10px] text-[#38BDF8] bg-[#0284C7]/15 px-1.5 py-0.2 rounded border border-[#38BDF8]/30 font-bold">
-              IDE
-            </span>
-          </div>
-
-          <div className="h-3.5 w-px bg-[#1E293B]" />
-
-          {/* Model Selector Dropdown */}
-          <div className="flex items-center gap-1 bg-[#0B0F17] px-2 py-0.5 rounded border border-[#1E293B] hover:border-[#38BDF8]/40 transition-colors">
-            <Database className="w-3.5 h-3.5 text-[#38BDF8]" />
-            <select
-              value={selectedModelId}
-              onChange={(e) => setSelectedModelId(e.target.value)}
-              className="bg-transparent text-xs text-[#F8FAFC] font-semibold focus:outline-none cursor-pointer"
-            >
-              {MODEL_ZOO.map((m) => (
-                <option key={m.id} value={m.id} className="bg-[#0B0F17] text-[#F8FAFC]">
-                  {m.name} ({m.domain})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Target MCU Selector Dropdown */}
-          <div className="flex items-center gap-1 bg-[#0B0F17] px-2 py-0.5 rounded border border-[#1E293B] hover:border-[#10B981]/40 transition-colors">
-            <Cpu className="w-3.5 h-3.5 text-[#10B981]" />
-            <select
-              value={selectedHwId}
-              onChange={(e) => setSelectedHwId(e.target.value)}
-              className="bg-transparent text-xs text-[#F8FAFC] font-semibold focus:outline-none cursor-pointer"
-            >
-              {HARDWARE_PROFILES.map((h) => (
-                <option key={h.id} value={h.id} className="bg-[#0B0F17] text-[#F8FAFC]">
-                  {h.name} ({h.clock_mhz}MHz • {h.sram_kb}KB SRAM)
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Right: Actions, Copilot, Compile Button */}
-        <div className="flex items-center gap-1.5 text-xs font-mono">
-          <button
-            onClick={() => setIsCmdOpen(true)}
-            className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#94A3B8] hover:text-[#F8FAFC] px-2 py-1 border border-[#1E293B] rounded text-xs transition-all btn-tactile"
-          >
-            <Search className="w-3 h-3 text-[#38BDF8]" />
-            <kbd className="text-[9px] bg-[#070A0F] px-1 py-0.2 rounded border border-[#1E293B] text-[#64748B]">
-              ⌘K
-            </kbd>
-          </button>
-
-          <button
-            onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-            className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#38BDF8] hover:text-[#F8FAFC] px-2.5 py-1 border border-[#1E293B] rounded text-xs transition-all btn-tactile"
-          >
-            <Sparkles className="w-3 h-3 text-[#38BDF8]" />
-            <span>Copilot</span>
-          </button>
-
-          <button
-            onClick={() => {
-              const blob = new Blob([generatedCppHeader], { type: 'text/plain;charset=utf-8' });
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `shannon_${currentModel.id}.h`;
-              a.click();
-              URL.revokeObjectURL(url);
-            }}
-            className="flex items-center gap-1 bg-[#0E1420] hover:bg-[#141C2E] text-[#E2E8F0] px-2.5 py-1 border border-[#1E293B] rounded text-xs transition-all btn-tactile"
-          >
-            <Download className="w-3 h-3 text-[#94A3B8]" />
-            <span>Export (.h)</span>
-          </button>
-
-          <a
-            href="https://github.com/atharveeee-netizen/shannon"
-            target="_blank"
-            rel="noreferrer"
-            className="p-1.5 text-[#94A3B8] hover:text-[#F8FAFC] bg-[#0E1420] hover:bg-[#141C2E] border border-[#1E293B] rounded transition-all btn-tactile"
-            title="GitHub Repository"
-          >
-            <Github className="w-3.5 h-3.5" />
-          </a>
-
-          {/* Primary Compile Action */}
-          <button
-            onClick={handleTriggerCompile}
-            disabled={isCompiling}
-            className={`px-3 py-1 text-xs font-mono font-bold rounded flex items-center gap-1.5 transition-all btn-tactile-primary ${
-              isCompiling
-                ? 'bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/50 animate-pulse'
-                : ''
-            }`}
-          >
-            {isCompiling ? (
-              <>
-                <Square className="w-3 h-3 fill-current" /> OPTIMIZING...
-              </>
-            ) : (
-              <>
-                <Play className="w-3 h-3 fill-current" /> COMPILE (⌘B)
-              </>
-            )}
-          </button>
-        </div>
-      </header>
+      {/* Top IDE Header (44px) with React Bits CardNav */}
+      <IdeHeader
+        currentHw={currentHw}
+        currentModel={currentModel}
+        isCompiling={isCompiling}
+        onTriggerCompile={handleTriggerCompile}
+        onOpenCommandPalette={() => setIsCmdOpen(true)}
+        onOpenCopilot={() => setIsCopilotOpen(true)}
+        onExportCode={() => {
+          const blob = new Blob([generatedCppHeader], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `shannon_${currentModel.id}.h`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+        zeroMallocVerified={true}
+        models={MODEL_ZOO}
+        hardwareList={HARDWARE_PROFILES}
+        onSelectModel={setSelectedModelId}
+        onSelectHardware={setSelectedHwId}
+        quantBits={quantBits}
+        onChangeQuantBits={setQuantBits}
+      />
 
       {/* Slide-over Shannon AI Copilot Drawer */}
       {isCopilotOpen && (
@@ -464,7 +367,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
 
       {/* CLEAN 3-PANE SPLIT: Tensor Layers (Left) | C++ Code Viewer (Center) | Live SRAM Timeline & Bench (Right) */}
       <div className="flex-1 flex overflow-hidden p-2 gap-2">
-        {/* PANE 1: TENSOR LAYERS & ARCHITECTURE BENTO (320px) */}
+        {/* PANE 1: TENSOR LAYERS & ARCHITECTURE BENTO (320px) WITH REACT BITS SPOTLIGHT CARDS */}
         <aside className="w-80 bg-[#0B0F17] border border-[#1E293B] rounded-[3px] flex flex-col shrink-0 select-none overflow-hidden shadow-sm">
           {/* Header */}
           <div className="p-2.5 border-b border-[#1E293B] bg-[#070A0F] flex items-center justify-between font-mono text-xs">
@@ -477,12 +380,13 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
             </span>
           </div>
 
-          {/* Layer List Bento Table */}
+          {/* Layer List Bento with React Bits SpotlightCard Glow */}
           <div className="flex-1 overflow-y-auto p-2 space-y-1.5 font-mono text-xs">
             {layers.map((l) => (
-              <div
+              <SpotlightCard
                 key={l.layer_id}
-                className="p-2 bg-[#070A0F] border border-[#1E293B] hover:border-[#38BDF8] rounded-[2px] transition-all duration-150 flex flex-col gap-1 group"
+                className="p-2 border-[#1E293B] hover:border-[#38BDF8] rounded-[2px] transition-all flex flex-col gap-1 group cursor-pointer"
+                spotlightColor="rgba(56, 189, 248, 0.12)"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-[#F8FAFC] group-hover:text-[#38BDF8] transition-colors">{l.layer_id}</span>
@@ -497,11 +401,14 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
                   <div>MACs: <strong className="text-[#38BDF8]">{l.macs.toLocaleString()}</strong></div>
                   <div>Offset: <strong className="text-[#10B981]">{l.sram_offset_hex}</strong></div>
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
 
             {/* Precision Controls Card */}
-            <div className="pt-2 border-t border-[#1E293B] space-y-2">
+            <SpotlightCard
+              className="p-2 border-[#1E293B] space-y-2 mt-2"
+              spotlightColor="rgba(245, 158, 11, 0.1)"
+            >
               <div className="text-[10px] text-[#64748B] uppercase font-bold tracking-wider">
                 PRECISION TUNING
               </div>
@@ -538,7 +445,7 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
                   className="accent-[#0284C7] rounded"
                 />
               </label>
-            </div>
+            </SpotlightCard>
           </div>
 
           {/* Footer Footprint Summary */}

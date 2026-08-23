@@ -276,3 +276,113 @@
   border-color: #38BDF8;
   box-shadow: 0 0 18px -2px rgba(56, 189, 248, 0.35);
 }
+
+/* ==========================================================================
+   REACT BITS ADVANCED COMPONENT TOKENS (reactbits.dev / pro / agent-kit)
+   ========================================================================== */
+
+/* React Bits: SpotlightCard Dynamic Radial Illumination */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(56, 189, 248, 0.14),
+    transparent 80%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: 1;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* React Bits: ShinyText & Shimmer Gradients */
+@keyframes shinyText {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.shiny-text {
+  background: linear-gradient(
+    90deg,
+    #F8FAFC 0%,
+    #38BDF8 30%,
+    #10B981 70%,
+    #F8FAFC 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shinyText 5s linear infinite;
+}
+
+/* React Bits: CardNav Component Deck */
+.card-nav-container {
+  position: relative;
+}
+
+.card-nav-deck {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  gap: 10px;
+  padding: 12px;
+  background: rgba(11, 15, 23, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 5px;
+  box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.85), 0 0 24px -2px rgba(56, 189, 248, 0.25);
+  animation: cardNavDrop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardNavDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-nav-item {
+  padding: 10px;
+  background: #070A0F;
+  border: 1px solid #1E293B;
+  border-radius: 4px;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.card-nav-item:hover {
+  background: #111622;
+  border-color: #38BDF8;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 16px -2px rgba(56, 189, 248, 0.35);
+}

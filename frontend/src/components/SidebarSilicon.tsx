@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HardwareProfile, ModelZooItem } from '../types';
 import { Database, Cpu, Sliders, UploadCloud, CheckCircle2 } from 'lucide-react';
+import { SpotlightCard } from './SpotlightCard';
 
 interface SidebarSiliconProps {
   models: ModelZooItem[];
@@ -47,7 +48,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
       <div className="flex items-center border-b border-[#1E293B] bg-[#070A0F] text-xs font-mono p-1 gap-1">
         <button
           onClick={() => setActiveTab('models')}
-          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group relative ${
+          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group ${
             activeTab === 'models'
               ? 'tab-pill-active border border-[#38BDF8]/40'
               : 'text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#0E1420]'
@@ -59,7 +60,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
 
         <button
           onClick={() => setActiveTab('chips')}
-          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group relative ${
+          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group ${
             activeTab === 'chips'
               ? 'tab-pill-active border border-[#10B981]/40'
               : 'text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#0E1420]'
@@ -71,7 +72,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
 
         <button
           onClick={() => setActiveTab('flags')}
-          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group relative ${
+          className={`flex-1 py-2 px-2 rounded-[3px] flex items-center justify-center gap-1.5 transition-all btn-tactile group ${
             activeTab === 'flags'
               ? 'tab-pill-active border border-[#F59E0B]/40'
               : 'text-[#64748B] hover:text-[#F8FAFC] hover:bg-[#0E1420]'
@@ -82,7 +83,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
         </button>
       </div>
 
-      {/* Tab Content Container with React Bits Terminal Dark Cards */}
+      {/* Tab Content Container */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3 font-mono text-xs">
         {/* TAB 1: MODEL ZOO & INGESTION */}
         {activeTab === 'models' && (
@@ -96,16 +97,16 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
               {models.map((m) => {
                 const isSelected = selectedModelId === m.id && !customFile;
                 return (
-                  <div
+                  <SpotlightCard
                     key={m.id}
                     onClick={() => {
                       setCustomFile(null);
                       onSelectModel(m.id);
                     }}
-                    className={`p-3 rounded-[3px] border cursor-pointer transition-all duration-200 flex flex-col gap-1.5 group ${
+                    className={`p-3 cursor-pointer transition-all duration-200 flex flex-col gap-1.5 group ${
                       isSelected
-                        ? 'bg-[#0E1420] border-[#38BDF8] shadow-[0_0_20px_-3px_rgba(56,189,248,0.3)]'
-                        : 'bg-[#0B0F17] border-[#1E293B] hover:border-[#38BDF8] hover:shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)] hover:bg-[#0E1420]'
+                        ? 'border-[#38BDF8] bg-[#0E1420] shadow-[0_0_20px_-3px_rgba(56,189,248,0.3)]'
+                        : 'hover:border-[#38BDF8] hover:shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -121,7 +122,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
                       <span>Shape: <strong className="text-[#94A3B8]">{m.input_shape}</strong></span>
                       <span className="text-[#38BDF8] font-bold">{m.int8_flash_kb} KB ({m.flash_compression_ratio})</span>
                     </div>
-                  </div>
+                  </SpotlightCard>
                 );
               })}
             </div>
@@ -163,17 +164,18 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
               {hardwareList.map((hw) => {
                 const isSelected = selectedHwId === hw.id;
                 return (
-                  <div
+                  <SpotlightCard
                     key={hw.id}
                     onClick={() => onSelectHardware(hw.id)}
-                    className={`p-3 rounded-[3px] border cursor-pointer transition-all duration-200 flex flex-col gap-1.5 group ${
+                    className={`p-3 cursor-pointer transition-all duration-200 flex flex-col gap-1.5 group ${
                       isSelected
-                        ? 'bg-[#0E1420] border-[#38BDF8] shadow-[0_0_20px_-3px_rgba(56,189,248,0.3)]'
-                        : 'bg-[#0B0F17] border-[#1E293B] hover:border-[#38BDF8] hover:shadow-[0_0_20px_-3px_rgba(56,189,248,0.25)] hover:bg-[#0E1420]'
+                        ? 'border-[#10B981] bg-[#0E1420] shadow-[0_0_20px_-3px_rgba(16,185,129,0.3)]'
+                        : 'hover:border-[#10B981] hover:shadow-[0_0_20px_-3px_rgba(16,185,129,0.25)]'
                     }`}
+                    spotlightColor="rgba(16, 185, 129, 0.12)"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#F8FAFC] group-hover:text-[#38BDF8] transition-colors">{hw.name}</span>
+                      <span className="font-bold text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">{hw.name}</span>
                       <span className="text-[9px] text-[#38BDF8] font-tabular font-bold bg-[#0284C7]/15 px-1.5 py-0.2 rounded border border-[#38BDF8]/30">
                         {hw.clock_mhz} MHz
                       </span>
@@ -185,7 +187,7 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
                       <span>SRAM: <strong className="text-[#10B981]">{hw.sram_kb} KB</strong></span>
                       <span>Flash: <strong className="text-[#38BDF8]">{hw.flash_mb} MB</strong></span>
                     </div>
-                  </div>
+                  </SpotlightCard>
                 );
               })}
             </div>
