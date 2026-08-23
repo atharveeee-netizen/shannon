@@ -150,40 +150,40 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
   }, [activeTab]);
 
   return (
-    <div className="bg-[#0D1117] border-t border-[#21262D] flex flex-col shrink-0 select-none shadow-lg">
+    <div className="bg-[#0B0E14] border-t border-[#1E293B] flex flex-col shrink-0 select-none shadow-lg">
       {/* Workbench Tab Strip */}
-      <div className="h-9 px-4 flex items-center justify-between border-b border-[#21262D] bg-[#0A0D12] text-xs font-mono">
+      <div className="h-9 px-4 flex items-center justify-between border-b border-[#1E293B] bg-[#0B0E14] text-xs font-mono">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setActiveTab('mic')}
-            className={`px-3 py-1.5 rounded-t transition flex items-center gap-1.5 border-t-2 ${
+            className={`px-3 py-1.5 rounded-t-[3px] transition-all flex items-center gap-1.5 border-t-2 ${
               activeTab === 'mic'
-                ? 'bg-[#13171F] text-[#F0F6FC] font-bold border-[#0284C7]'
-                : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+                ? 'bg-[#111622] text-[#F8FAFC] font-bold border-[#3B82F6]'
+                : 'text-[#64748B] border-transparent hover:text-[#94A3B8]'
             }`}
           >
-            <Mic className="w-3.5 h-3.5 text-[#38BDF8]" />
+            <Mic className="w-3.5 h-3.5 text-[#3B82F6]" />
             <span>Mic MFCC</span>
           </button>
 
           <button
             onClick={() => setActiveTab('camera')}
-            className={`px-3 py-1.5 rounded-t transition flex items-center gap-1.5 border-t-2 ${
+            className={`px-3 py-1.5 rounded-t-[3px] transition-all flex items-center gap-1.5 border-t-2 ${
               activeTab === 'camera'
-                ? 'bg-[#13171F] text-[#F0F6FC] font-bold border-[#0284C7]'
-                : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+                ? 'bg-[#111622] text-[#F8FAFC] font-bold border-[#3B82F6]'
+                : 'text-[#64748B] border-transparent hover:text-[#94A3B8]'
             }`}
           >
-            <Camera className="w-3.5 h-3.5 text-[#00FFA3]" />
+            <Camera className="w-3.5 h-3.5 text-[#10B981]" />
             <span>Camera 48x48</span>
           </button>
 
           <button
             onClick={() => setActiveTab('imu')}
-            className={`px-3 py-1.5 rounded-t transition flex items-center gap-1.5 border-t-2 ${
+            className={`px-3 py-1.5 rounded-t-[3px] transition-all flex items-center gap-1.5 border-t-2 ${
               activeTab === 'imu'
-                ? 'bg-[#13171F] text-[#F0F6FC] font-bold border-[#0284C7]'
-                : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+                ? 'bg-[#111622] text-[#F8FAFC] font-bold border-[#3B82F6]'
+                : 'text-[#64748B] border-transparent hover:text-[#94A3B8]'
             }`}
           >
             <Activity className="w-3.5 h-3.5 text-[#F59E0B]" />
@@ -192,27 +192,27 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
 
           <button
             onClick={() => setActiveTab('uart')}
-            className={`px-3 py-1.5 rounded-t transition flex items-center gap-1.5 border-t-2 ${
+            className={`px-3 py-1.5 rounded-t-[3px] transition-all flex items-center gap-1.5 border-t-2 ${
               activeTab === 'uart'
-                ? 'bg-[#13171F] text-[#F0F6FC] font-bold border-[#0284C7]'
-                : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+                ? 'bg-[#111622] text-[#F8FAFC] font-bold border-[#3B82F6]'
+                : 'text-[#64748B] border-transparent hover:text-[#94A3B8]'
             }`}
           >
-            <Terminal className="w-3.5 h-3.5 text-[#38BDF8]" />
+            <Terminal className="w-3.5 h-3.5 text-[#3B82F6]" />
             <span>UART Console</span>
           </button>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-[11px]">
-            <span className="text-[#8B949E]">Temp: <strong className="text-[#F59E0B] font-tabular">{simState.coreTempC}°C</strong></span>
-            <span className="text-[#30363D]">|</span>
-            <span className="text-[#8B949E]">Power: <strong className="text-[#00FFA3] font-tabular">{simState.powerMw}mW</strong></span>
+          <div className="flex items-center gap-2 text-[11px] font-tabular">
+            <span className="text-[#64748B]">Temp: <strong className="text-[#F59E0B]">{simState.coreTempC}°C</strong></span>
+            <span className="text-[#1E293B]">|</span>
+            <span className="text-[#64748B]">Power: <strong className="text-[#10B981]">{simState.powerMw}mW</strong></span>
           </div>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1 text-[#8B949E] hover:text-[#F0F6FC] transition"
+            className="p-1 text-[#64748B] hover:text-[#F8FAFC] transition-all"
             title={isCollapsed ? 'Expand Workbench' : 'Collapse Workbench'}
           >
             {isCollapsed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -222,66 +222,66 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
 
       {/* Collapsible Workbench Body */}
       {!isCollapsed && (
-        <div className="h-44 p-3 bg-[#13171F] overflow-hidden font-mono text-xs">
+        <div className="h-44 p-3 bg-[#111622] overflow-hidden font-mono text-xs">
           {/* TAB 1: MIC STREAM */}
           {activeTab === 'mic' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 h-full items-center">
               <div className="md:col-span-3 flex flex-col justify-center space-y-2">
-                <span className="text-[10px] font-bold uppercase text-[#8B949E]">AUDIO SPECTROGRAM STREAM</span>
+                <span className="text-[10px] font-bold uppercase text-[#94A3B8]">AUDIO SPECTROGRAM STREAM</span>
                 <button
                   onClick={isLiveActive ? stopAllStreams : startMic}
-                  className={`px-3 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                     isLiveActive
-                      ? 'bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/40'
-                      : 'bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm'
+                      ? 'bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30'
+                      : 'btn-tactile-primary text-white'
                   }`}
                 >
                   <Mic className="w-3.5 h-3.5" />
-                  <span>{isLiveActive ? 'Stop Mic Stream' : 'Start Live Mic'}</span>
+                  <span>{isLiveActive ? 'Stop Stream' : 'Start Live Mic'}</span>
                 </button>
-                <span className="text-[9px] text-[#484F58] font-sans">
-                  {isLiveActive ? 'Live PCM audio input active' : 'Click to stream real microphone audio'}
+                <span className="text-[9px] text-[#64748B] font-sans">
+                  {isLiveActive ? '16kHz PCM audio stream active' : 'Click to stream microphone audio'}
                 </span>
               </div>
 
               {/* Frequency Bars */}
-              <div className="md:col-span-5 bg-[#0A0D12] p-2.5 rounded border border-[#21262D] h-32 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-[9px] text-[#8B949E]">
+              <div className="md:col-span-5 bg-[#0B0E14] p-2.5 rounded-[3px] border border-[#1E293B] h-32 flex flex-col justify-between">
+                <div className="flex items-center justify-between text-[9px] text-[#94A3B8]">
                   <span>16-BAND FFT SPECTROGRAM</span>
-                  <span className="text-[#00FFA3] font-bold">16kHz PCM (49x10 MFCC)</span>
+                  <span className="text-[#10B981] font-bold">16kHz PCM (49x10 MFCC)</span>
                 </div>
 
                 <div className="h-16 flex items-end justify-between gap-1 px-1">
                   {audioSpectrum.map((v, i) => (
                     <div
                       key={i}
-                      className="flex-1 bg-[#0284C7] rounded-t-[1px] transition-all duration-75"
-                      style={{ height: `${v}%`, backgroundColor: v > 60 ? '#00FFA3' : '#0284C7' }}
+                      className="flex-1 rounded-t-[1px] transition-all duration-75"
+                      style={{ height: `${v}%`, backgroundColor: v > 60 ? '#10B981' : '#2563EB' }}
                     />
                   ))}
                 </div>
 
-                <div className="text-[8px] text-[#484F58] flex justify-between">
+                <div className="text-[8px] text-[#64748B] flex justify-between font-tabular">
                   <span>0 Hz</span>
                   <span>4000 Hz</span>
                   <span>8000 Hz</span>
                 </div>
               </div>
 
-              {/* Inference Keyword Probabilities */}
-              <div className="md:col-span-4 bg-[#0A0D12] p-2.5 rounded border border-[#21262D] h-32 flex flex-col justify-between">
-                <span className="text-[9px] font-bold text-[#8B949E]">WAKE-WORD DETECTION CONFIDENCE</span>
-                <div className="grid grid-cols-2 gap-2">
+              {/* Keyword Probabilities */}
+              <div className="md:col-span-4 bg-[#0B0E14] p-2.5 rounded-[3px] border border-[#1E293B] h-32 flex flex-col justify-between">
+                <span className="text-[9px] font-bold text-[#94A3B8]">WAKE-WORD DETECTION CONFIDENCE</span>
+                <div className="grid grid-cols-2 gap-1.5">
                   {Object.entries(audioKeywords).map(([kw, sc]) => (
-                    <div key={kw} className="p-1.5 rounded bg-[#13171F] border border-[#21262D] flex items-center justify-between">
-                      <span className="text-[#8B949E] text-[10px]">{kw}</span>
-                      <span className={`font-bold font-tabular text-[11px] ${kw === 'YES' && sc > 60 ? 'text-[#00FFA3]' : 'text-[#F0F6FC]'}`}>
+                    <div key={kw} className="p-1.5 rounded-[2px] bg-[#151B28] border border-[#1E293B] flex items-center justify-between">
+                      <span className="text-[#94A3B8] text-[10px]">{kw}</span>
+                      <span className={`font-bold font-tabular text-[11px] ${kw === 'YES' && sc > 60 ? 'text-[#10B981]' : 'text-[#F8FAFC]'}`}>
                         {sc}%
                       </span>
                     </div>
                   ))}
                 </div>
-                <span className="text-[8px] text-[#00FFA3] font-bold">INFERENCE LATENCY: 0.42 ms</span>
+                <span className="text-[8px] text-[#10B981] font-bold font-tabular">INFERENCE LATENCY: 0.42 ms</span>
               </div>
             </div>
           )}
@@ -290,44 +290,44 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
           {activeTab === 'camera' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 h-full items-center">
               <div className="md:col-span-3 flex flex-col justify-center space-y-2">
-                <span className="text-[10px] font-bold uppercase text-[#8B949E]">VISION DOWNSAMPLER</span>
+                <span className="text-[10px] font-bold uppercase text-[#94A3B8]">VISION DOWNSAMPLER</span>
                 <button
                   onClick={isLiveActive ? stopAllStreams : startCamera}
-                  className={`px-3 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+                  className={`px-3 py-1.5 rounded-[3px] text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
                     isLiveActive
-                      ? 'bg-[#EF4444]/20 text-[#EF4444] border border-[#EF4444]/40'
-                      : 'bg-[#0284C7] hover:bg-[#0369A1] text-white shadow-sm'
+                      ? 'bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30'
+                      : 'btn-tactile-primary text-white'
                   }`}
                 >
                   <Camera className="w-3.5 h-3.5" />
-                  <span>{isLiveActive ? 'Stop Webcam' : 'Start Live Cam'}</span>
+                  <span>{isLiveActive ? 'Stop Stream' : 'Start Live Cam'}</span>
                 </button>
               </div>
 
               <div className="md:col-span-5 flex items-center justify-center gap-3">
-                <div className="relative rounded overflow-hidden border border-[#21262D] bg-black h-28 w-36 flex items-center justify-center">
+                <div className="relative rounded-[3px] overflow-hidden border border-[#1E293B] bg-black h-28 w-36 flex items-center justify-center">
                   <video ref={videoRef} className="h-full w-full object-cover grayscale opacity-90" autoPlay muted playsInline />
-                  <span className="absolute bottom-1 left-1 text-[8px] bg-black/80 text-[#00FFA3] px-1 rounded">Raw Ingest</span>
+                  <span className="absolute bottom-1 left-1 text-[8px] bg-black/80 text-[#10B981] px-1 rounded-[2px]">Raw Ingest</span>
                 </div>
 
-                <div className="relative rounded overflow-hidden border border-[#21262D] bg-[#0A0D12] h-28 w-36 flex flex-col items-center justify-center p-1">
-                  <span className="text-[8px] text-[#8B949E] block mb-1">Downsampled 48x48</span>
-                  <canvas ref={canvasRef} width={48} height={48} className="w-16 h-16 border border-[#30363D] bg-black image-rendering-pixelated rounded" />
+                <div className="relative rounded-[3px] overflow-hidden border border-[#1E293B] bg-[#0B0E14] h-28 w-36 flex flex-col items-center justify-center p-1">
+                  <span className="text-[8px] text-[#94A3B8] block mb-1">Downsampled 48x48</span>
+                  <canvas ref={canvasRef} width={48} height={48} className="w-16 h-16 border border-[#26344A] bg-black image-rendering-pixelated rounded-[2px]" />
                 </div>
               </div>
 
-              <div className="md:col-span-4 bg-[#0A0D12] p-2.5 rounded border border-[#21262D] h-32 flex flex-col justify-between">
-                <span className="text-[9px] font-bold text-[#8B949E]">PERSON DETECTOR OUTPUT</span>
+              <div className="md:col-span-4 bg-[#0B0E14] p-2.5 rounded-[3px] border border-[#1E293B] h-32 flex flex-col justify-between">
+                <span className="text-[9px] font-bold text-[#94A3B8]">PERSON DETECTOR OUTPUT</span>
                 <div>
-                  <div className="flex justify-between text-xs font-bold mb-1">
-                    <span className="text-[#00FFA3]">PERSON PRESENT:</span>
-                    <span className="text-[#00FFA3] font-tabular">{cameraConfidence.person}%</span>
+                  <div className="flex justify-between text-xs font-bold mb-1 font-tabular">
+                    <span className="text-[#10B981]">PERSON PRESENT:</span>
+                    <span className="text-[#10B981]">{cameraConfidence.person}%</span>
                   </div>
-                  <div className="w-full bg-[#161B22] h-2 rounded overflow-hidden">
-                    <div className="bg-[#00FFA3] h-full" style={{ width: `${cameraConfidence.person}%` }} />
+                  <div className="w-full bg-[#151B28] h-2 rounded-[2px] overflow-hidden">
+                    <div className="bg-[#10B981] h-full" style={{ width: `${cameraConfidence.person}%` }} />
                   </div>
                 </div>
-                <span className="text-[8px] text-[#38BDF8] font-bold">FPS: 2,380 | LATENCY: 1.84 ms</span>
+                <span className="text-[8px] text-[#3B82F6] font-bold font-tabular">FPS: 2,380 | LATENCY: 1.84 ms</span>
               </div>
             </div>
           )}
@@ -336,19 +336,19 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
           {activeTab === 'imu' && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 h-full items-center">
               <div className="md:col-span-4 flex flex-col justify-center space-y-1">
-                <span className="text-[10px] font-bold uppercase text-[#8B949E]">3-AXIS VIBRATION SPECTRUM</span>
-                <p className="text-[10px] text-[#8B949E] font-sans">
+                <span className="text-[10px] font-bold uppercase text-[#94A3B8]">3-AXIS VIBRATION SPECTRUM</span>
+                <p className="text-[10px] text-[#94A3B8] font-sans">
                   Simulating accelerometer FFT spectrum for industrial motor bearings (NASA Bearing Dataset).
                 </p>
-                <div className="text-[10px] text-[#00FFA3] font-bold pt-1">
+                <div className="text-[10px] text-[#10B981] font-bold pt-1 font-tabular">
                   RECONSTRUCTION ERROR: {anomalyError} (NORMAL &lt; 0.150)
                 </div>
               </div>
 
-              <div className="md:col-span-8 bg-[#0A0D12] p-2.5 rounded border border-[#21262D] h-32 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-[9px] text-[#8B949E]">
+              <div className="md:col-span-8 bg-[#0B0E14] p-2.5 rounded-[3px] border border-[#1E293B] h-32 flex flex-col justify-between">
+                <div className="flex items-center justify-between text-[9px] text-[#94A3B8]">
                   <span>64-POINT FFT SPECTRUM</span>
-                  <span className="text-[#00FFA3] font-bold">MOTOR OPERATIONAL: PASS</span>
+                  <span className="text-[#10B981] font-bold">MOTOR OPERATIONAL: PASS</span>
                 </div>
 
                 <div className="h-16 flex items-end gap-1">
@@ -357,23 +357,23 @@ export const SensorWorkbench: React.FC<SensorWorkbenchProps> = ({
                     return (
                       <div
                         key={i}
-                        className="flex-1 bg-[#38BDF8] rounded-t-[1px]"
+                        className="flex-1 bg-[#2563EB] rounded-t-[1px]"
                         style={{ height: `${h}%` }}
                       />
                     );
                   })}
                 </div>
 
-                <span className="text-[8px] text-[#484F58]">5-Layer Deep Autoencoder (64 &rarr; 32 &rarr; 8 &rarr; 32 &rarr; 64)</span>
+                <span className="text-[8px] text-[#64748B]">5-Layer Deep Autoencoder (64 &rarr; 32 &rarr; 8 &rarr; 32 &rarr; 64)</span>
               </div>
             </div>
           )}
 
           {/* TAB 4: UART CONSOLE */}
           {activeTab === 'uart' && (
-            <div className="bg-[#0A0D12] rounded border border-[#21262D] h-full p-2 overflow-y-auto space-y-1 text-[11px]">
+            <div className="bg-[#0B0E14] rounded-[3px] border border-[#1E293B] h-full p-2 overflow-y-auto space-y-1 text-[11px]">
               {simState.uartLogs.map((l, i) => (
-                <div key={i} className="text-[#8B949E]">
+                <div key={i} className="text-[#94A3B8] font-tabular">
                   {l}
                 </div>
               ))}

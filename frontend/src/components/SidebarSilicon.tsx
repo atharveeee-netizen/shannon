@@ -42,42 +42,42 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
   };
 
   return (
-    <aside className="w-72 bg-[#0D1117] border-r border-[#21262D] flex flex-col shrink-0 select-none h-full overflow-hidden">
+    <aside className="w-72 bg-[#0B0E14] border-r border-[#1E293B] flex flex-col shrink-0 select-none h-full overflow-hidden">
       {/* Sidebar Sub-navigation Tabs */}
-      <div className="flex items-center border-b border-[#21262D] bg-[#0A0D12] text-xs font-mono">
+      <div className="flex items-center border-b border-[#1E293B] bg-[#0B0E14] text-xs font-mono">
         <button
           onClick={() => setActiveTab('models')}
-          className={`flex-1 py-2 px-2 flex items-center justify-center gap-1.5 transition border-b-2 ${
+          className={`flex-1 py-2.5 px-2 flex items-center justify-center gap-1.5 transition-all border-b-2 ${
             activeTab === 'models'
-              ? 'text-[#F0F6FC] border-[#0284C7] bg-[#13171F] font-bold'
-              : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+              ? 'text-[#F8FAFC] border-[#3B82F6] bg-[#111622] font-bold'
+              : 'text-[#64748B] border-transparent hover:text-[#94A3B8] hover:bg-[#111622]/50'
           }`}
         >
-          <Database className="w-3.5 h-3.5" />
+          <Database className="w-3.5 h-3.5 text-[#3B82F6]" />
           <span>Models</span>
         </button>
 
         <button
           onClick={() => setActiveTab('chips')}
-          className={`flex-1 py-2 px-2 flex items-center justify-center gap-1.5 transition border-b-2 ${
+          className={`flex-1 py-2.5 px-2 flex items-center justify-center gap-1.5 transition-all border-b-2 ${
             activeTab === 'chips'
-              ? 'text-[#F0F6FC] border-[#0284C7] bg-[#13171F] font-bold'
-              : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+              ? 'text-[#F8FAFC] border-[#3B82F6] bg-[#111622] font-bold'
+              : 'text-[#64748B] border-transparent hover:text-[#94A3B8] hover:bg-[#111622]/50'
           }`}
         >
-          <Cpu className="w-3.5 h-3.5" />
+          <Cpu className="w-3.5 h-3.5 text-[#10B981]" />
           <span>Silicon</span>
         </button>
 
         <button
           onClick={() => setActiveTab('flags')}
-          className={`flex-1 py-2 px-2 flex items-center justify-center gap-1.5 transition border-b-2 ${
+          className={`flex-1 py-2.5 px-2 flex items-center justify-center gap-1.5 transition-all border-b-2 ${
             activeTab === 'flags'
-              ? 'text-[#F0F6FC] border-[#0284C7] bg-[#13171F] font-bold'
-              : 'text-[#8B949E] border-transparent hover:text-[#F0F6FC]'
+              ? 'text-[#F8FAFC] border-[#3B82F6] bg-[#111622] font-bold'
+              : 'text-[#64748B] border-transparent hover:text-[#94A3B8] hover:bg-[#111622]/50'
           }`}
         >
-          <Sliders className="w-3.5 h-3.5" />
+          <Sliders className="w-3.5 h-3.5 text-[#94A3B8]" />
           <span>Flags</span>
         </button>
       </div>
@@ -86,8 +86,8 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
       <div className="flex-1 overflow-y-auto p-3 space-y-3 font-mono text-xs">
         {/* TAB 1: MODEL ZOO & INGESTION */}
         {activeTab === 'models' && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-[10px] text-[#484F58] uppercase font-bold tracking-wider">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-[10px] text-[#64748B] uppercase font-bold tracking-wider">
               <span>PRESET BENCHMARK ZOO</span>
               <span>{models.length} ITEMS</span>
             </div>
@@ -102,49 +102,49 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
                       setCustomFile(null);
                       onSelectModel(m.id);
                     }}
-                    className={`p-2.5 rounded border cursor-pointer transition flex flex-col gap-1 ${
+                    className={`p-2.5 rounded-[3px] border cursor-pointer transition-all flex flex-col gap-1 ${
                       isSelected
-                        ? 'bg-[#13171F] border-[#38BDF8] shadow-sm'
-                        : 'bg-[#0A0D12]/60 border-[#21262D] hover:border-[#30363D] hover:bg-[#13171F]'
+                        ? 'bg-[#151B28] border-[#3B82F6] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
+                        : 'bg-[#111622] border-[#1E293B] hover:border-[#26344A] hover:bg-[#151B28]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#F0F6FC]">{m.name}</span>
-                      <span className="text-[9px] px-1 py-0.2 rounded bg-[#10B981]/15 text-[#00FFA3] font-bold">
+                      <span className="font-bold text-[#F8FAFC]">{m.name}</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded-[2px] bg-[#10B981]/10 text-[#10B981] font-bold border border-[#10B981]/20">
                         {m.accuracy_score}
                       </span>
                     </div>
 
-                    <p className="text-[10px] text-[#8B949E] font-sans line-clamp-1">{m.architecture}</p>
+                    <p className="text-[10px] text-[#94A3B8] font-sans line-clamp-1">{m.architecture}</p>
 
-                    <div className="flex items-center justify-between text-[10px] text-[#484F58] pt-1 border-t border-[#21262D]/60 mt-0.5">
-                      <span>Shape: <strong className="text-[#8B949E]">{m.input_shape}</strong></span>
-                      <span className="text-[#38BDF8] font-bold font-tabular">{m.int8_flash_kb} KB ({m.flash_compression_ratio})</span>
+                    <div className="flex items-center justify-between text-[10px] text-[#64748B] pt-1.5 border-t border-[#1E293B] mt-0.5 font-tabular">
+                      <span>Shape: <strong className="text-[#94A3B8]">{m.input_shape}</strong></span>
+                      <span className="text-[#3B82F6] font-bold">{m.int8_flash_kb} KB ({m.flash_compression_ratio})</span>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Custom ONNX / JSON Upload */}
-            <div className="pt-2 border-t border-[#21262D]">
+            {/* Custom Graph Ingest */}
+            <div className="pt-2 border-t border-[#1E293B]">
               <label
-                className={`p-3 rounded border border-dashed cursor-pointer transition flex flex-col gap-1.5 ${
+                className={`p-3 rounded-[3px] border border-dashed cursor-pointer transition-all flex flex-col gap-1.5 ${
                   customFile
-                    ? 'bg-[#13171F] border-[#00FFA3]'
-                    : 'bg-[#0A0D12]/60 border-[#21262D] hover:border-[#38BDF8]'
+                    ? 'bg-[#151B28] border-[#10B981]'
+                    : 'bg-[#111622] border-[#1E293B] hover:border-[#3B82F6] hover:bg-[#151B28]'
                 }`}
               >
                 <input type="file" accept=".onnx,.json,.tflite,.pt" onChange={handleFileUpload} className="hidden" />
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase text-[#8B949E]">CUSTOM GRAPH INGEST</span>
-                  <UploadCloud className="w-3.5 h-3.5 text-[#38BDF8]" />
+                  <span className="text-[10px] font-bold uppercase text-[#94A3B8]">CUSTOM GRAPH INGEST</span>
+                  <UploadCloud className="w-3.5 h-3.5 text-[#3B82F6]" />
                 </div>
-                <span className="text-[11px] font-bold text-[#F0F6FC] truncate">
+                <span className="text-[11px] font-bold text-[#F8FAFC] truncate">
                   {customFile || 'Upload ONNX / JSON Graph'}
                 </span>
-                <span className="text-[9px] text-[#484F58] font-sans">
-                  {customFile ? 'Custom model parsed & ready' : 'Ingest custom neural network definitions'}
+                <span className="text-[9px] text-[#64748B] font-sans">
+                  {customFile ? 'Custom model graph parsed & verified' : 'Drop ONNX or PyTorch graph exports'}
                 </span>
               </label>
             </div>
@@ -153,8 +153,8 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
 
         {/* TAB 2: SILICON MCU PROFILES */}
         {activeTab === 'chips' && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-[10px] text-[#484F58] uppercase font-bold tracking-wider">
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-[10px] text-[#64748B] uppercase font-bold tracking-wider">
               <span>TARGET SILICON PLATFORMS</span>
               <span>{hardwareList.length} MCUS</span>
             </div>
@@ -166,24 +166,24 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
                   <div
                     key={hw.id}
                     onClick={() => onSelectHardware(hw.id)}
-                    className={`p-2.5 rounded border cursor-pointer transition flex flex-col gap-1 ${
+                    className={`p-2.5 rounded-[3px] border cursor-pointer transition-all flex flex-col gap-1 ${
                       isSelected
-                        ? 'bg-[#13171F] border-[#38BDF8] shadow-sm'
-                        : 'bg-[#0A0D12]/60 border-[#21262D] hover:border-[#30363D] hover:bg-[#13171F]'
+                        ? 'bg-[#151B28] border-[#3B82F6] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
+                        : 'bg-[#111622] border-[#1E293B] hover:border-[#26344A] hover:bg-[#151B28]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#F0F6FC]">{hw.name}</span>
-                      <span className="text-[9px] text-[#38BDF8] font-tabular font-bold">
+                      <span className="font-bold text-[#F8FAFC]">{hw.name}</span>
+                      <span className="text-[9px] text-[#3B82F6] font-tabular font-bold">
                         {hw.clock_mhz} MHz
                       </span>
                     </div>
 
-                    <p className="text-[10px] text-[#8B949E] font-sans line-clamp-1">{hw.arch}</p>
+                    <p className="text-[10px] text-[#94A3B8] font-sans line-clamp-1">{hw.arch}</p>
 
-                    <div className="flex items-center justify-between text-[10px] text-[#484F58] pt-1 border-t border-[#21262D]/60 mt-0.5">
-                      <span>SRAM: <strong className="text-[#00FFA3] font-tabular">{hw.sram_kb} KB</strong></span>
-                      <span>Flash: <strong className="text-[#38BDF8] font-tabular">{hw.flash_mb} MB</strong></span>
+                    <div className="flex items-center justify-between text-[10px] text-[#64748B] pt-1.5 border-t border-[#1E293B] mt-0.5 font-tabular">
+                      <span>SRAM: <strong className="text-[#10B981]">{hw.sram_kb} KB</strong></span>
+                      <span>Flash: <strong className="text-[#3B82F6]">{hw.flash_mb} MB</strong></span>
                     </div>
                   </div>
                 );
@@ -195,62 +195,62 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
         {/* TAB 3: COMPILER FLAGS & TUNING */}
         {activeTab === 'flags' && (
           <div className="space-y-3">
-            <div className="text-[10px] text-[#484F58] uppercase font-bold tracking-wider">
+            <div className="text-[10px] text-[#64748B] uppercase font-bold tracking-wider">
               QUANTIZATION & CODEGEN FLAGS
             </div>
 
-            <div className="space-y-2 bg-[#0A0D12] p-2.5 rounded border border-[#21262D]">
-              <label className="text-[10px] text-[#8B949E] block uppercase font-bold">
+            <div className="space-y-2 bg-[#111622] p-2.5 rounded-[3px] border border-[#1E293B]">
+              <label className="text-[10px] text-[#94A3B8] block uppercase font-bold">
                 Quantization Precision
               </label>
               <div className="grid grid-cols-2 gap-1.5">
                 <button
                   onClick={() => onChangeQuantBits(8)}
-                  className={`py-1 px-2 rounded border text-xs font-bold transition ${
+                  className={`py-1.5 px-2 rounded-[3px] border text-xs font-bold transition-all ${
                     quantBits === 8
-                      ? 'bg-[#0284C7] text-white border-[#38BDF8]'
-                      : 'bg-[#13171F] text-[#8B949E] border-[#21262D]'
+                      ? 'btn-tactile-primary text-white'
+                      : 'btn-tactile-secondary text-[#94A3B8]'
                   }`}
                 >
                   INT8 Symmetric
                 </button>
                 <button
                   onClick={() => onChangeQuantBits(4)}
-                  className={`py-1 px-2 rounded border text-xs font-bold transition ${
+                  className={`py-1.5 px-2 rounded-[3px] border text-xs font-bold transition-all ${
                     quantBits === 4
-                      ? 'bg-[#0284C7] text-white border-[#38BDF8]'
-                      : 'bg-[#13171F] text-[#8B949E] border-[#21262D]'
+                      ? 'btn-tactile-primary text-white'
+                      : 'btn-tactile-secondary text-[#94A3B8]'
                   }`}
                 >
                   INT4 Packed
                 </button>
               </div>
 
-              <div className="pt-2 border-t border-[#21262D]">
+              <div className="pt-2 border-t border-[#1E293B]">
                 <label className="flex items-center justify-between cursor-pointer select-none">
-                  <span className="text-[11px] text-[#F0F6FC]">Mixed Precision (HAWQ)</span>
+                  <span className="text-[11px] text-[#F8FAFC]">Mixed Precision (HAWQ)</span>
                   <input
                     type="checkbox"
                     checked={mixedPrecision}
                     onChange={(e) => onToggleMixedPrecision(e.target.checked)}
-                    className="accent-[#0284C7] rounded"
+                    className="accent-[#2563EB] rounded-[2px]"
                   />
                 </label>
-                <span className="text-[9px] text-[#484F58] font-sans block mt-0.5">
+                <span className="text-[9px] text-[#64748B] font-sans block mt-0.5">
                   Keep first/last layers INT8, compress deep convs to INT4.
                 </span>
               </div>
             </div>
 
-            <div className="space-y-2 bg-[#0A0D12] p-2.5 rounded border border-[#21262D]">
-              <label className="text-[10px] text-[#8B949E] block uppercase font-bold">
+            <div className="space-y-2 bg-[#111622] p-2.5 rounded-[3px] border border-[#1E293B]">
+              <label className="text-[10px] text-[#94A3B8] block uppercase font-bold">
                 Memory Alignment
               </label>
               <div className="grid grid-cols-2 gap-1.5">
-                <div className="p-1.5 rounded bg-[#13171F] border border-[#38BDF8]/40 text-[#38BDF8] text-center font-bold">
+                <div className="p-1.5 rounded-[3px] bg-[#151B28] border border-[#3B82F6]/50 text-[#3B82F6] text-center font-bold">
                   4-Byte Word
                 </div>
-                <div className="p-1.5 rounded bg-[#13171F] border border-[#21262D] text-[#484F58] text-center">
+                <div className="p-1.5 rounded-[3px] bg-[#151B28] border border-[#1E293B] text-[#64748B] text-center">
                   8-Byte D-Word
                 </div>
               </div>
@@ -259,10 +259,10 @@ export const SidebarSilicon: React.FC<SidebarSiliconProps> = ({
         )}
       </div>
 
-      {/* Sidebar Footer Info */}
-      <div className="p-2.5 bg-[#0A0D12] border-t border-[#21262D] flex items-center justify-between text-[10px] font-mono text-[#8B949E]">
+      {/* Sidebar Footer */}
+      <div className="p-2.5 bg-[#0B0E14] border-t border-[#1E293B] flex items-center justify-between text-[10px] font-mono text-[#64748B]">
         <span>STATIC ARENA</span>
-        <span className="text-[#00FFA3] font-bold flex items-center gap-1">
+        <span className="text-[#10B981] font-bold flex items-center gap-1">
           <CheckCircle2 className="w-3 h-3" /> 0 MALLOCS
         </span>
       </div>
