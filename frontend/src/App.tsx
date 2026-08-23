@@ -3,52 +3,52 @@ import {
   HardwareProfile,
   ModelZooItem,
   LayerBentoRow,
-  AgentLogEntry,
   ZeroMallocBlock,
   SimulatedSiliconState,
-  TargetLanguage,
 } from './types';
-import { Navbar } from './components/Navbar';
-import { ModelZooPanel } from './components/ModelZooPanel';
-import { CompilerWorkbenchPanel } from './components/CompilerWorkbenchPanel';
-import { ZeroMallocArenaPanel } from './components/ZeroMallocArenaPanel';
-import { LiveSimulatorPanel } from './components/LiveSimulatorPanel';
-import { CodeExportPanel } from './components/CodeExportPanel';
+import { IdeHeader } from './components/IdeHeader';
+import { SidebarSilicon } from './components/SidebarSilicon';
+import { SramArenaTimeline } from './components/SramArenaTimeline';
+import { CodeViewerPanel } from './components/CodeViewerPanel';
+import { ProfilerPanel } from './components/ProfilerPanel';
+import { SensorWorkbench } from './components/SensorWorkbench';
 import { CommandPalette } from './components/CommandPalette';
-import { Silicon3DCanvas } from './components/Silicon3DCanvas';
 import { AgentChat } from './components/AgentChat';
 import { ScreenpipeAuditDrawer } from './components/ScreenpipeAuditDrawer';
-import { HardDrive, Cpu, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { optimizeModel } from './services/api';
+import { X, Sparkles } from 'lucide-react';
 
 const HARDWARE_PROFILES: HardwareProfile[] = [
   {
     id: 'ESP32-S3',
     name: 'ESP32-S3',
+    vendor: 'Espressif',
     sram_kb: 512,
     flash_mb: 8,
     clock_mhz: 240,
-    arch: 'Xtensa Dual-Core LX7 with Vector PIE',
+    arch: 'Xtensa Dual-Core LX7 + Vector PIE',
     simd: 'Xtensa PIE (8-bit SIMD)',
     voltage_v: 3.3,
     power_budget_mw: 250,
-    recommendedFor: 'Voice and Vision Edge Nodes',
+    recommendedFor: 'Voice & Smart Vision Nodes',
   },
   {
     id: 'STM32H7',
     name: 'STM32H7',
+    vendor: 'STMicroelectronics',
     sram_kb: 1024,
     flash_mb: 2,
     clock_mhz: 480,
-    arch: 'ARM Cortex-M7 with CMSIS-NN',
+    arch: 'ARM Cortex-M7 + CMSIS-NN',
     simd: 'ARM __SMLAD (Dual 16-bit MAC)',
     voltage_v: 3.3,
     power_budget_mw: 420,
-    recommendedFor: 'High-Speed Industrial Automation',
+    recommendedFor: 'Industrial Automation & Robotics',
   },
   {
     id: 'RP2040',
     name: 'RP2040 (Pico)',
+    vendor: 'Raspberry Pi',
     sram_kb: 264,
     flash_mb: 2,
     clock_mhz: 133,
@@ -61,14 +61,41 @@ const HARDWARE_PROFILES: HardwareProfile[] = [
   {
     id: 'nRF52840',
     name: 'nRF52840',
+    vendor: 'Nordic Semiconductor',
     sram_kb: 256,
     flash_mb: 1,
     clock_mhz: 64,
-    arch: 'ARM Cortex-M4F with BLE',
+    arch: 'ARM Cortex-M4F + BLE 5.3',
     simd: 'ARMv7E-M DSP Instructions',
     voltage_v: 3.0,
     power_budget_mw: 45,
     recommendedFor: 'Wearable Medical Monitors',
+  },
+  {
+    id: 'MAX78000',
+    name: 'MAX78000',
+    vendor: 'Analog Devices',
+    sram_kb: 442,
+    flash_mb: 0.5,
+    clock_mhz: 100,
+    arch: 'ARM Cortex-M4F + CNN HW Engine',
+    simd: 'Hardware CNN Accelerator',
+    voltage_v: 1.8,
+    power_budget_mw: 35,
+    recommendedFor: 'Ultra Low-Energy Vision & Audio',
+  },
+  {
+    id: 'GAP9',
+    name: 'GAP9',
+    vendor: 'GreenWaves Technologies',
+    sram_kb: 1600,
+    flash_mb: 16,
+    clock_mhz: 400,
+    arch: '9-Core RISC-V + NE16 Tensor Engine',
+    simd: 'GAP8/9 Vector Intrinsics',
+    voltage_v: 1.0,
+    power_budget_mw: 50,
+    recommendedFor: 'Autonomous Micro-Drones',
   },
 ];
 
@@ -94,7 +121,7 @@ const MODEL_ZOO: ModelZooItem[] = [
     id: 'vision',
     name: 'MicroVision Person Detector',
     domain: 'Edge Computer Vision',
-    architecture: 'MobileNet-Tiny (0.25x)',
+    architecture: 'MobileNet-Tiny (0.25x Depthwise)',
     dataset: 'Visual Wake Words (VWW)',
     input_shape: '1x48x48x1 (Grayscale)',
     input_type: 'Grayscale Camera Frame',
@@ -112,7 +139,7 @@ const MODEL_ZOO: ModelZooItem[] = [
     name: 'Motor Anomaly Autoencoder',
     domain: 'Industrial IoT Maintenance',
     architecture: '5-Layer Deep Autoencoder',
-    dataset: 'NASA Bearing Vibration',
+    dataset: 'NASA Bearing Vibration Dataset',
     input_shape: '1x64 (FFT)',
     input_type: 'Accelerometer FFT Spectrum',
     fp32_flash_kb: 18.0,
@@ -141,13 +168,12 @@ const INITIAL_BLOCKS: ZeroMallocBlock[] = [
 ];
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'zoo' | 'workbench' | 'arena' | 'simulator' | 'export'>('zoo');
   const [selectedHwId, setSelectedHwId] = useState<string>('ESP32-S3');
   const [selectedModelId, setSelectedModelId] = useState<string>('kws');
-  const [targetLang, setTargetLang] = useState<TargetLanguage>('cpp_esp32');
+  const [quantBits, setQuantBits] = useState<number>(8);
   const [mixedPrecision, setMixedPrecision] = useState<boolean>(false);
-  const [isAgentRunning, setIsAgentRunning] = useState<boolean>(false);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [isCompiling, setIsCompiling] = useState<boolean>(false);
+  const [isSimulating, setIsSimulating] = useState<boolean>(true);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
   const [isAuditOpen, setIsAuditOpen] = useState<boolean>(false);
@@ -157,14 +183,6 @@ export function App() {
 
   const currentHw = HARDWARE_PROFILES.find((h) => h.id === selectedHwId) || HARDWARE_PROFILES[0];
   const currentModel = MODEL_ZOO.find((m) => m.id === selectedModelId) || MODEL_ZOO[0];
-
-  const [agentLogs, setAgentLogs] = useState<AgentLogEntry[]>([
-    { id: '1', timestamp: '13:40:01', agent: 'Planner', step: 'planner', status: 'PASSED', message: `Parsed model graph: ${currentModel.architecture}. SRAM Budget: ${currentHw.sram_kb}KB.` },
-    { id: '2', timestamp: '13:40:02', agent: 'Quantizer', step: 'quantizer', status: 'PASSED', message: `Applied symmetric INT8 PTQ. Flash footprint reduced by ${currentModel.flash_compression_ratio}.`, metric: `Weights: ${currentModel.int8_flash_kb} KB` },
-    { id: '3', timestamp: '13:40:03', agent: 'MemoryMapper', step: 'memory_mapper', status: 'PASSED', message: `Greedy interval coloring scheduled ${arenaBlocks.length} buffers with zero overlap.`, metric: `Peak Arena: ${currentModel.peak_sram_kb} KB` },
-    { id: '4', timestamp: '13:40:04', agent: 'CodeGen', step: 'codegen', status: 'PASSED', message: `Synthesized zero dependency C++ kernel tuned for ${currentHw.simd}.` },
-    { id: '5', timestamp: '13:40:05', agent: 'Critic', step: 'critic', status: 'PASSED', message: `Formal boundary verification passed. 0 bytes dynamic malloc confirmed.` },
-  ]);
 
   const [simState, setSimState] = useState<SimulatedSiliconState>({
     gpio: { GPIO_13: true, GPIO_12: false, GPIO_14: true, GPIO_27: false },
@@ -196,8 +214,8 @@ export function App() {
  * Static Allocation: MISRA-C:2012 Rule 21.3 Compliant (0 Bytes Dynamic malloc)
  * =========================================================================== */
 
-#ifndef SHANNON_MODEL_H
-#define SHANNON_MODEL_H
+#ifndef SHANNON_${currentModel.id.toUpperCase()}_H
+#define SHANNON_${currentModel.id.toUpperCase()}_H
 
 #include <stdint.h>
 #include <string.h>
@@ -222,17 +240,12 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
     return 0; // Success
 }
 
-#endif // SHANNON_MODEL_H
+#endif // SHANNON_${currentModel.id.toUpperCase()}_H
 `
   );
 
-  const handleTriggerAgentLoop = async () => {
-    setIsAgentRunning(true);
-    setAgentLogs((prev) => [
-      { id: Date.now().toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Planner', step: 'planner', status: 'RUNNING', message: `Compiling ${currentModel.name} for ${currentHw.name}...` },
-      ...prev,
-    ]);
-
+  const handleTriggerCompile = async () => {
+    setIsCompiling(true);
     try {
       const res = await optimizeModel(selectedModelId, currentHw.name);
       if (res && res.code) {
@@ -243,12 +256,15 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
     }
 
     setTimeout(() => {
-      setIsAgentRunning(false);
-      setAgentLogs((prev) => [
-        { id: (Date.now() + 1).toString(), timestamp: new Date().toLocaleTimeString(), agent: 'Critic', step: 'critic', status: 'PASSED', message: `Optimization converged in 3 iterations. Memory footprint: ${currentModel.peak_sram_kb} KB.` },
+      setIsCompiling(false);
+      setSimState((prev) => ({
         ...prev,
-      ]);
-    }, 1200);
+        uartLogs: [
+          `[+${(Date.now() / 1000 % 100).toFixed(3)}s] COMPILER_SUCCESS: Model re-compiled for ${currentHw.name}. Peak Arena: ${currentModel.peak_sram_kb}KB.`,
+          ...prev.uartLogs,
+        ],
+      }));
+    }, 1000);
   };
 
   useEffect(() => {
@@ -276,37 +292,46 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
   }, [isSimulating, simState.coreTempC]);
 
   return (
-    <div className="min-h-screen bg-[#0A0D12] text-[#F0F6FC] font-sans flex flex-col relative bg-silicon-grid silicon-noise-overlay selection:bg-[#0284C7]/30 selection:text-[#38BDF8]">
+    <div className="h-screen w-screen bg-[#0A0D12] text-[#F0F6FC] font-sans flex flex-col overflow-hidden select-none selection:bg-[#0284C7]/30 selection:text-[#38BDF8]">
+      {/* Command Palette Overlay */}
       <CommandPalette
         isOpen={isCmdOpen}
         onClose={() => setIsCmdOpen(false)}
-        onSelectTab={setActiveTab}
+        onSelectTab={() => {}}
         onSelectHardware={setSelectedHwId}
         onSelectModel={setSelectedModelId}
-        onTriggerAgentLoop={handleTriggerAgentLoop}
+        onTriggerAgentLoop={handleTriggerCompile}
         hardwareList={HARDWARE_PROFILES}
         models={MODEL_ZOO}
       />
 
+      {/* Screenpipe Continuous Audit Drawer */}
       <ScreenpipeAuditDrawer
         isOpen={isAuditOpen}
         onClose={() => setIsAuditOpen(false)}
       />
 
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        hardwareList={HARDWARE_PROFILES}
-        selectedHwId={selectedHwId}
-        onSelectHardware={setSelectedHwId}
-        isAgentRunning={isAgentRunning}
-        onTriggerAgentLoop={handleTriggerAgentLoop}
+      {/* Top IDE Header (48px) */}
+      <IdeHeader
+        currentHw={currentHw}
+        currentModel={currentModel}
+        isCompiling={isCompiling}
+        onTriggerCompile={handleTriggerCompile}
         onOpenCommandPalette={() => setIsCmdOpen(true)}
-        onOpenCopilot={() => setIsCopilotOpen(!isCopilotOpen)}
-        onOpenAudit={() => setIsAuditOpen(true)}
+        onOpenCopilot={() => setIsCopilotOpen(true)}
+        onExportCode={() => {
+          const blob = new Blob([generatedCppHeader], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `shannon_${currentModel.id}.h`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+        zeroMallocVerified={true}
       />
 
-      {/* Slide-over Copilot Drawer */}
+      {/* Slide-over Shannon AI Copilot Drawer */}
       {isCopilotOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end" onClick={() => setIsCopilotOpen(false)}>
           <div
@@ -331,132 +356,68 @@ static inline int shannon_run_inference(const int8_t* input_data, int8_t* output
         </div>
       )}
 
-      <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto flex flex-col gap-4">
-        {activeTab === 'zoo' && (
-          <ModelZooPanel
-            models={MODEL_ZOO}
-            selectedModelId={selectedModelId}
-            onSelectModel={setSelectedModelId}
-            targetHw={currentHw}
-            onCompileSelected={() => setActiveTab('workbench')}
-          />
-        )}
+      {/* Main Studio Body: Sidebar (Left) + Split Studio Workspace (Center) + Profiler (Right) */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar (280px) */}
+        <SidebarSilicon
+          models={MODEL_ZOO}
+          selectedModelId={selectedModelId}
+          onSelectModel={setSelectedModelId}
+          hardwareList={HARDWARE_PROFILES}
+          selectedHwId={selectedHwId}
+          onSelectHardware={setSelectedHwId}
+          mixedPrecision={mixedPrecision}
+          onToggleMixedPrecision={setMixedPrecision}
+          quantBits={quantBits}
+          onChangeQuantBits={setQuantBits}
+        />
 
-        {activeTab === 'workbench' && (
-          <CompilerWorkbenchPanel
-            layers={layers}
-            agentLogs={agentLogs}
-            targetHw={currentHw}
-            isAgentRunning={isAgentRunning}
-            onRerunLoop={handleTriggerAgentLoop}
-            mixedPrecision={mixedPrecision}
-            onToggleMixedPrecision={setMixedPrecision}
-          />
-        )}
+        {/* Center Studio (Split-Pane: SRAM Timeline Top-Left, Code Viewer Top-Right) */}
+        <main className="flex-1 flex flex-col overflow-hidden p-3 gap-3">
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-0">
+            {/* Center Left: Interactive SRAM Memory Arena Timeline */}
+            <div className="min-h-0 h-full">
+              <SramArenaTimeline
+                blocks={arenaBlocks}
+                targetHw={currentHw}
+                totalArenaBytes={Math.round(currentModel.peak_sram_kb * 1024)}
+              />
+            </div>
 
-        {activeTab === 'arena' && (
-          <ZeroMallocArenaPanel
-            blocks={arenaBlocks}
-            targetHw={currentHw}
-            totalArenaBytes={Math.round(currentModel.peak_sram_kb * 1024)}
-          />
-        )}
+            {/* Center Right: C/C++ Code View & Assembly Emitter */}
+            <div className="min-h-0 h-full">
+              <CodeViewerPanel
+                code={generatedCppHeader}
+                targetHw={currentHw}
+                currentModel={currentModel}
+              />
+            </div>
+          </div>
 
-        {activeTab === 'simulator' && (
-          <LiveSimulatorPanel
-            simState={simState}
-            targetHw={currentHw}
-            isSimulating={isSimulating}
-            onToggleSim={() => setIsSimulating(!isSimulating)}
-            onUpdateGpio={(pin, val) =>
-              setSimState((p) => ({ ...p, gpio: { ...p.gpio, [pin]: val } }))
-            }
-            onUpdateAdc={(pin, val) =>
-              setSimState((p) => ({ ...p, adc: { ...p.adc, [pin]: val } }))
-            }
-          />
-        )}
-
-        {activeTab === 'export' && (
-          <CodeExportPanel
-            code={generatedCppHeader}
-            targetLanguage={targetLang}
-            onChangeTarget={setTargetLang}
-            targetHw={currentHw}
-          />
-        )}
-
-        {/* 3D Die & Bottom Metrics Telemetry */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          <div className="lg:col-span-4">
-            <Silicon3DCanvas
+          {/* Bottom Panel: Hardware-in-the-Loop Sensor Workbench */}
+          <div className="shrink-0">
+            <SensorWorkbench
+              simState={simState}
               targetHw={currentHw}
-              peakSramKb={currentModel.peak_sram_kb}
-              flashKb={currentModel.int8_flash_kb}
+              isSimulating={isSimulating}
+              onToggleSim={() => setIsSimulating(!isSimulating)}
+              onUpdateGpio={(pin, val) =>
+                setSimState((p) => ({ ...p, gpio: { ...p.gpio, [pin]: val } }))
+              }
+              onUpdateAdc={(pin, val) =>
+                setSimState((p) => ({ ...p, adc: { ...p.adc, [pin]: val } }))
+              }
             />
           </div>
+        </main>
 
-          <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#13171F] p-4 rounded-[4px] border border-[#21262D] shadow-sm">
-            <div className="bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                  <span className="text-[#8B949E] flex items-center gap-1.5">
-                    <HardDrive className="w-3.5 h-3.5 text-[#38BDF8]" /> Flash ROM Storage (INT8)
-                  </span>
-                  <span className="text-[#38BDF8] font-bold font-tabular">
-                    {currentModel.int8_flash_kb} KB
-                  </span>
-                </div>
-                <div className="w-full h-1.5 bg-[#161B22] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#0284C7] rounded-full"
-                    style={{ width: `${Math.min(100, (currentModel.int8_flash_kb / (currentHw.flash_mb * 1024)) * 100 * 30)}%` }}
-                  />
-                </div>
-              </div>
-              <span className="text-[10px] font-mono text-[#00FFA3] block mt-2 font-bold">
-                Reduced by {currentModel.flash_compression_ratio} (from {currentModel.fp32_flash_kb}KB FP32)
-              </span>
-            </div>
-
-            <div className="bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                  <span className="text-[#8B949E] flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5 text-[#00FFA3]" /> Peak SRAM Arena Allocation
-                  </span>
-                  <span className="text-[#00FFA3] font-bold font-tabular">
-                    {currentModel.peak_sram_kb} KB / {currentHw.sram_kb} KB
-                  </span>
-                </div>
-                <div className="w-full h-1.5 bg-[#161B22] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#10B981] rounded-full"
-                    style={{ width: `${Math.min(100, (currentModel.peak_sram_kb / currentHw.sram_kb) * 100 * 10)}%` }}
-                  />
-                </div>
-              </div>
-              <span className="text-[10px] font-mono text-[#8B949E] block mt-2 font-tabular">
-                0 Bytes dynamic malloc / Zero heap fragmentation
-              </span>
-            </div>
-
-            <div className="sm:col-span-2 bg-[#0A0D12] p-3 rounded-[3px] border border-[#21262D] flex items-center justify-between">
-              <div>
-                <span className="text-[9px] font-mono text-[#484F58] block uppercase">SAFETY & COMPLIANCE VERIFICATION</span>
-                <h4 className="text-xs font-bold text-[#F0F6FC] font-mono flex items-center gap-1.5 mt-0.5">
-                  <ShieldCheck className="w-4 h-4 text-[#00FFA3]" />
-                  MISRA-C:2012 COMPLIANT (ZERO RUNTIME DYNAMIC ALLOCATIONS)
-                </h4>
-              </div>
-              <div className="text-right font-mono">
-                <span className="text-[9px] text-[#484F58] block uppercase">HARDWARE ACCELERATION</span>
-                <span className="text-xs font-bold text-[#38BDF8]">{currentHw.simd}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+        {/* Right Profiler Panel (320px) */}
+        <ProfilerPanel
+          currentHw={currentHw}
+          currentModel={currentModel}
+          layers={layers}
+        />
+      </div>
     </div>
   );
 }

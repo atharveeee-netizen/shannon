@@ -6,6 +6,7 @@ export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'ESP32-S3': {
     id: 'ESP32-S3',
     name: 'ESP32-S3',
+    vendor: 'Espressif',
     sram_kb: 512,
     flash_mb: 8,
     clock_mhz: 240,
@@ -18,6 +19,7 @@ export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'STM32H7': {
     id: 'STM32H7',
     name: 'STM32H7',
+    vendor: 'STMicroelectronics',
     sram_kb: 1024,
     flash_mb: 2,
     clock_mhz: 480,
@@ -30,6 +32,7 @@ export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'RP2040 (Pico)': {
     id: 'RP2040',
     name: 'RP2040 (Pico)',
+    vendor: 'Raspberry Pi',
     sram_kb: 264,
     flash_mb: 2,
     clock_mhz: 133,
@@ -42,6 +45,7 @@ export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'nRF52840': {
     id: 'nRF52840',
     name: 'nRF52840',
+    vendor: 'Nordic Semi',
     sram_kb: 256,
     flash_mb: 1,
     clock_mhz: 64,
@@ -54,6 +58,7 @@ export const HARDWARE_PROFILES: Record<string, HardwareProfile> = {
   'Arduino Portenta H7': {
     id: 'PortentaH7',
     name: 'Arduino Portenta H7',
+    vendor: 'Arduino',
     sram_kb: 1024,
     flash_mb: 16,
     clock_mhz: 480,
@@ -96,12 +101,14 @@ export const PRESET_MODELS: PresetModel[] = [
 
 export async function optimizeModel(presetId: string, hardwareName: string): Promise<OptimizationResult> {
   try {
-    const res = await fetch(`${API_BASE}/compile-preset/${presetId}?target_hw=${encodeURIComponent(hardwareName)}`, {
-      method: 'POST'
+    const res = await fetch(`${API_BASE}/presets/${presetId}/optimize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target_hardware: hardwareName, bits: 8 })
     });
     if (!res.ok) throw new Error('API request failed');
     return await res.json();
-  } catch (err) {
+  } catch {
     // High-fidelity fallback
     const hw = HARDWARE_PROFILES[hardwareName] || HARDWARE_PROFILES['ESP32-S3'];
     return {
@@ -141,8 +148,8 @@ export async function askAgent(query: string, hardwareName: string, modelName: s
     });
     if (!res.ok) throw new Error('API failed');
     const data = await res.json();
-    return data.response;
-  } catch (err) {
+    return data.response || data.reply;
+  } catch {
     const hw = HARDWARE_PROFILES[hardwareName] || HARDWARE_PROFILES['ESP32-S3'];
     const q = query.toLowerCase();
     if (q.includes('sram') || q.includes('memory') || q.includes('malloc') || q.includes('fragment')) {

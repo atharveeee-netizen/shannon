@@ -1,11 +1,16 @@
 export interface HardwareProfile {
   id: string;
   name: string;
+  vendor?: string;
   sram_kb: number;
   flash_mb: number;
   clock_mhz: number;
   arch: string;
   simd: string;
+  memory_banks?: {
+    sram_regions: Array<{ name: string; address_hex: string; size_kb: number }>;
+    flash_regions: Array<{ name: string; address_hex: string; size_mb: number }>;
+  };
   voltage_v: number;
   power_budget_mw: number;
   recommendedFor: string;
@@ -27,6 +32,7 @@ export interface ModelZooItem {
   flash_compression_ratio: string;
   target_mcu: string;
   accuracy_score: string;
+  weight_distribution?: number[];
 }
 
 export interface LayerBentoRow {
