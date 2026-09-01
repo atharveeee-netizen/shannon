@@ -9,6 +9,7 @@ import {
   PRESET_MODELS,
   fetchHardware,
   compileModel,
+  uploadAndCompileModel,
 } from './services/api';
 import { AppHeader } from './components/AppHeader';
 import { CompilerControls } from './components/CompilerControls';
@@ -21,16 +22,18 @@ export function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('shannon_theme');
     if (saved) return saved === 'dark';
-    return true; // Default to dark theme for developer software
+    return true;
   });
 
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
   const [models] = useState<PresetModel[]>(PRESET_MODELS);
   const [selectedHwId, setSelectedHwId] = useState<string>('ESP32-S3');
   const [selectedModelId, setSelectedModelId] = useState<string>('kws');
+  const [customFile, setCustomFile] = useState<File | null>(null);
   const [customFilename, setCustomFilename] = useState<string | null>(null);
 
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
   const [compilationResult, setCompilationResult] = useState<CompilationResult | null>(null);
 
@@ -45,33 +48,44 @@ export function App() {
   }, [isDarkMode]);
 
   useEffect(() => {
-    fetchHardware().then((hw) => setHardwareList(hw));
+    fetchHardware()
+      .then((hw) => setHardwareList(hw))
+      .catch(() => setHardwareList(HARDWARE_PROFILES));
   }, []);
 
-  const runCompilation = async (modelId: string, hwId: string) => {
+  const runCompilation = async (modelId: string, hwId: string, fileToUpload: File | null = customFile) => {
     setIsCompiling(true);
+    setErrorMessage(null);
     try {
-      const res = await compileModel(modelId, hwId);
+      let res: CompilationResult;
+      if (fileToUpload) {
+        res = await uploadAndCompileModel(fileToUpload, hwId);
+      } else {
+        res = await compileModel(modelId, hwId);
+      }
       setCompilationResult(res);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Compilation error:', err);
+      setErrorMessage(err.message || 'Failed to connect to Shannon Compiler backend. Ensure server is running on http://localhost:8000.');
     } finally {
       setIsCompiling(false);
     }
   };
 
   useEffect(() => {
-    runCompilation(selectedModelId, selectedHwId);
+    runCompilation(selectedModelId, selectedHwId, customFile);
   }, [selectedModelId, selectedHwId]);
 
   const handleSelectModel = (id: string) => {
+    setCustomFile(null);
     setCustomFilename(null);
     setSelectedModelId(id);
   };
 
   const handleUploadCustom = (file: File) => {
+    setCustomFile(file);
     setCustomFilename(file.name);
-    setSelectedModelId('vision');
+    runCompilation('custom', selectedHwId, file);
   };
 
   const handleDownloadHeader = () => {
@@ -80,7 +94,7 @@ export function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'shannon_model.h';
+    link.download = `shannon_${compilationResult.model_name.toLowerCase()}_model.h`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -98,7 +112,7 @@ export function App() {
         onClose={() => setIsCmdOpen(false)}
         onSelectHardware={setSelectedHwId}
         onSelectModel={handleSelectModel}
-        onTriggerCompile={() => runCompilation(selectedModelId, selectedHwId)}
+        onTriggerCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
         onDownloadHeader={handleDownloadHeader}
         onToggleTheme={handleToggleTheme}
         isDarkMode={isDarkMode}
@@ -113,6 +127,18 @@ export function App() {
       />
 
       <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {errorMessage && (
+          <div className="p-3 bg-danger/10 border border-danger/30 rounded-[4px] text-danger text-xs flex items-center justify-between">
+            <span>{errorMessage}</span>
+            <button
+              onClick={() => runCompilation(selectedModelId, selectedHwId, customFile)}
+              className="px-2 py-1 bg-danger text-canvas rounded text-[11px] font-medium hover:opacity-90 transition"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         <CompilerControls
           models={models}
           selectedModelId={selectedModelId}
@@ -123,7 +149,7 @@ export function App() {
           selectedHwId={selectedHwId}
           onSelectHardware={setSelectedHwId}
           isCompiling={isCompiling}
-          onCompile={() => runCompilation(selectedModelId, selectedHwId)}
+          onCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
         />
 
         {compilationResult && (
