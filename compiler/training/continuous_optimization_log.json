@@ -1,0 +1,11 @@
+{
+  "round": 31,
+  "timestamp": "2026-09-01 21:24:02",
+  "status": "OPTIMAL_CONVERGED",
+  "metrics": {
+    "kws_acc": 96.6,
+    "vision_acc": 96.4,
+    "anomaly_mse": 0.000133,
+    "anomaly_sep": 59.4
+  }
+}
