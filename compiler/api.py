@@ -19,6 +19,7 @@ try:
     from engine.presets import get_keyword_spotting_model, get_anomaly_detection_model, get_vision_classifier_model
     from engine.codegen import CCodeGenerator
     from engine.parser import ModelParser
+    from engine.dsp import SensorPreprocessingDSP
     from agent.optimizer_agent import ShannonAgent, HardwareSpecs
 except ImportError:
     from .engine.ir import ModelGraph
@@ -27,6 +28,7 @@ except ImportError:
     from .engine.presets import get_keyword_spotting_model, get_anomaly_detection_model, get_vision_classifier_model
     from .engine.codegen import CCodeGenerator
     from .engine.parser import ModelParser
+    from .engine.dsp import SensorPreprocessingDSP
     from .agent.optimizer_agent import ShannonAgent, HardwareSpecs
 
 app = FastAPI(
@@ -118,6 +120,16 @@ def optimize_preset(preset_id: str, req: OptimizeRequest):
     codegen = CCodeGenerator(target_mcu=req.target_hardware)
     c_header = codegen.generate_header(quantized_graph)
 
+    active_ma = hw_spec.get("active_ma", 50.0)
+    sleep_ua = hw_spec.get("sleep_ua", 10.0)
+    battery_energy = SensorPreprocessingDSP.calculate_battery_lifetime(
+        active_current_ma=active_ma,
+        sleep_current_ua=sleep_ua,
+        inference_latency_ms=quantized_graph.estimated_latency_ms,
+        inferences_per_minute=6.0,
+        battery_capacity_mah=225.0
+    )
+
     return {
         "model_name": quantized_graph.name,
         "target_hardware": req.target_hardware,
@@ -131,6 +143,7 @@ def optimize_preset(preset_id: str, req: OptimizeRequest):
             "compression_ratio": round((fp32_stats["flash_bytes"] / max(quantized_graph.flash_bytes, 1)), 2),
             "flash_reduction_pct": round((1.0 - (quantized_graph.flash_bytes / max(fp32_stats["flash_bytes"], 1))) * 100.0, 1)
         },
+        "battery_energy": battery_energy,
         "fits_hardware": agent_report["fits_hardware"],
         "zero_malloc_verified": is_collision_free,
         "memory_timeline": timeline,
@@ -192,6 +205,16 @@ async def upload_onnx_model(
         codegen = CCodeGenerator(target_mcu=target_hardware)
         c_header = codegen.generate_header(quantized_graph)
 
+        active_ma = hw_spec.get("active_ma", 50.0)
+        sleep_ua = hw_spec.get("sleep_ua", 10.0)
+        battery_energy = SensorPreprocessingDSP.calculate_battery_lifetime(
+            active_current_ma=active_ma,
+            sleep_current_ua=sleep_ua,
+            inference_latency_ms=quantized_graph.estimated_latency_ms,
+            inferences_per_minute=6.0,
+            battery_capacity_mah=225.0
+        )
+
         return {
             "model_name": quantized_graph.name,
             "target_hardware": target_hardware,
@@ -206,6 +229,7 @@ async def upload_onnx_model(
                 "compression_ratio": round((fp32_stats["flash_bytes"] / max(quantized_graph.flash_bytes, 1)), 2),
                 "flash_reduction_pct": round((1.0 - (quantized_graph.flash_bytes / max(fp32_stats["flash_bytes"], 1))) * 100.0, 1)
             },
+            "battery_energy": battery_energy,
             "fits_hardware": agent_report["fits_hardware"],
             "zero_malloc_verified": is_collision_free,
             "memory_timeline": timeline,

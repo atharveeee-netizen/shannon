@@ -24,6 +24,8 @@ class HardwareSpecs:
             "sram_kb": 512,
             "flash_mb": 8,
             "clock_mhz": 240,
+            "active_ma": 65.0,
+            "sleep_ua": 15.0,
             "arch": "Xtensa Dual-Core LX7 + Vector Ext",
             "simd": "Xtensa PIE (8-bit SIMD)"
         },
@@ -31,6 +33,8 @@ class HardwareSpecs:
             "sram_kb": 1024,
             "flash_mb": 2,
             "clock_mhz": 480,
+            "active_ma": 110.0,
+            "sleep_ua": 8.0,
             "arch": "ARM Cortex-M7",
             "simd": "ARM CMSIS-NN __SMLAD (Dual 16-bit MAC)"
         },
@@ -38,6 +42,8 @@ class HardwareSpecs:
             "sram_kb": 264,
             "flash_mb": 2,
             "clock_mhz": 133,
+            "active_ma": 22.0,
+            "sleep_ua": 35.0,
             "arch": "Dual ARM Cortex-M0+",
             "simd": "32-bit software unrolled"
         },
@@ -45,6 +51,8 @@ class HardwareSpecs:
             "sram_kb": 256,
             "flash_mb": 1,
             "clock_mhz": 64,
+            "active_ma": 5.5,
+            "sleep_ua": 1.5,
             "arch": "ARM Cortex-M4F",
             "simd": "ARMv7E-M DSP Instructions"
         },
@@ -52,6 +60,8 @@ class HardwareSpecs:
             "sram_kb": 1024,
             "flash_mb": 8,
             "clock_mhz": 600,
+            "active_ma": 100.0,
+            "sleep_ua": 20.0,
             "arch": "ARM Cortex-M7 @ 600MHz",
             "simd": "ARM DWT + CMSIS-NN 4-way SIMD"
         }

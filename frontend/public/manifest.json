@@ -1,0 +1,16 @@
+{
+  "short_name": "Shannon AI",
+  "name": "Shannon AI Studio — TinyML Silicon Optimization",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#05070B",
+  "background_color": "#05070B",
+  "description": "Autonomous Zero-Malloc TinyML Compiler & Hardware Optimization Engine for Microcontrollers (ESP32-S3, STM32H7, RP2040 Pico)."
+}
