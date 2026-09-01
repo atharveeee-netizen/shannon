@@ -93,6 +93,10 @@ def list_presets():
 @app.post("/api/presets/{preset_id}/optimize")
 def optimize_preset(preset_id: str, req: OptimizeRequest):
     graph = _get_preset_graph(preset_id)
+    hw_spec = HardwareSpecs.PROFILES.get(req.target_hardware, HardwareSpecs.PROFILES["ESP32-S3"])
+    clock_mhz = hw_spec.get("clock_mhz", 240)
+    graph.compute_stats(clock_mhz=clock_mhz)
+
     fp32_stats = {
         "flash_bytes": graph.flash_bytes,
         "peak_sram_bytes": graph.peak_sram_bytes,
@@ -102,6 +106,7 @@ def optimize_preset(preset_id: str, req: OptimizeRequest):
 
     quantizer = Quantizer(bits=req.bits, symmetric=req.symmetric, mixed_precision=req.mixed_precision)
     quantized_graph = quantizer.quantize_graph(graph)
+    quantized_graph.compute_stats(clock_mhz=clock_mhz)
 
     planner = MemoryPlanner(alignment_bytes=4, base_address_hex=0x20000000)
     arena_size, timeline = planner.plan_tensor_arena(quantized_graph)
@@ -162,6 +167,10 @@ async def upload_onnx_model(
             graph = get_vision_classifier_model()
             graph.name = f"Custom_{os.path.splitext(file.filename)[0]}"
 
+        hw_spec = HardwareSpecs.PROFILES.get(target_hardware, HardwareSpecs.PROFILES["ESP32-S3"])
+        clock_mhz = hw_spec.get("clock_mhz", 240)
+        graph.compute_stats(clock_mhz=clock_mhz)
+
         fp32_stats = {
             "flash_bytes": graph.flash_bytes,
             "peak_sram_bytes": graph.peak_sram_bytes,
@@ -171,6 +180,7 @@ async def upload_onnx_model(
 
         quantizer = Quantizer(bits=bits, symmetric=True)
         quantized_graph = quantizer.quantize_graph(graph)
+        quantized_graph.compute_stats(clock_mhz=clock_mhz)
 
         planner = MemoryPlanner(alignment_bytes=4, base_address_hex=0x20000000)
         arena_size, timeline = planner.plan_tensor_arena(quantized_graph)
