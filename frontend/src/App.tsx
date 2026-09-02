@@ -13,6 +13,7 @@ import {
   getOfflineFallbackResult,
 } from './services/api';
 
+import { OllamaHomeView } from './components/OllamaHomeView';
 import { Sidebar, TabType } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { DashboardView } from './components/views/DashboardView';
@@ -26,6 +27,7 @@ import { SiliconCopilotDrawer } from './components/views/SiliconCopilotDrawer';
 import { CommandPalette } from './components/CommandPalette';
 
 export function App() {
+  const [viewMode, setViewMode] = useState<'home' | 'studio'>('home');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('shannon_theme');
     if (saved) return saved === 'dark';
@@ -43,7 +45,7 @@ export function App() {
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
 
-  // Initialize immediately with guaranteed verified fallback so GitHub Pages is never blank or broken
+  // Initialize immediately with guaranteed verified fallback so page is 100% instant & never broken
   const [compilationResult, setCompilationResult] = useState<CompilationResult>(() =>
     getOfflineFallbackResult('kws', 'ESP32-S3')
   );
@@ -115,12 +117,35 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
+  const handleOpenStudio = (tab?: string) => {
+    if (tab && (tab === 'dashboard' || tab === 'impulse' || tab === 'dsp' || tab === 'classifier' || tab === 'live' || tab === 'arena' || tab === 'deployment')) {
+      setActiveTab(tab as TabType);
+    }
+    setViewMode('studio');
+  };
+
   const selectedModel = models.find((m) => m.id === selectedModelId) || null;
   const selectedHw = hardwareList.find((h) => h.name === selectedHwId) || hardwareList[0];
 
+  // 1. Ollama Minimalist Documentation & CLI Home View
+  if (viewMode === 'home') {
+    return (
+      <OllamaHomeView
+        onOpenStudio={handleOpenStudio}
+        result={compilationResult}
+        selectedModel={selectedModel}
+        selectedHw={selectedHw}
+        models={models}
+        onSelectModel={handleSelectModel}
+        onDownloadHeader={handleDownloadHeader}
+      />
+    );
+  }
+
+  // 2. Full Edge Impulse Studio Workspace View
   return (
     <div className="flex h-screen bg-[#0E131F] text-[#F8FAFC] font-sans overflow-hidden">
-      {/* 1. Left Sidebar Navigation (Edge Impulse Studio Standard) */}
+      {/* Left Sidebar Navigation (Edge Impulse Studio Standard) */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -130,9 +155,9 @@ export function App() {
         setIsCopilotOpen={setIsCopilotOpen}
       />
 
-      {/* 2. Main Workspace Shell */}
+      {/* Main Workspace Shell */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#0E131F]">
-        {/* Top Navigation Bar */}
+        {/* Top Navigation Bar with Back to Home button */}
         <TopBar
           selectedModel={selectedModel}
           models={models}
@@ -149,6 +174,7 @@ export function App() {
           isDarkMode={isDarkMode}
           setIsDarkMode={setIsDarkMode}
           apiConnected={apiConnected}
+          onBackToHome={() => setViewMode('home')}
         />
 
         {/* Dynamic Studio Tab View Body */}
@@ -217,7 +243,7 @@ export function App() {
         </main>
       </div>
 
-      {/* 3. Silicon Copilot Assistant Drawer */}
+      {/* Silicon Copilot Assistant Drawer */}
       <SiliconCopilotDrawer
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}

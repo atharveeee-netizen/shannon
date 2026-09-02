@@ -7,6 +7,7 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  ArrowLeft,
 } from 'lucide-react';
 import { HardwareProfile, PresetModel } from '../types';
 
@@ -26,6 +27,7 @@ interface TopBarProps {
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
   apiConnected: boolean;
+  onBackToHome?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -44,6 +46,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   isDarkMode,
   setIsDarkMode,
   apiConnected,
+  onBackToHome,
 }) => {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -57,6 +60,17 @@ export const TopBar: React.FC<TopBarProps> = ({
     <header className="h-16 bg-[#151B26] border-b border-[#2A3649] px-6 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
       {/* Breadcrumb & Project Selector */}
       <div className="flex items-center gap-3">
+        {onBackToHome && (
+          <button
+            onClick={onBackToHome}
+            className="flex items-center gap-1 text-xs font-mono text-[#94A3B8] hover:text-white px-2 py-1 rounded bg-[#1B2431] border border-[#2A3649] transition-colors mr-1"
+            title="Return to Home & CLI page"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Home</span>
+          </button>
+        )}
+
         <div className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
           <span className="text-[#64748B]">studio</span>
           <span>/</span>

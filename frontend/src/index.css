@@ -4,72 +4,56 @@
 
 @layer base {
   :root {
-    --bg-main: #0E131F;
-    --bg-sidebar: #1B2431;
-    --bg-header: #151B26;
-    --bg-card: #151D2A;
-    --bg-card-darker: #101620;
-    --border-color: #202B3C;
-    --border-light: #2A3649;
-    --brand-green: #20E28B;
-    --brand-green-hover: #1BC97B;
-    --brand-blue: #3B82F6;
-    --brand-amber: #F59E0B;
-    --brand-purple: #8B5CF6;
-    --text-primary: #FFFFFF;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
+    --canvas: #ffffff;
+    --surface-soft: #fafafa;
+    --surface-dark: #171717;
+    --hairline: #e5e5e5;
+    --hairline-strong: #d4d4d4;
+    --primary: #000000;
+    --ink-deep: #090909;
+    --ink: #000000;
+    --charcoal: #525252;
+    --body: #737373;
+    --mute: #a3a3a3;
+    --on-dark: #ffffff;
+    --on-dark-mute: rgba(255, 255, 255, 0.7);
+    --terminal-red: #ff5f56;
+    --terminal-yellow: #ffbd2e;
+    --terminal-green: #27c93f;
+    --focus-ring: rgba(59, 130, 246, 0.5);
   }
 
   body {
-    background-color: var(--bg-main);
-    color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 600;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Tabular Numerals & Monospace */
-.font-mono {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Edge Impulse style custom scrollbars */
+/* Minimalist scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0E131F;
+  background: #fafafa;
 }
 ::-webkit-scrollbar-thumb {
-  background: #253041;
-  border-radius: 3px;
+  background: #e5e5e5;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
-
-/* Edge Impulse Visual Impulse Flow Nodes */
-.impulse-node-blue {
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border-top: 3px solid #3B82F6;
-}
-
-.impulse-node-amber {
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border-top: 3px solid #F59E0B;
-}
-
-.impulse-node-green {
-  background: linear-gradient(180deg, rgba(32, 226, 139, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border-top: 3px solid #20E28B;
-}
-
-.impulse-node-purple {
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border-top: 3px solid #8B5CF6;
+  background: #d4d4d4;
 }
