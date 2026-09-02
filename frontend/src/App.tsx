@@ -19,6 +19,10 @@ import { CompileResult } from './components/CompileResult';
 import { OptimizationTable } from './components/OptimizationTable';
 import { TechnicalInspector } from './components/TechnicalInspector';
 import { CommandPalette } from './components/CommandPalette';
+import { ImpulseFlowGraph } from './components/ImpulseFlowGraph';
+import { ConfusionMatrixView } from './components/ConfusionMatrixView';
+import { DspSpectralView } from './components/DspSpectralView';
+import { DeploymentGrid } from './components/DeploymentGrid';
 
 export function App() {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -30,9 +34,12 @@ export function App() {
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
   const [models] = useState<PresetModel[]>(PRESET_MODELS);
   const [selectedHwId, setSelectedHwId] = useState<string>('STM32H7');
-  const [selectedModelId, setSelectedModelId] = useState<string>('vision');
+  const [selectedModelId, setSelectedModelId] = useState<string>('kws');
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [customFilename, setCustomFilename] = useState<string | null>(null);
+
+  const [activeSection, setActiveSection] = useState<string>('dashboard');
+  const [isQuantized, setIsQuantized] = useState<boolean>(true);
 
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -118,6 +125,7 @@ export function App() {
   };
 
   const currentHw = hardwareList.find((h) => h.id === selectedHwId) || hardwareList[0];
+  const currentModel = models.find((m) => m.id === selectedModelId) || models[0];
 
   return (
     <div className="min-h-screen bg-canvas text-text-primary font-sans flex flex-col antialiased">
@@ -134,26 +142,30 @@ export function App() {
         models={models}
       />
 
-      {/* Top Full-Width Header */}
+      {/* Top Full-Width Header with Edge Impulse Breadcrumbs */}
       <AppHeader
         onOpenCommandPalette={() => setIsCmdOpen(true)}
         isDarkMode={isDarkMode}
         onToggleTheme={handleToggleTheme}
         currentHw={currentHw}
+        currentModel={currentModel}
         compilationResult={compilationResult}
         onDownloadHeader={handleDownloadHeader}
+        isQuantized={isQuantized}
+        onToggleQuantization={setIsQuantized}
       />
 
       {/* 3-Column Studio Layout */}
       <div className="flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
         
-        {/* Left Sidebar: Silicon Hardware & Compiler Directives */}
+        {/* Left Navigation Rail & Silicon Telemetry */}
         <SiliconSidebar
           currentHw={currentHw}
           hardwareList={hardwareList}
           onSelectHardware={setSelectedHwId}
           compilationResult={compilationResult}
-          onDownloadHeader={handleDownloadHeader}
+          activeSection={activeSection}
+          onSelectSection={setActiveSection}
         />
 
         {/* Center Main Workspace */}
@@ -184,10 +196,25 @@ export function App() {
             onCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
           />
 
-          {/* Compilation Results Overview & Metrics */}
-          {compilationResult && (
+          {/* Impulse Pipeline Visual Flow Diagram */}
+          <ImpulseFlowGraph
+            model={currentModel}
+            targetHw={currentHw}
+            compilationResult={compilationResult}
+            activeSection={activeSection}
+            onSelectSection={setActiveSection}
+          />
+
+          {/* Section 1: Dashboard & Performance Overview */}
+          {(activeSection === 'dashboard' || activeSection === 'impulse') && compilationResult && (
             <div className="space-y-5">
               <CompileResult
+                result={compilationResult}
+                targetHw={currentHw}
+              />
+
+              <ConfusionMatrixView
+                model={currentModel}
                 result={compilationResult}
                 targetHw={currentHw}
               />
@@ -202,6 +229,69 @@ export function App() {
                 onDownloadHeader={handleDownloadHeader}
               />
             </div>
+          )}
+
+          {/* Section 2: DSP Preprocessing & Spectral Filterbank */}
+          {activeSection === 'dsp' && (
+            <DspSpectralView
+              model={currentModel}
+              targetHw={currentHw}
+            />
+          )}
+
+          {/* Section 3: NN Classifier, Confusion Matrix & Performance */}
+          {activeSection === 'classifier' && compilationResult && (
+            <div className="space-y-5">
+              <ConfusionMatrixView
+                model={currentModel}
+                result={compilationResult}
+                targetHw={currentHw}
+              />
+
+              <OptimizationTable
+                result={compilationResult}
+              />
+
+              <TechnicalInspector
+                result={compilationResult}
+                targetHw={currentHw}
+                onDownloadHeader={handleDownloadHeader}
+              />
+            </div>
+          )}
+
+          {/* Section 4: Memory Arena Tab Direct View */}
+          {activeSection === 'arena' && compilationResult && (
+            <div className="space-y-5">
+              <TechnicalInspector
+                result={compilationResult}
+                targetHw={currentHw}
+                onDownloadHeader={handleDownloadHeader}
+              />
+            </div>
+          )}
+
+          {/* Section 5: Live Sensory Testbench */}
+          {activeSection === 'testbench' && (
+            <div className="p-4 bg-surface border border-border rounded-lg space-y-4">
+              <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">
+                Live Sensory Testbench & Simulator Active
+              </h3>
+              <p className="text-xs text-text-secondary">
+                Inspect real-time hardware-in-the-loop inference feed on the right sidebar testbench panel.
+              </p>
+            </div>
+          )}
+
+          {/* Section 6: Deployment & Microcontroller Firmware Grid */}
+          {activeSection === 'deployment' && (
+            <DeploymentGrid
+              currentHw={currentHw}
+              hardwareList={hardwareList}
+              onSelectHardware={setSelectedHwId}
+              compilationResult={compilationResult}
+              onDownloadHeader={handleDownloadHeader}
+            />
           )}
         </main>
 
