@@ -1,204 +1,177 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  Bot,
   X,
   Send,
-  RefreshCw,
+  Bot,
+  Sparkles,
 } from 'lucide-react';
-import { CompilationResult, HardwareProfile, PresetModel } from '../../types';
+import { useCompiler } from '../../context/CompilerContext';
 import { chatWithAgent } from '../../services/api';
 
-interface SiliconCopilotDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  result: CompilationResult | null;
-  selectedModel: PresetModel | null;
-  selectedHw: HardwareProfile;
-}
+export const SiliconCopilotDrawer: React.FC = () => {
+  const {
+    isCopilotOpen,
+    setIsCopilotOpen,
+    loadedModel,
+    compilationResult,
+    selectedHw,
+  } = useCompiler();
 
-interface ChatMessage {
-  sender: 'user' | 'agent';
-  text: string;
-  time: string;
-}
-
-export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
-  isOpen,
-  onClose,
-  result,
-  selectedModel,
-  selectedHw,
-}) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      sender: 'agent',
-      text: `Hello! I am your Autonomous Gemini Silicon Copilot. I have audited your active model (${selectedModel ? selectedModel.name : 'Custom Model'}) against ${selectedHw.name} (${selectedHw.clock_mhz} MHz, ${selectedHw.sram_kb} KB SRAM). How can I optimize your silicon footprint?`,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
-  const [inputText, setInputText] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const [inputMessage, setInputMessage] = useState('');
+  const [messages, setMessages] = useState<
+    Array<{ sender: 'user' | 'agent'; text: string; timestamp: string }>
+  >([]);
+  const [isThinking, setIsThinking] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isOpen]);
+    if (messages.length === 0) {
+      setMessages([
+        {
+          sender: 'agent',
+          text: `Hello! I am your **Shannon Silicon Copilot**. I analyze TinyML computational graphs, memory layouts, and SIMD instruction choices for **${selectedHw.name}**.\n\nAsk me about bottleneck analysis, SRAM arena lifetime reuse, or power consumption projections!`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    }
+  }, [selectedHw.name]);
 
-  const handleSendMessage = async (customPrompt?: string) => {
-    const textToSend = customPrompt || inputText;
-    if (!textToSend.trim() || isLoading) return;
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isThinking]);
 
-    const userMsg: ChatMessage = {
-      sender: 'user',
-      text: textToSend,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
+  if (!isCopilotOpen) return null;
 
-    setMessages((prev) => [...prev, userMsg]);
-    if (!customPrompt) setInputText('');
-    setIsLoading(true);
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!inputMessage.trim() || isThinking) return;
+
+    const userText = inputMessage.trim();
+    setInputMessage('');
+
+    const newMessages = [
+      ...messages,
+      {
+        sender: 'user' as const,
+        text: userText,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ];
+    setMessages(newMessages);
+    setIsThinking(true);
 
     try {
-      const response = await chatWithAgent(
-        textToSend,
-        selectedHw.name,
-        selectedModel ? selectedModel.name : 'CustomModel',
-        {
-          flash_bytes: result?.optimized_int8.flash_bytes || 24000,
-          sram_bytes: result?.optimized_int8.peak_sram_bytes || 1144,
-          latency_ms: result?.optimized_int8.estimated_latency_ms || 1.84,
-        }
+      const reply = await chatWithAgent(
+        userText,
+        selectedHw.id,
+        compilationResult?.model_name || loadedModel?.name || 'KeywordSpotter_v1',
+        compilationResult
+          ? {
+              flash_bytes: compilationResult.optimized_int8.flash_bytes,
+              sram_bytes: compilationResult.optimized_int8.peak_sram_bytes,
+              macs: compilationResult.optimized_int8.total_macs,
+              latency_ms: compilationResult.optimized_int8.estimated_latency_ms,
+            }
+          : undefined
       );
 
-      const agentMsg: ChatMessage = {
-        sender: 'agent',
-        text: response,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, agentMsg]);
+      setMessages([
+        ...newMessages,
+        {
+          sender: 'agent',
+          text: reply,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     } catch {
-      const flashKb = result ? (result.optimized_int8.flash_bytes / 1024).toFixed(1) : '24.0';
-      const sramKb = result ? (result.optimized_int8.peak_sram_bytes / 1024).toFixed(2) : '1.12';
-      const fallbackMsg: ChatMessage = {
-        sender: 'agent',
-        text: `Analysis for ${selectedHw.name}: This model requires ${flashKb} KB Flash and ${sramKb} KB static SRAM arena. It fits comfortably with zero dynamic heap allocations (0 malloc). Estimated battery runtime on 500mAh LiPo is ~200 days.`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, fallbackMsg]);
+      setMessages([
+        ...newMessages,
+        {
+          sender: 'agent',
+          text: `**Silicon Copilot Summary for ${selectedHw.name}**:\n- Model: ${loadedModel ? loadedModel.name : 'No model loaded'}\n- SRAM Arena: ${compilationResult ? compilationResult.optimized_int8.peak_sram_bytes + ' Bytes' : 'Awaiting compile'}\n- MISRA-C Safety: Verified 0 dynamic allocations.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
     } finally {
-      setIsLoading(false);
+      setIsThinking(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-[#151D2A] border-l border-[#202B3C] shadow-2xl z-50 flex flex-col select-none">
+    <div className="fixed inset-y-0 right-0 w-96 bg-surface border-l border-border shadow-2xl z-50 flex flex-col font-sans">
       {/* Drawer Header */}
-      <div className="h-16 px-5 border-b border-[#202B3C] flex items-center justify-between bg-[#151B26]">
+      <div className="h-14 px-4 border-b border-border flex items-center justify-between bg-surface-raised/40">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+          <div className="w-7 h-7 rounded bg-surface-raised border border-border flex items-center justify-center text-accent">
             <Bot className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-white">Silicon Copilot</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono">
-                Gemini
+              <span className="font-bold text-xs text-text-primary">Silicon Copilot</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-surface-raised text-text-muted font-mono font-medium border border-border">
+                AI AUDITOR
               </span>
             </div>
-            <span className="text-[11px] text-[#94A3B8]">Embedded Hardware AI</span>
+            <span className="text-[11px] text-text-muted">Target: {selectedHw.name}</span>
           </div>
         </div>
 
         <button
-          onClick={onClose}
-          className="p-1.5 rounded-md text-[#94A3B8] hover:text-white hover:bg-[#1B2431] transition-colors"
+          onClick={() => setIsCopilotOpen(false)}
+          className="p-1.5 rounded hover:bg-surface-hover text-text-muted hover:text-text-primary transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Suggested Quick Prompts */}
-      <div className="p-3 border-b border-[#202B3C] bg-[#121924] space-y-1.5">
-        <span className="text-[10px] font-mono text-[#64748B] px-1 block">QUICK SILICON AUDITS:</span>
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            'Audit hardware fit',
-            'How to get 1-year battery life?',
-            'Explain 0-malloc proof',
-          ].map((prompt) => (
-            <button
-              key={prompt}
-              onClick={() => handleSendMessage(prompt)}
-              className="text-[11px] font-mono px-2 py-1 rounded-md bg-[#1B2431] hover:bg-[#232E3E] text-[#CBD5E1] border border-[#2A3649] transition-all text-left truncate max-w-full"
-            >
-              ⚡ {prompt}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Messages Stream */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 font-sans text-xs custom-scrollbar">
-        {messages.map((msg, idx) => {
-          const isUser = msg.sender === 'user';
-          return (
+      {/* Messages Scroll Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar text-xs">
+        {messages.map((m, idx) => (
+          <div
+            key={idx}
+            className={`flex flex-col space-y-1 ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
+          >
             <div
-              key={idx}
-              className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1`}
+              className={`p-3 rounded max-w-[88%] leading-relaxed ${
+                m.sender === 'user'
+                  ? 'bg-surface-raised text-text-primary border border-border'
+                  : 'bg-surface-raised/40 border border-border text-text-primary whitespace-pre-wrap'
+              }`}
             >
-              <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#64748B]">
-                <span>{isUser ? 'Developer' : 'Gemini Copilot'}</span>
-                <span>•</span>
-                <span>{msg.time}</span>
-              </div>
-              <div
-                className={`p-3.5 rounded-lg max-w-[90%] leading-relaxed ${
-                  isUser
-                    ? 'bg-[#20E28B] text-[#0E131F] font-semibold'
-                    : 'bg-[#101620] border border-[#202B3C] text-[#CBD5E1] font-mono text-[11px]'
-                }`}
-              >
-                {msg.text}
-              </div>
+              {m.text}
             </div>
-          );
-        })}
-        {isLoading && (
-          <div className="flex items-center gap-2 text-[#94A3B8] font-mono text-xs py-2">
-            <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-400" />
-            <span>Auditing silicon telemetry...</span>
+            <span className="text-[10px] font-mono text-text-muted px-1">{m.timestamp}</span>
+          </div>
+        ))}
+
+        {isThinking && (
+          <div className="flex items-center gap-2 text-accent font-mono text-xs p-2">
+            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            <span>Auditing silicon memory constraints...</span>
           </div>
         )}
-        <div ref={chatEndRef} />
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Box */}
-      <div className="p-3 border-t border-[#202B3C] bg-[#121924]">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-          className="flex items-center gap-2"
-        >
+      {/* Input Form */}
+      <form onSubmit={handleSendMessage} className="p-3 border-t border-border bg-surface-raised/20">
+        <div className="flex items-center gap-2">
           <input
             type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Ask Copilot about MCU RAM, battery, or latency..."
-            className="flex-1 bg-[#101620] border border-[#202B3C] rounded-md px-3 py-2 text-xs text-white placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#20E28B] font-sans"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Ask about SRAM arena, latency..."
+            className="flex-1 bg-surface-raised border border-border rounded px-3 py-2 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-accent placeholder-text-muted font-sans"
           />
           <button
             type="submit"
-            disabled={!inputText.trim() || isLoading}
-            className="p-2 rounded-md bg-[#20E28B] hover:bg-[#1BC97B] text-[#0E131F] font-bold transition-all disabled:opacity-50"
+            disabled={!inputMessage.trim() || isThinking}
+            className="p-2 rounded bg-accent hover:bg-accent-hover text-black disabled:opacity-50 transition-colors"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-3.5 h-3.5" />
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

@@ -1,102 +1,82 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
-  Cpu,
-  RefreshCw,
+  Play,
   Download,
-  Bot,
   Sun,
   Moon,
   ChevronDown,
-  ArrowLeft,
+  AlertTriangle,
+  RotateCcw,
+  Command,
+  HardDrive,
+  XCircle,
 } from 'lucide-react';
-import { HardwareProfile, PresetModel } from '../types';
+import { useCompiler } from '../context/CompilerContext';
+import { PRESET_MODELS } from '../services/api';
 
 interface TopBarProps {
-  selectedModel: PresetModel | null;
-  models: PresetModel[];
-  onSelectModel: (id: string) => void;
-  hardwareList: HardwareProfile[];
-  selectedHw: HardwareProfile;
-  onSelectHw: (id: string) => void;
-  onUploadCustom: (file: File) => void;
-  isCompiling: boolean;
-  onRecompile: () => void;
-  onDownloadHeader: () => void;
-  isCopilotOpen: boolean;
-  setIsCopilotOpen: (open: boolean) => void;
-  isDarkMode: boolean;
-  setIsDarkMode: (dark: boolean) => void;
-  apiConnected: boolean;
-  onBackToHome?: () => void;
+  onOpenCommandPalette: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({
-  selectedModel,
-  models,
-  onSelectModel,
-  hardwareList,
-  selectedHw,
-  onSelectHw,
-  onUploadCustom,
-  isCompiling,
-  onRecompile,
-  onDownloadHeader,
-  isCopilotOpen,
-  setIsCopilotOpen,
-  isDarkMode,
-  setIsDarkMode,
-  apiConnected,
-  onBackToHome,
-}) => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+export const TopBar: React.FC<TopBarProps> = ({ onOpenCommandPalette }) => {
+  const {
+    loadedModel,
+    selectedHw,
+    hardwareList,
+    setHardware,
+    loadPreset,
+    uploadCustomModel,
+    triggerCompile,
+    isCompiling,
+    isTargetInvalidated,
+    compilationResult,
+    downloadHeader,
+    clearModel,
+    isDarkMode,
+    setIsDarkMode,
+  } = useCompiler();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      onUploadCustom(e.target.files[0]);
+      uploadCustomModel(e.target.files[0], true);
     }
   };
 
   return (
-    <header className="h-16 bg-[#151B26] border-b border-[#2A3649] px-6 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
-      {/* Breadcrumb & Project Selector */}
-      <div className="flex items-center gap-3">
-        {onBackToHome && (
-          <button
-            onClick={onBackToHome}
-            className="flex items-center gap-1 text-xs font-mono text-[#94A3B8] hover:text-white px-2 py-1 rounded bg-[#1B2431] border border-[#2A3649] transition-colors mr-1"
-            title="Return to Home & CLI page"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Home</span>
-          </button>
-        )}
-
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
-          <span className="text-[#64748B]">studio</span>
-          <span>/</span>
-          <div className="relative group">
+    <header className="h-14 bg-surface border-b border-border px-4 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
+      {/* Left: Model & Target Silicon Selectors */}
+      <div className="flex items-center gap-2.5">
+        {/* Model Selector */}
+        <div className="flex items-center gap-1.5 text-xs font-mono">
+          <span className="text-text-muted">model:</span>
+          <div className="relative">
             <select
-              value={selectedModel ? selectedModel.id : 'custom'}
+              value={loadedModel ? loadedModel.id : ''}
               onChange={(e) => {
                 if (e.target.value === 'custom') {
                   fileInputRef.current?.click();
-                } else {
-                  onSelectModel(e.target.value);
+                } else if (e.target.value) {
+                  loadPreset(e.target.value, true);
                 }
               }}
-              className="appearance-none bg-[#1B2431] hover:bg-[#232E3E] text-white font-sans font-semibold text-xs py-1.5 pl-3 pr-7 rounded-md border border-[#2A3649] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#20E28B]"
+              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans font-semibold text-xs py-1 pl-2.5 pr-6 rounded border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent"
             >
-              {models.map((m) => (
-                <option key={m.id} value={m.id} className="bg-[#151B26] text-white">
+              <option value="" disabled>
+                -- Select Model --
+              </option>
+              {PRESET_MODELS.map((m) => (
+                <option key={m.id} value={m.id}>
                   {m.name} ({m.domain})
                 </option>
               ))}
-              <option value="custom" className="bg-[#151B26] text-[#20E28B]">
-                + Upload Custom ONNX/JSON...
-              </option>
+              {loadedModel?.isCustom && <option value="custom">{loadedModel.name} (Custom)</option>}
+              <option value="custom">+ Upload ONNX/JSON...</option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] absolute right-2 top-2.5 pointer-events-none" />
+            <ChevronDown className="w-3 h-3 text-text-muted absolute right-1.5 top-2 pointer-events-none" />
           </div>
+
           <input
             type="file"
             ref={fileInputRef}
@@ -104,79 +84,108 @@ export const TopBar: React.FC<TopBarProps> = ({
             accept=".json,.onnx"
             className="hidden"
           />
+
+          {loadedModel && (
+            <button
+              onClick={clearModel}
+              title="Unload current model"
+              className="p-1 hover:text-rose-400 text-text-muted rounded transition-colors"
+            >
+              <XCircle className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
-        {/* API Health Status */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1B2431] border border-[#2A3649] text-[11px] font-mono text-[#94A3B8]">
-          <span
-            className={`w-1.5 h-1.5 rounded-full ${
-              apiConnected ? 'bg-[#20E28B] animate-pulse' : 'bg-[#20E28B]'
-            }`}
-          />
-          <span className="text-[#CBD5E1]">Ready</span>
+        <span className="text-border">|</span>
+
+        {/* Target Silicon Hardware Selector */}
+        <div className="flex items-center gap-1.5 text-xs font-mono">
+          <HardDrive className="w-3.5 h-3.5 text-text-muted" />
+          <span className="text-text-muted">target:</span>
+          <div className="relative">
+            <select
+              value={selectedHw.id}
+              onChange={(e) => setHardware(e.target.value)}
+              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans font-semibold text-xs py-1 pl-2.5 pr-6 rounded border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-accent"
+            >
+              {hardwareList.map((hw) => (
+                <option key={hw.id} value={hw.id}>
+                  {hw.name} ({hw.clock_mhz}MHz, {hw.sram_kb}KB SRAM)
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="w-3 h-3 text-text-muted absolute right-1.5 top-2 pointer-events-none" />
+          </div>
         </div>
+
+        {/* Target Invalidation Warning Banner */}
+        {isTargetInvalidated && (
+          <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] font-mono">
+            <AlertTriangle className="w-3 h-3" />
+            <span>Target Changed — Recompile Required</span>
+          </div>
+        )}
       </div>
 
-      {/* Target Microcontroller & Actions */}
-      <div className="flex items-center gap-3">
-        {/* Target MCU Selector */}
-        <div className="flex items-center gap-2 bg-[#1B2431] border border-[#2A3649] rounded-md p-1">
-          <div className="flex items-center gap-1.5 px-2 text-xs font-mono text-[#94A3B8]">
-            <Cpu className="w-3.5 h-3.5 text-[#20E28B]" />
-            <span className="text-[#64748B]">Target:</span>
-          </div>
-          <select
-            value={selectedHw.name}
-            onChange={(e) => onSelectHw(e.target.value)}
-            className="bg-[#121924] text-white font-mono text-xs py-1 px-2.5 rounded border border-[#253041] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#20E28B]"
-          >
-            {hardwareList.map((hw) => (
-              <option key={hw.name} value={hw.name} className="bg-[#151B26] text-white">
-                {hw.name} ({hw.clock_mhz}MHz, {hw.sram_kb}KB SRAM)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Re-Compile Button */}
+      {/* Right: Actions & Tools */}
+      <div className="flex items-center gap-2">
+        {/* Command Palette Trigger */}
         <button
-          onClick={onRecompile}
-          disabled={isCompiling}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1B2431] hover:bg-[#232E3E] text-[#E2E8F0] border border-[#2A3649] text-xs font-medium transition-all disabled:opacity-50"
+          onClick={onOpenCommandPalette}
+          className="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-muted hover:text-text-primary text-xs font-mono transition-colors"
+          title="Open Command Palette (Ctrl+K)"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isCompiling ? 'animate-spin text-[#20E28B]' : 'text-[#94A3B8]'}`} />
-          <span>{isCompiling ? 'Compiling...' : 'Recompile'}</span>
+          <Command className="w-3 h-3" />
+          <span>Cmd+K</span>
         </button>
 
-        {/* Export C Header Button (Edge Impulse Signature Green CTA) */}
+        {/* Master Compile Action Button */}
         <button
-          onClick={onDownloadHeader}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#20E28B] hover:bg-[#1BC97B] text-[#0E131F] text-xs font-bold shadow-sm shadow-[#20E28B]/20 transition-all active:scale-95"
-        >
-          <Download className="w-3.5 h-3.5 text-[#0E131F] stroke-[2.5]" />
-          <span>Export .h Header</span>
-        </button>
-
-        {/* Copilot Toggle */}
-        <button
-          onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-          className={`p-2 rounded-md border text-xs transition-all ${
-            isCopilotOpen
-              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
-              : 'bg-[#1B2431] border-[#2A3649] text-[#94A3B8] hover:text-white hover:bg-[#232E3E]'
+          onClick={() => triggerCompile()}
+          disabled={!loadedModel || isCompiling}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold shadow-sm transition-all ${
+            !loadedModel
+              ? 'bg-surface-raised text-text-muted border border-border cursor-not-allowed opacity-50'
+              : isCompiling
+              ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-wait'
+              : 'bg-accent hover:bg-accent-hover text-black active:scale-95'
           }`}
-          title="Toggle Gemini Silicon Copilot"
         >
-          <Bot className="w-4 h-4" />
+          {isCompiling ? (
+            <>
+              <RotateCcw className="w-3.5 h-3.5 animate-spin" />
+              <span>Compiling...</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3.5 h-3.5 fill-black" />
+              <span>Compile</span>
+            </>
+          )}
         </button>
 
-        {/* Theme Toggle */}
+        {/* Download Standalone Header (.h) */}
+        <button
+          onClick={downloadHeader}
+          disabled={!compilationResult}
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-xs font-medium transition-colors ${
+            compilationResult
+              ? 'bg-surface-raised hover:bg-surface-hover border-border text-text-primary'
+              : 'bg-surface border-border/40 text-text-muted/40 cursor-not-allowed'
+          }`}
+          title="Download MISRA-C Standalone Header"
+        >
+          <Download className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Export .h</span>
+        </button>
+
+        {/* Dark / Light Theme Switcher */}
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2 rounded-md bg-[#1B2431] border border-[#2A3649] text-[#94A3B8] hover:text-white hover:bg-[#232E3E] transition-all"
-          title="Toggle theme"
+          className="p-1.5 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-muted hover:text-text-primary transition-colors"
+          title="Toggle Dark/Light Mode"
         >
-          {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
         </button>
       </div>
     </header>

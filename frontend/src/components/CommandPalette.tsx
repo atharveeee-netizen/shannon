@@ -1,40 +1,58 @@
-import React, { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
-import { HardwareProfile, PresetModel } from '../types';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Search,
+  Zap,
+  HardDrive,
+  GitMerge,
+  Cpu,
+  Download,
+  Terminal,
+  Sun,
+  Moon,
+  Box,
+  Layers,
+  FileCode,
+} from 'lucide-react';
+import { useCompiler } from '../context/CompilerContext';
+import { PRESET_MODELS } from '../services/api';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectHardware: (id: string) => void;
-  onSelectModel: (id: string) => void;
-  onTriggerCompile: () => void;
-  onDownloadHeader: () => void;
-  onToggleTheme: () => void;
-  isDarkMode: boolean;
-  hardwareList: HardwareProfile[];
-  models: PresetModel[];
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({
-  isOpen,
-  onClose,
-  onSelectHardware,
-  onSelectModel,
-  onTriggerCompile,
-  onDownloadHeader,
-  onToggleTheme,
-  isDarkMode,
-  hardwareList,
-  models,
-}) => {
-  const [query, setQuery] = useState('');
+export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
+  const {
+    loadedModel,
+    hardwareList,
+    setHardware,
+    loadPreset,
+    triggerCompile,
+    downloadHeader,
+    setActiveTab,
+    isDarkMode,
+    setIsDarkMode,
+  } = useCompiler();
 
+  const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => inputRef.current?.focus(), 50);
+      setQuery('');
+      setSelectedIndex(0);
+    }
+  }, [isOpen]);
+
+  // Global Ctrl+K / Cmd+K shortcut listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         if (isOpen) onClose();
-        else setQuery('');
+        else onClose(); // parent handles toggle
       }
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -46,122 +64,199 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   if (!isOpen) return null;
 
-  const actions = [
+  const commands = [
+    // Core Actions
     {
-      category: 'Actions',
-      items: [
-        {
-          id: 'act_compile',
-          label: 'Compile model',
-          action: () => {
-            onTriggerCompile();
-            onClose();
-          },
-        },
-        {
-          id: 'act_download',
-          label: 'Download shannon_model.h',
-          action: () => {
-            onDownloadHeader();
-            onClose();
-          },
-        },
-        {
-          id: 'act_theme',
-          label: isDarkMode ? 'Toggle theme (Light)' : 'Toggle theme (Dark)',
-          action: () => {
-            onToggleTheme();
-            onClose();
-          },
-        },
-      ],
+      id: 'compile',
+      title: 'Run Silicon Compilation Pipeline',
+      category: 'Compiler',
+      icon: Zap,
+      action: () => {
+        triggerCompile();
+        onClose();
+      },
     },
     {
-      category: 'Target Hardware',
-      items: hardwareList.map((hw) => ({
-        id: `hw_${hw.id}`,
-        label: `Target: ${hw.name} (${hw.sram_kb} KB SRAM, ${hw.flash_mb} MB Flash)`,
-        action: () => {
-          onSelectHardware(hw.id);
-          onClose();
-        },
-      })),
+      id: 'export_header',
+      title: 'Export Standalone C Header (shannon_model.h)',
+      category: 'Export',
+      icon: Download,
+      action: () => {
+        downloadHeader();
+        onClose();
+      },
+    },
+    // Navigation
+    {
+      id: 'nav_dashboard',
+      title: 'Go to Dashboard',
+      category: 'Navigation',
+      icon: Layers,
+      action: () => {
+        setActiveTab('dashboard');
+        onClose();
+      },
     },
     {
-      category: 'Preset Models',
-      items: models.map((m) => ({
-        id: `mod_${m.id}`,
-        label: `Model: ${m.name} (${m.input_shape})`,
-        action: () => {
-          onSelectModel(m.id);
-          onClose();
-        },
-      })),
+      id: 'nav_graph',
+      title: 'Go to Computation Graph (DAG)',
+      category: 'Navigation',
+      icon: GitMerge,
+      action: () => {
+        setActiveTab('graph');
+        onClose();
+      },
+    },
+    {
+      id: 'nav_memory',
+      title: 'Go to SRAM Memory Arena Visualizer',
+      category: 'Navigation',
+      icon: Cpu,
+      action: () => {
+        setActiveTab('memory');
+        onClose();
+      },
+    },
+    {
+      id: 'nav_codegen',
+      title: 'Go to Generated C/C++ Header',
+      category: 'Navigation',
+      icon: FileCode,
+      action: () => {
+        setActiveTab('codegen');
+        onClose();
+      },
+    },
+    {
+      id: 'nav_logs',
+      title: 'Go to Compiler Logs',
+      category: 'Navigation',
+      icon: Terminal,
+      action: () => {
+        setActiveTab('logs');
+        onClose();
+      },
+    },
+    // Model Presets
+    ...PRESET_MODELS.map((m) => ({
+      id: `model_${m.id}`,
+      title: `Load Model: ${m.name} (${m.domain})`,
+      category: 'Models',
+      icon: Box,
+      action: () => {
+        loadPreset(m.id, true);
+        onClose();
+      },
+    })),
+    // Hardware Targets
+    ...hardwareList.map((hw) => ({
+      id: `hw_${hw.id}`,
+      title: `Set Target Silicon: ${hw.name} (${hw.clock_mhz}MHz, ${hw.sram_kb}KB SRAM)`,
+      category: 'Hardware',
+      icon: HardDrive,
+      action: () => {
+        setHardware(hw.id);
+        onClose();
+      },
+    })),
+    // Theme
+    {
+      id: 'toggle_theme',
+      title: `Switch to ${isDarkMode ? 'Light' : 'Dark'} Theme`,
+      category: 'Settings',
+      icon: isDarkMode ? Sun : Moon,
+      action: () => {
+        setIsDarkMode(!isDarkMode);
+        onClose();
+      },
     },
   ];
 
-  const filtered = actions
-    .map((grp) => ({
-      ...grp,
-      items: grp.items.filter((item) =>
-        item.label.toLowerCase().includes(query.toLowerCase())
-      ),
-    }))
-    .filter((grp) => grp.items.length > 0);
+  const filteredCommands = commands.filter(
+    (c) =>
+      c.title.toLowerCase().includes(query.toLowerCase()) ||
+      c.category.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const handleKeyDownList = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % Math.max(1, filteredCommands.length));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % Math.max(1, filteredCommands.length));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filteredCommands[selectedIndex]) {
+        filteredCommands[selectedIndex].action();
+      }
+    }
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/60 backdrop-blur-sm p-4">
       <div
-        className="w-full max-w-lg bg-surface border border-border rounded-[3px] shadow-lg overflow-hidden flex flex-col font-sans"
+        className="w-full max-w-xl rounded-lg bg-surface border border-border shadow-2xl overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center px-4 py-3 border-b border-border bg-surface-raised">
-          <Search className="w-4 h-4 text-text-secondary mr-3" />
+        {/* Search Header */}
+        <div className="flex items-center px-4 py-3 border-b border-border gap-3 bg-surface-raised/40">
+          <Search className="w-4 h-4 text-text-muted" />
           <input
+            ref={inputRef}
             type="text"
-            autoFocus
-            placeholder="Type a command or search..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-xs text-text-primary focus:outline-none placeholder-text-muted"
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setSelectedIndex(0);
+            }}
+            onKeyDown={handleKeyDownList}
+            placeholder="Type a command or search models, hardware, views..."
+            className="w-full bg-transparent text-text-primary text-xs font-medium focus:outline-none placeholder-text-muted"
           />
-          <button
-            onClick={onClose}
-            className="text-text-secondary hover:text-text-primary p-1"
-            aria-label="Close"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
+          <kbd className="px-1.5 py-0.5 rounded bg-surface border border-border text-[10px] font-mono text-text-muted">
+            ESC
+          </kbd>
         </div>
 
-        <div className="max-h-72 overflow-y-auto p-2 space-y-3 text-xs">
-          {filtered.map((grp, idx) => (
-            <div key={idx}>
-              <span className="text-[11px] text-text-muted font-medium px-2 block mb-1">
-                {grp.category}
-              </span>
-              <div className="space-y-0.5">
-                {grp.items.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={item.action}
-                    className="w-full text-left px-2.5 py-1.5 rounded-[2px] text-text-primary hover:bg-surface-hover flex items-center justify-between transition"
-                  >
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          {filtered.length === 0 && (
-            <div className="p-6 text-center text-text-muted">
-              No matching commands.
-            </div>
+        {/* Results List */}
+        <div className="max-h-80 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+          {filteredCommands.length === 0 ? (
+            <div className="py-8 text-center text-xs text-text-muted">No commands found matching "{query}"</div>
+          ) : (
+            filteredCommands.map((cmd, idx) => {
+              const Icon = cmd.icon;
+              const isSelected = idx === selectedIndex;
+              return (
+                <div
+                  key={cmd.id}
+                  onClick={() => cmd.action()}
+                  onMouseEnter={() => setSelectedIndex(idx)}
+                  className={`flex items-center justify-between px-3 py-2 rounded text-xs cursor-pointer transition-colors ${
+                    isSelected ? 'bg-accent/15 text-accent' : 'text-text-primary hover:bg-surface-hover'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-accent' : 'text-text-muted'}`} />
+                    <span className="font-medium">{cmd.title}</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">
+                    {cmd.category}
+                  </span>
+                </div>
+              );
+            })
           )}
+        </div>
+
+        {/* Footer shortcuts */}
+        <div className="px-4 py-2 border-t border-border bg-surface-raised/30 flex items-center justify-between text-[10px] font-mono text-text-muted">
+          <div className="flex items-center gap-2">
+            <span>↑↓ Navigate</span>
+            <span>↵ Select</span>
+            <span>ESC Close</span>
+          </div>
+          <span>Active: {loadedModel?.name || 'None'}</span>
         </div>
       </div>
     </div>
