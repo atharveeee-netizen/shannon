@@ -4,61 +4,61 @@
 
 @layer base {
   :root {
-    --bg: #FFFFFF;
-    --surface: #F7F7F8;
-    --surface-raised: #FFFFFF;
-    --surface-hover: #EFEFF1;
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-raised: #F1F5F9;
+    --surface-hover: #E2E8F0;
     --panel: #FFFFFF;
-    --border: #E1E1E3;
-    --border-strong: #C8C8CD;
-    --text: #1F1F23;
-    --text-secondary: #66666D;
-    --text-muted: #8A8A91;
-    --primary: #6C4CE8;
-    --primary-hover: #5B3FD0;
-    --primary-subtle: #F0EDFD;
-    --success: #238636;
-    --success-subtle: #E6F4EA;
-    --warning: #B7791F;
-    --warning-subtle: #FEF7E0;
-    --danger: #D73A49;
-    --danger-subtle: #FCE8E6;
-    --info: #2563EB;
-    --info-subtle: #E8F0FE;
-    --code-bg: #18181B;
-    --code-text: #F4F4F5;
+    --border: #CBD5E1;
+    --border-strong: #94A3B8;
+    --text: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+    --primary: #059669;
+    --primary-hover: #047857;
+    --primary-subtle: #ECFDF5;
+    --success: #16A34A;
+    --success-subtle: #DCFCE7;
+    --warning: #D97706;
+    --warning-subtle: #FEF3C7;
+    --danger: #DC2626;
+    --danger-subtle: #FEE2E2;
+    --info: #0284C7;
+    --info-subtle: #E0F2FE;
+    --code-bg: #0F172A;
+    --code-text: #F8FAFC;
   }
 
   .dark {
-    --bg: #111113;
-    --surface: #18181B;
-    --surface-raised: #1E1E22;
-    --surface-hover: #26262B;
-    --panel: #1E1E22;
-    --border: #303036;
-    --border-strong: #45454D;
-    --text: #F4F4F5;
-    --text-secondary: #A1A1AA;
-    --text-muted: #71717A;
-    --primary: #8B6FF7;
-    --primary-hover: #A088F9;
-    --primary-subtle: #241C40;
-    --success: #3FB950;
-    --success-subtle: #122818;
-    --warning: #D29922;
-    --warning-subtle: #332408;
-    --danger: #F85149;
-    --danger-subtle: #371416;
-    --info: #38BDF8;
-    --info-subtle: #0B253A;
-    --code-bg: #0C0C0E;
-    --code-text: #E4E4E7;
+    --bg: #0B0E14;
+    --surface: #111622;
+    --surface-raised: #182234;
+    --surface-hover: #1F2C42;
+    --panel: #141C2B;
+    --border: #233044;
+    --border-strong: #334460;
+    --text: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --primary: #10B981;
+    --primary-hover: #059669;
+    --primary-subtle: rgba(16, 185, 129, 0.12);
+    --success: #22C55E;
+    --success-subtle: rgba(34, 197, 94, 0.15);
+    --warning: #F59E0B;
+    --warning-subtle: rgba(245, 158, 11, 0.15);
+    --danger: #EF4444;
+    --danger-subtle: rgba(239, 68, 68, 0.15);
+    --info: #06B6D4;
+    --info-subtle: rgba(6, 182, 212, 0.15);
+    --code-bg: #080B10;
+    --code-text: #E2E8F0;
   }
 
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 14px;
@@ -66,23 +66,21 @@
   }
 }
 
-/* Monospace with tabular numerals for data tables, hex offsets, and code */
 .font-mono {
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* Restrained technical scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);

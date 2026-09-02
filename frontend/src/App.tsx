@@ -25,6 +25,11 @@ import { QuantizationView } from './views/QuantizationView';
 import { MemoryArenaView } from './views/MemoryArenaView';
 import { OptimizationView } from './views/OptimizationView';
 import { CodeGenView } from './views/CodeGenView';
+import { SignalFlowView } from './views/SignalFlowView';
+import { TensorInspectorView } from './views/TensorInspectorView';
+import { WaveformsView } from './views/WaveformsView';
+import { Fp32VsInt8View } from './views/Fp32VsInt8View';
+import { CompareView } from './views/CompareView';
 import { TestbenchView } from './views/TestbenchView';
 import { BenchmarksView } from './views/BenchmarksView';
 import { TargetsView } from './views/TargetsView';
@@ -190,14 +195,13 @@ export function App() {
             </div>
           )}
 
+          {/* PROJECT */}
           {activeView === 'dashboard' && (
             <DashboardView
               currentModel={currentModel}
               currentHw={currentHw}
               compilationResult={compilationResult}
               onNavigate={setActiveView}
-              onRunCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
-              isCompiling={isCompiling}
             />
           )}
 
@@ -222,6 +226,7 @@ export function App() {
             />
           )}
 
+          {/* COMPILER */}
           {activeView === 'graph' && (
             <GraphView compilationResult={compilationResult} />
           )}
@@ -256,6 +261,41 @@ export function App() {
             />
           )}
 
+          {/* SIMULATION */}
+          {activeView === 'signalflow' && (
+            <SignalFlowView
+              model={currentModel}
+              targetHw={currentHw}
+            />
+          )}
+
+          {activeView === 'tensorinspector' && (
+            <TensorInspectorView
+              compilationResult={compilationResult}
+            />
+          )}
+
+          {activeView === 'waveforms' && (
+            <WaveformsView
+              model={currentModel}
+            />
+          )}
+
+          {activeView === 'fp32vsint8' && (
+            <Fp32VsInt8View
+              model={currentModel}
+              compilationResult={compilationResult}
+            />
+          )}
+
+          {activeView === 'compare' && (
+            <CompareView
+              models={models}
+              hardwareList={hardwareList}
+            />
+          )}
+
+          {/* VALIDATION */}
           {(activeView === 'testbench' || activeView === 'parity') && (
             <TestbenchView
               model={currentModel}
@@ -268,6 +308,7 @@ export function App() {
             <BenchmarksView />
           )}
 
+          {/* HARDWARE */}
           {activeView === 'targets' && (
             <TargetsView
               currentHw={currentHw}
@@ -284,6 +325,7 @@ export function App() {
             />
           )}
 
+          {/* SYSTEM */}
           {activeView === 'logs' && (
             <LogsView />
           )}

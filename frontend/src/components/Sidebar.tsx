@@ -16,24 +16,36 @@ import {
   Rocket,
   Terminal,
   Settings,
+  Layers,
 } from 'lucide-react';
 import { HardwareProfile } from '../types';
 
 export type ViewId =
+  // PROJECT
   | 'dashboard'
   | 'models'
   | 'inputs'
   | 'import'
+  // COMPILER
   | 'graph'
   | 'quantization'
   | 'arena'
   | 'optimization'
   | 'codegen'
+  // SIMULATION
+  | 'signalflow'
+  | 'tensorinspector'
+  | 'waveforms'
+  | 'fp32vsint8'
+  | 'compare'
+  // VALIDATION
   | 'testbench'
   | 'parity'
   | 'benchmarks'
+  // HARDWARE
   | 'targets'
   | 'deployment'
+  // SYSTEM
   | 'logs'
   | 'settings';
 
@@ -56,18 +68,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'dashboard' as ViewId, label: 'Dashboard', icon: LayoutDashboard },
         { id: 'models' as ViewId, label: 'Models', icon: Box },
-        { id: 'inputs' as ViewId, label: 'Data / Inputs', icon: Radio },
+        { id: 'inputs' as ViewId, label: 'Inputs', icon: Radio },
+        { id: 'import' as ViewId, label: 'Import', icon: UploadCloud },
       ],
     },
     {
       category: 'COMPILER',
       items: [
-        { id: 'import' as ViewId, label: 'Import Model', icon: UploadCloud },
         { id: 'graph' as ViewId, label: 'Graph', icon: GitCommit },
         { id: 'quantization' as ViewId, label: 'Quantization', icon: Sliders },
         { id: 'arena' as ViewId, label: 'Memory Arena', icon: Database, badge: '0B' },
         { id: 'optimization' as ViewId, label: 'Optimization', icon: Cpu },
         { id: 'codegen' as ViewId, label: 'Code Generation', icon: FileCode },
+      ],
+    },
+    {
+      category: 'SIMULATION',
+      items: [
+        { id: 'signalflow' as ViewId, label: 'Signal Flow', icon: Activity },
+        { id: 'tensorinspector' as ViewId, label: 'Tensor Inspector', icon: Layers },
+        { id: 'waveforms' as ViewId, label: 'Waveforms', icon: Radio },
+        { id: 'fp32vsint8' as ViewId, label: 'FP32 vs INT8', icon: Sliders },
+        { id: 'compare' as ViewId, label: 'Compare', icon: BarChart2 },
       ],
     },
     {
@@ -96,24 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className="w-60 flex-shrink-0 bg-surface border-r border-border flex flex-col h-auto lg:h-[calc(100vh-3rem)] overflow-y-auto text-xs font-sans select-none">
-      {/* Brand Header */}
-      <div className="h-12 px-4 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 bg-primary rounded flex items-center justify-center font-mono font-bold text-white text-[11px]">
-            S
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-xs text-text-primary tracking-tight">SHANNON</span>
-            <span className="text-[9px] font-mono text-text-muted leading-none">TinyML Compiler Studio</span>
-          </div>
-        </div>
-      </div>
-
       {/* Navigation Sections */}
-      <div className="p-2 space-y-4 flex-1">
+      <div className="p-2 space-y-3 flex-1">
         {navSections.map((sec) => (
           <div key={sec.category} className="space-y-0.5">
-            <span className="text-[10px] font-semibold text-text-muted px-2.5 py-1 block tracking-wider">
+            <span className="text-[10px] font-bold text-text-muted px-2.5 py-1 block tracking-wider font-mono">
               {sec.category}
             </span>
             {sec.items.map((item) => {
@@ -125,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onClick={() => onSelectView(item.id)}
                   className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-xs transition font-medium ${
                     isActive
-                      ? 'bg-primary/10 text-primary font-semibold border border-primary/20'
+                      ? 'bg-primary/10 text-primary font-bold border border-primary/30 shadow-sm'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover border border-transparent'
                   }`}
                 >
@@ -155,11 +164,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-border bg-surface-raised/40 font-mono text-[11px] space-y-1.5">
         <div className="flex items-center justify-between text-text-muted text-[10px]">
           <span>TARGET SILICON</span>
-          <span className="text-primary font-semibold">{targetHw.name}</span>
+          <span className="text-primary font-bold">{targetHw.name}</span>
         </div>
         <div className="flex items-center justify-between text-text-secondary">
           <span className="truncate">{targetHw.arch.split(' ')[0]}</span>
-          <span className="flex items-center gap-1 text-[10px] text-success">
+          <span className="flex items-center gap-1 text-[10px] text-success font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             {compilationStatus}
           </span>
