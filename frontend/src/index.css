@@ -4,45 +4,53 @@
 
 @layer base {
   :root {
-    --bg: #F7F7F5;
+    --bg: #F8F9FA;
     --surface: #FFFFFF;
-    --surface-raised: #F0F0EC;
-    --surface-hover: #EAEAE5;
-    --border: #E0E0DC;
-    --border-strong: #C8C8C2;
-    --text: #141413;
-    --text-secondary: #60605C;
-    --text-muted: #8C8C87;
-    --accent: #106BA3;
-    --accent-hover: #0E5A8A;
-    --success: #0D8050;
-    --danger: #C23030;
-    --code-bg: #141414;
-    --code-text: #E6E6E6;
+    --surface-raised: #F1F3F5;
+    --surface-hover: #E9ECEF;
+    --border: #DEE2E6;
+    --border-strong: #CED4DA;
+    --text: #1A1D20;
+    --text-secondary: #495057;
+    --text-muted: #868E96;
+    --accent: #0284C7;
+    --accent-hover: #0369A1;
+    --success: #16A34A;
+    --success-bg: #DCFCE7;
+    --warning: #D97706;
+    --warning-bg: #FEF3C7;
+    --danger: #DC2626;
+    --danger-bg: #FEE2E2;
+    --code-bg: #1E293B;
+    --code-text: #F8FAFC;
   }
 
   .dark {
-    --bg: #0A0A0A;
-    --surface: #121212;
-    --surface-raised: #181818;
-    --surface-hover: #222222;
-    --border: #262626;
-    --border-strong: #383838;
-    --text: #F5F5F5;
-    --text-secondary: #8E8E8E;
-    --text-muted: #5C5C5C;
-    --accent: #2B95D6;
-    --accent-hover: #48AFF0;
-    --success: #0D8050;
-    --danger: #C23030;
-    --code-bg: #0E0E0E;
-    --code-text: #E6E6E6;
+    --bg: #090D16;
+    --surface: #0F172A;
+    --surface-raised: #1E293B;
+    --surface-hover: #334155;
+    --border: #1E293B;
+    --border-strong: #475569;
+    --text: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --accent: #38BDF8;
+    --accent-hover: #7DD3FC;
+    --success: #22C55E;
+    --success-bg: #14532D;
+    --warning: #F59E0B;
+    --warning-bg: #78350F;
+    --danger: #EF4444;
+    --danger-bg: #7F1D1D;
+    --code-bg: #0B1120;
+    --code-text: #E2E8F0;
   }
 
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -50,11 +58,11 @@
 
 /* Monospace with tabular numerals for data tables, hex offsets, and code */
 .font-mono {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* Minimal scrollbars */
+/* Minimal sleek scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -64,7 +72,7 @@
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);

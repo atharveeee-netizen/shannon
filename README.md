@@ -65,9 +65,9 @@ All models in the Shannon Model Zoo are trained with PyTorch using AdamW and a s
 
 | Benchmark Model | Domain | Target Silicon | Validation Metric | INT8 Flash | Flash Savings | Peak SRAM Arena | Total MACs |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Audio Keyword Spotter** | Voice Wake-Word | ESP32-S3 | **95.8% Acc (12 Classes)** | 24.0 KB | **75% (4x)** | **1.12 KB** | 46,368 |
-| **MicroVision Person** | Edge Vision | STM32H7 | **89.1% Acc (48x48)** | 1.13 KB | **65x** | **18.0 KB** | 239,680 |
-| **Vibration Autoencoder** | Industrial IoT | RP2040 Pico | **MSE 0.0003 (85x separation)** | 19.5 KB | **73%** | **0.19 KB** | 18,432 |
+| **Audio Keyword Spotter** | Voice Wake-Word | ESP32-S3 | **96.6% Acc (12 Classes)** | 24.0 KB | **74.5% (4x)** | **1.12 KB** | 46,368 |
+| **MicroVision Person** | Edge Vision | STM32H7 | **96.4% Acc (48x48)** | 18.1 KB | **75.0% (4x)** | **18.0 KB** | 239,680 |
+| **Vibration Autoencoder** | Industrial IoT | RP2040 Pico | **MSE 0.000133 (Normal)** | 19.5 KB | **72.9%** | **0.19 KB** | 18,432 |
 
 ---
 

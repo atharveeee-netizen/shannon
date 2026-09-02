@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   HardwareProfile,
   PresetModel,
@@ -55,7 +55,19 @@ export function App() {
       .catch(() => setHardwareList(HARDWARE_PROFILES));
   }, []);
 
-  const runCompilation = async (modelId: string, hwId: string, fileToUpload: File | null = customFile) => {
+  // Global Keyboard Shortcut for Command Palette (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCmdOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const runCompilation = useCallback(async (modelId: string, hwId: string, fileToUpload: File | null = customFile) => {
     setIsCompiling(true);
     setErrorMessage(null);
     try {
@@ -72,11 +84,11 @@ export function App() {
     } finally {
       setIsCompiling(false);
     }
-  };
+  }, [customFile]);
 
   useEffect(() => {
     runCompilation(selectedModelId, selectedHwId, customFile);
-  }, [selectedModelId, selectedHwId]);
+  }, [selectedModelId, selectedHwId, customFile, runCompilation]);
 
   const handleSelectModel = (id: string) => {
     setCustomFile(null);
@@ -133,7 +145,7 @@ export function App() {
       />
 
       {/* 3-Column Studio Layout */}
-      <div className="flex-1 flex flex-col md:flex-row w-full overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
         
         {/* Left Sidebar: Silicon Hardware & Compiler Directives */}
         <SiliconSidebar

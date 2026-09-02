@@ -4,7 +4,10 @@ Loads production-grade trained models with real neural network weights.
 """
 
 import numpy as np
-import torch
+try:
+    import torch
+except ImportError:
+    torch = None
 from .ir import ModelGraph, Tensor, Layer
 
 def get_keyword_spotting_model() -> ModelGraph:

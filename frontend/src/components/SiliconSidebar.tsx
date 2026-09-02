@@ -1,13 +1,14 @@
 import React from 'react';
 import { HardwareProfile, CompilationResult } from '../types';
 import { Cpu, Battery, Download, ShieldCheck, Settings2, FileCode } from 'lucide-react';
+import { generateStarterKitSource } from '../services/api';
 
 interface SiliconSidebarProps {
   currentHw: HardwareProfile;
   hardwareList: HardwareProfile[];
   onSelectHardware: (id: string) => void;
   compilationResult: CompilationResult | null;
-  onDownloadHeader: () => void;
+  onDownloadHeader?: () => void;
 }
 
 export const SiliconSidebar: React.FC<SiliconSidebarProps> = ({
@@ -15,7 +16,6 @@ export const SiliconSidebar: React.FC<SiliconSidebarProps> = ({
   hardwareList,
   onSelectHardware,
   compilationResult,
-  onDownloadHeader,
 }) => {
   const peakSramBytes = compilationResult?.optimized_int8.peak_sram_bytes || 18432;
   const flashBytes = compilationResult?.optimized_int8.flash_bytes || 18560;
@@ -32,14 +32,28 @@ export const SiliconSidebar: React.FC<SiliconSidebarProps> = ({
   const batteryDays = Math.round((220 * 1000) / ((activeCurrentMa * (latencyMs / 1000) * 100) + 0.015 * 24));
 
   const starterKits = [
-    { name: 'ESP32 I2S / CAM', ext: '.ino', target: 'ESP32-S3' },
-    { name: 'Arduino Uno R4', ext: '.ino', target: 'Universal' },
-    { name: 'Raspberry Pi Pico', ext: '.c', target: 'RP2040' },
-    { name: 'STM32 CMSIS-NN', ext: '.cpp', target: 'STM32H7' },
+    { name: 'ESP32 I2S / CAM', ext: '.ino', target: 'ESP32-S3', type: 'esp32' },
+    { name: 'Arduino Uno R4', ext: '.ino', target: 'Universal', type: 'arduino' },
+    { name: 'Raspberry Pi Pico', ext: '.c', target: 'RP2040', type: 'pico' },
+    { name: 'STM32 CMSIS-NN', ext: '.cpp', target: 'STM32H7', type: 'stm32' },
   ];
 
+  const handleDownloadKit = (kit: typeof starterKits[0]) => {
+    const modelName = compilationResult?.model_name || 'CompiledModel';
+    const cHeader = compilationResult?.c_header_code || '';
+    const { filename, content } = generateStarterKitSource(kit.type, modelName, currentHw, cHeader);
+    
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <aside className="w-80 flex-shrink-0 bg-surface border-r border-border flex flex-col h-[calc(100vh-3.5rem)] overflow-y-auto text-xs font-sans">
+    <aside className="w-full lg:w-80 flex-shrink-0 bg-surface border-r border-border flex flex-col h-auto lg:h-[calc(100vh-3.5rem)] overflow-y-auto text-xs font-sans">
       <div className="p-4 space-y-5">
         
         {/* Silicon Target Selector */}
@@ -195,9 +209,9 @@ export const SiliconSidebar: React.FC<SiliconSidebarProps> = ({
               >
                 <span className="text-text-primary truncate">{kit.name}</span>
                 <button
-                  onClick={onDownloadHeader}
+                  onClick={() => handleDownloadKit(kit)}
                   className="px-2 py-0.5 bg-border hover:bg-border-strong text-text-primary rounded text-[10px] flex items-center gap-1 transition"
-                  title="Download starter code with header"
+                  title={`Download ${kit.name} starter firmware`}
                 >
                   <Download className="w-2.5 h-2.5" />
                   {kit.ext}

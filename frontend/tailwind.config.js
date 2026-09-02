@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Geist', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
       colors: {
         canvas: 'var(--bg)',
         surface: {
@@ -40,13 +44,17 @@ export default {
           DEFAULT: 'var(--danger)',
           subtle: 'var(--danger-bg)',
         },
-        code: 'var(--code-bg)',
+        code: {
+          DEFAULT: 'var(--code-bg)',
+          text: 'var(--code-text)',
+        }
       },
       borderRadius: {
-        DEFAULT: '3px',
+        DEFAULT: '4px',
         sm: '2px',
-        md: '3px',
-        lg: '4px',
+        md: '4px',
+        lg: '6px',
+        xl: '8px',
       },
     },
   },
