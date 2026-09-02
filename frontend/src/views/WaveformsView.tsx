@@ -7,15 +7,29 @@ interface WaveformsViewProps {
 }
 
 export const WaveformsView: React.FC<WaveformsViewProps> = ({ model }) => {
-  const [signalType, setSignalType] = useState<'sine' | 'chirp' | 'pulse' | 'noise'>('chirp');
-  const [channel, setChannel] = useState<'ch1' | 'ch2' | 'fft'>('ch1');
+  const isKws = model.id === 'kws';
+  const isVision = model.id === 'vision';
+  const isAnomaly = model.id === 'anomaly';
 
-  const fftBins = [
+  const [activeTab, setActiveTab] = useState<'raw' | 'preprocessed' | 'features' | 'activation'>('raw');
+
+  // Ground truth MFCC Mel Filterbank energy bins for KWS
+  const kwsMelBins = [
+    { name: '0-250 Hz', energy: 38 },
+    { name: '250-500 Hz', energy: 86 },
+    { name: '500-1000 Hz', energy: 94 },
+    { name: '1-2 kHz', energy: 72 },
+    { name: '2-4 kHz', energy: 45 },
+    { name: '4-8 kHz', energy: 22 },
+  ];
+
+  // Ground truth FFT power spectrum for Anomaly
+  const anomalyFftBins = [
     { freq: '120 Hz', power: 42, label: 'Base Motor Fundamental' },
     { freq: '342 Hz', power: 94, label: 'Bearing Defect BPFO' },
     { freq: '684 Hz', power: 68, label: '2x Harmonic' },
     { freq: '1026 Hz', power: 35, label: '3x Harmonic' },
-    { freq: '2400 Hz', power: 18, label: 'High-Freq Resonance' },
+    { freq: '2400 Hz', power: 18, label: 'Resonance Band' },
   ];
 
   return (
@@ -24,120 +38,190 @@ export const WaveformsView: React.FC<WaveformsViewProps> = ({ model }) => {
         <div>
           <h2 className="text-sm font-bold text-text-primary font-mono uppercase tracking-wider flex items-center gap-2">
             <Radio className="w-4 h-4 text-primary" />
-            Multi-Channel Sensory Waveform & Harmonic Analyzer
+            Sensor Signal Preprocessing & Feature Transformation Pipeline
           </h2>
           <p className="text-text-secondary text-xs mt-0.5">
-            Multi-channel analog signal generator, windowing functions, and frequency FFT decomposition testbench.
+            Step-by-step tensor visualization from raw physical sensor capture to mathematical feature representations.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-[11px] text-text-secondary">
-          <span>Active Domain: <strong className="text-primary">{model.domain}</strong></span>
+        <div className="flex items-center gap-2 font-mono text-[11px]">
+          <span className="text-text-muted">Provenance:</span>
+          <span className="text-primary font-bold bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
+            [SIMULATED]
+          </span>
         </div>
       </div>
 
+      {/* Stage Selector Tabs */}
+      <div className="flex items-center gap-2 bg-surface-raised p-1 rounded border border-border font-mono text-xs overflow-x-auto">
+        <button
+          onClick={() => setActiveTab('raw')}
+          className={`px-3 py-1.5 rounded font-bold transition flex items-center gap-1.5 ${
+            activeTab === 'raw' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <span>1. Raw Sensor Input</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('preprocessed')}
+          className={`px-3 py-1.5 rounded font-bold transition flex items-center gap-1.5 ${
+            activeTab === 'preprocessed' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <span>2. Preprocessed Window</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('features')}
+          className={`px-3 py-1.5 rounded font-bold transition flex items-center gap-1.5 ${
+            activeTab === 'features' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <span>3. Feature Matrix ({isKws ? 'MFCC' : isVision ? 'Normalized 48x48' : 'FFT Energy'})</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('activation')}
+          className={`px-3 py-1.5 rounded font-bold transition flex items-center gap-1.5 ${
+            activeTab === 'activation' ? 'bg-primary text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <span>4. Model Input Tensor</span>
+        </button>
+      </div>
+
+      {/* Main Feature Transformation Visualizer */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Waveform Generator & Controls */}
-        <div className="lg:col-span-4 bg-surface border border-border rounded p-4 space-y-4 font-mono text-xs">
-          <span className="font-bold text-text-primary uppercase tracking-wider block font-sans border-b border-border pb-2">
-            Signal Configuration
-          </span>
-
-          <div className="space-y-1.5">
-            <label className="text-[11px] text-text-secondary block font-medium">Test Waveform Profile</label>
-            <div className="grid grid-cols-2 gap-1.5">
-              {[
-                { id: 'chirp', label: 'Frequency Chirp' },
-                { id: 'sine', label: 'Harmonic Sine' },
-                { id: 'pulse', label: 'Impulse Pulse' },
-                { id: 'noise', label: 'Gaussian Noise' },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setSignalType(p.id as any)}
-                  className={`py-1.5 px-2 rounded text-xs transition border text-center font-semibold ${
-                    signalType === p.id
-                      ? 'bg-primary/10 border-primary text-primary font-bold'
-                      : 'bg-surface-raised border-border text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-3 bg-surface-raised border border-border rounded space-y-1.5 text-[11px]">
-            <span className="font-bold text-text-primary block font-sans">Signal Metrics</span>
-            <div className="text-text-secondary space-y-0.5">
-              <div className="flex justify-between">
-                <span>RMS Amplitude:</span>
-                <strong className="text-text-primary">0.707 V</strong>
-              </div>
-              <div className="flex justify-between">
-                <span>Crest Factor:</span>
-                <strong className="text-text-primary">1.414</strong>
-              </div>
-              <div className="flex justify-between">
-                <span>THD (Total Distortion):</span>
-                <strong className="text-success">&lt;0.05%</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Time-Domain & Frequency Visualizer */}
-        <div className="lg:col-span-8 bg-surface border border-border rounded p-4 space-y-4 font-mono">
+        <div className="lg:col-span-8 bg-surface border border-border rounded p-4 space-y-3 font-mono">
           <div className="flex items-center justify-between border-b border-border pb-2">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setChannel('ch1')}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition ${
-                  channel === 'ch1' ? 'bg-primary text-white' : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                Channel 1 (Time-Domain)
-              </button>
-              <button
-                onClick={() => setChannel('fft')}
-                className={`px-2.5 py-1 rounded text-xs font-semibold transition ${
-                  channel === 'fft' ? 'bg-primary text-white' : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                FFT Power Spectrum
-              </button>
-            </div>
-            <span className="text-[10px] text-text-muted">Window: 128 Points</span>
+            <span className="font-bold text-xs text-text-primary uppercase tracking-wider font-sans">
+              {activeTab === 'raw' && 'Raw Sensor Stream Capture'}
+              {activeTab === 'preprocessed' && 'Hanning Window Preprocessing & Normalization'}
+              {activeTab === 'features' && 'Extracted Feature Energy Distribution'}
+              {activeTab === 'activation' && 'Static Model Entry Tensor Geometry'}
+            </span>
+            <span className="text-[10px] text-text-muted">{model.input_shape}</span>
           </div>
 
-          {channel === 'ch1' ? (
-            <div className="h-48 bg-canvas rounded border border-border p-3 flex items-center justify-between gap-1 relative overflow-hidden">
-              {Array.from({ length: 64 }).map((_, i) => {
-                const height = Math.sin(i * 0.25) * 40 + 50;
-                return (
-                  <div key={i} className="flex-1 flex flex-col items-center justify-center h-full">
-                    <div className="w-1 bg-emerald-400 rounded-full" style={{ height: `${height}%` }} />
-                  </div>
-                );
-              })}
-              <span className="absolute top-2 left-2 text-[9px] text-text-muted">Voltage Scale: ±1.0 V</span>
-            </div>
-          ) : (
+          {/* Audio (KWS) Visualization */}
+          {isKws && (
             <div className="space-y-3">
-              <div className="h-48 bg-canvas rounded border border-border p-3 flex items-end justify-between gap-2 relative overflow-hidden">
-                {fftBins.map((bin, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center justify-end h-full group">
-                    <div
-                      className="w-full bg-primary/80 group-hover:bg-primary rounded-t transition-all"
-                      style={{ height: `${bin.power}%` }}
-                    />
-                    <span className="text-[8px] text-text-muted mt-1 truncate max-w-[50px]">{bin.freq}</span>
+              {activeTab === 'raw' && (
+                <div className="h-44 bg-canvas rounded border border-border p-3 flex items-center justify-between gap-1 relative overflow-hidden">
+                  {Array.from({ length: 64 }).map((_, i) => {
+                    const h = Math.sin(i * 0.28) * 40 + Math.cos(i * 0.6) * 25 + 50;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center justify-center h-full">
+                        <div className="w-1 bg-primary rounded-full" style={{ height: `${Math.max(8, h)}%` }} />
+                      </div>
+                    );
+                  })}
+                  <span className="absolute top-2 left-2 text-[9px] text-text-muted">16,000 Hz Raw Audio PCM Stream</span>
+                </div>
+              )}
+
+              {activeTab === 'preprocessed' && (
+                <div className="h-44 bg-canvas rounded border border-border p-3 flex items-center justify-between gap-1 relative overflow-hidden">
+                  {Array.from({ length: 64 }).map((_, i) => {
+                    const windowHanning = Math.sin((Math.PI * i) / 64);
+                    const h = (Math.sin(i * 0.28) * 40 + 50) * windowHanning;
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center justify-center h-full">
+                        <div className="w-1 bg-cyan-400 rounded-full" style={{ height: `${Math.max(4, h)}%` }} />
+                      </div>
+                    );
+                  })}
+                  <span className="absolute top-2 left-2 text-[9px] text-text-muted">Hanning Tapered Slice (32ms Frame, 512 Samples)</span>
+                </div>
+              )}
+
+              {activeTab === 'features' && (
+                <div className="h-44 bg-canvas rounded border border-border p-3 flex items-end justify-between gap-3 relative overflow-hidden">
+                  {kwsMelBins.map((bin, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+                      <div className="w-full bg-emerald-500 rounded-t" style={{ height: `${bin.energy}%` }} />
+                      <span className="text-[9px] text-text-muted mt-1 truncate">{bin.name}</span>
+                    </div>
+                  ))}
+                  <span className="absolute top-2 left-2 text-[9px] text-text-muted">10-Bin Mel Filterbank Energy</span>
+                </div>
+              )}
+
+              {activeTab === 'activation' && (
+                <div className="h-44 bg-canvas rounded border border-border p-3 flex flex-col justify-center items-center font-mono space-y-2">
+                  <div className="text-center">
+                    <span className="text-[10px] text-text-muted uppercase block">Staged Quantized Tensor</span>
+                    <strong className="text-base text-primary block">[1, 49, 10, 1] (Signed INT8)</strong>
+                    <span className="text-xs text-text-secondary">490 Elements &times; 1 Byte = 490 Bytes Static SRAM</span>
                   </div>
-                ))}
-                <span className="absolute top-2 left-2 text-[9px] text-text-muted">Power Spectral Density (dB/Hz)</span>
+                  <div className="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded">
+                    Mapped to Memory Arena Offset: 0x20000000
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Vision Visualization */}
+          {isVision && (
+            <div className="space-y-3">
+              <div className="aspect-square max-w-[200px] mx-auto bg-canvas rounded border border-border p-2 flex items-center justify-center relative">
+                <div className="grid grid-cols-6 gap-1 w-full h-full p-2 bg-black/40 rounded">
+                  {Array.from({ length: 36 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-[1px] bg-primary/40 flex items-center justify-center text-[7px] text-white/80"
+                    >
+                      {Math.round(30 + (i % 6) * 16)}
+                    </div>
+                  ))}
+                </div>
+                <span className="absolute bottom-1 right-2 text-[9px] text-text-muted">48&times;48 8-bit Grayscale</span>
               </div>
             </div>
           )}
+
+          {/* Vibration Anomaly Visualization */}
+          {isAnomaly && (
+            <div className="h-44 bg-canvas rounded border border-border p-3 flex items-end justify-between gap-2 relative overflow-hidden">
+              {anomalyFftBins.map((bin, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
+                  <div className="w-full bg-primary rounded-t" style={{ height: `${bin.power}%` }} />
+                  <span className="text-[8px] text-text-muted mt-1 truncate max-w-[50px]">{bin.freq}</span>
+                </div>
+              ))}
+              <span className="absolute top-2 left-2 text-[9px] text-text-muted">128-Point FFT Magnitude Spectrum</span>
+            </div>
+          )}
+        </div>
+
+        {/* Feature Metadata Panel */}
+        <div className="lg:col-span-4 bg-surface border border-border rounded p-4 space-y-3 font-mono text-xs">
+          <span className="font-bold text-text-primary uppercase tracking-wider block font-sans border-b border-border pb-2">
+            Signal Pipeline Telemetry
+          </span>
+
+          <div className="space-y-2 text-[11px]">
+            <div className="p-2.5 bg-surface-raised border border-border rounded space-y-1">
+              <span className="text-[10px] text-text-muted block uppercase">Domain Protocol</span>
+              <strong className="text-text-primary block">{model.domain}</strong>
+              <span className="text-[10px] text-text-secondary">{model.input_type}</span>
+            </div>
+
+            <div className="p-2.5 bg-surface-raised border border-border rounded space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-text-secondary">Input Tensor Shape:</span>
+                <strong className="text-primary">{model.input_shape}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-secondary">DSP Execution Cycles:</span>
+                <strong className="text-text-primary">1,420 Cycles <span className="text-[9px] text-text-muted">[ESTIMATED]</span></strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-text-secondary">DMA Ring Buffer:</span>
+                <strong className="text-success">0-Copy SRAM Ptr</strong>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
