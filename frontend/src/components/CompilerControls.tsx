@@ -70,12 +70,12 @@ export const CompilerControls: React.FC<CompilerControlsProps> = ({
               onClick={() => fileInputRef.current?.click()}
               className="px-2.5 py-1.5 bg-surface-raised hover:bg-surface-hover border border-border rounded-[3px] text-xs text-text-secondary hover:text-text-primary whitespace-nowrap transition"
             >
-              {customFilename ? 'Change file' : 'Upload ONNX'}
+              {customFilename ? 'Change file' : 'Upload File'}
             </button>
             <input
               ref={fileInputRef}
               type="file"
-              accept=".onnx,.tflite,.pt"
+              accept=".onnx,.tflite,.pt,.json,.c,.cpp,.h,.py,.txt"
               onChange={handleFileChange}
               className="hidden"
             />
@@ -94,7 +94,7 @@ export const CompilerControls: React.FC<CompilerControlsProps> = ({
           >
             {hardwareList.map((h) => (
               <option key={h.id} value={h.id}>
-                {h.name} — {h.sram_kb} KB SRAM, {h.flash_mb} MB Flash ({h.arch})
+                {h.name}: {h.sram_kb} KB SRAM, {h.flash_mb} MB Flash ({h.arch})
               </option>
             ))}
           </select>
