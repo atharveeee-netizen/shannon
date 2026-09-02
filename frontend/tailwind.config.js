@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Geist', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
@@ -17,6 +17,7 @@ export default {
           DEFAULT: 'var(--surface)',
           raised: 'var(--surface-raised)',
           hover: 'var(--surface-hover)',
+          panel: 'var(--panel)',
         },
         border: {
           DEFAULT: 'var(--border)',
@@ -26,23 +27,31 @@ export default {
           primary: 'var(--text)',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
-          accent: 'var(--accent)',
+        },
+        primary: {
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
+          subtle: 'var(--primary-subtle)',
         },
         accent: {
-          DEFAULT: 'var(--accent)',
-          hover: 'var(--accent-hover)',
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
         },
         success: {
           DEFAULT: 'var(--success)',
-          subtle: 'var(--success-bg)',
+          subtle: 'var(--success-subtle)',
         },
         warning: {
           DEFAULT: 'var(--warning)',
-          subtle: 'var(--warning-bg)',
+          subtle: 'var(--warning-subtle)',
         },
         danger: {
           DEFAULT: 'var(--danger)',
-          subtle: 'var(--danger-bg)',
+          subtle: 'var(--danger-subtle)',
+        },
+        info: {
+          DEFAULT: 'var(--info)',
+          subtle: 'var(--info-subtle)',
         },
         code: {
           DEFAULT: 'var(--code-bg)',
@@ -51,10 +60,9 @@ export default {
       },
       borderRadius: {
         DEFAULT: '4px',
-        sm: '2px',
+        sm: '3px',
         md: '4px',
         lg: '6px',
-        xl: '8px',
       },
     },
   },

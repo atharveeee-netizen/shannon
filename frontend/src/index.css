@@ -4,55 +4,65 @@
 
 @layer base {
   :root {
-    --bg: #F8F9FA;
-    --surface: #FFFFFF;
-    --surface-raised: #F1F3F5;
-    --surface-hover: #E9ECEF;
-    --border: #DEE2E6;
-    --border-strong: #CED4DA;
-    --text: #1A1D20;
-    --text-secondary: #495057;
-    --text-muted: #868E96;
-    --accent: #0284C7;
-    --accent-hover: #0369A1;
-    --success: #16A34A;
-    --success-bg: #DCFCE7;
-    --warning: #D97706;
-    --warning-bg: #FEF3C7;
-    --danger: #DC2626;
-    --danger-bg: #FEE2E2;
-    --code-bg: #1E293B;
-    --code-text: #F8FAFC;
+    --bg: #FFFFFF;
+    --surface: #F7F7F8;
+    --surface-raised: #FFFFFF;
+    --surface-hover: #EFEFF1;
+    --panel: #FFFFFF;
+    --border: #E1E1E3;
+    --border-strong: #C8C8CD;
+    --text: #1F1F23;
+    --text-secondary: #66666D;
+    --text-muted: #8A8A91;
+    --primary: #6C4CE8;
+    --primary-hover: #5B3FD0;
+    --primary-subtle: #F0EDFD;
+    --success: #238636;
+    --success-subtle: #E6F4EA;
+    --warning: #B7791F;
+    --warning-subtle: #FEF7E0;
+    --danger: #D73A49;
+    --danger-subtle: #FCE8E6;
+    --info: #2563EB;
+    --info-subtle: #E8F0FE;
+    --code-bg: #18181B;
+    --code-text: #F4F4F5;
   }
 
   .dark {
-    --bg: #090D16;
-    --surface: #0F172A;
-    --surface-raised: #1E293B;
-    --surface-hover: #334155;
-    --border: #1E293B;
-    --border-strong: #475569;
-    --text: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
-    --accent: #38BDF8;
-    --accent-hover: #7DD3FC;
-    --success: #22C55E;
-    --success-bg: #14532D;
-    --warning: #F59E0B;
-    --warning-bg: #78350F;
-    --danger: #EF4444;
-    --danger-bg: #7F1D1D;
-    --code-bg: #0B1120;
-    --code-text: #E2E8F0;
+    --bg: #111113;
+    --surface: #18181B;
+    --surface-raised: #1E1E22;
+    --surface-hover: #26262B;
+    --panel: #1E1E22;
+    --border: #303036;
+    --border-strong: #45454D;
+    --text: #F4F4F5;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+    --primary: #8B6FF7;
+    --primary-hover: #A088F9;
+    --primary-subtle: #241C40;
+    --success: #3FB950;
+    --success-subtle: #122818;
+    --warning: #D29922;
+    --warning-subtle: #332408;
+    --danger: #F85149;
+    --danger-subtle: #371416;
+    --info: #38BDF8;
+    --info-subtle: #0B253A;
+    --code-bg: #0C0C0E;
+    --code-text: #E4E4E7;
   }
 
   body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Plus Jakarta Sans', Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+    line-height: 1.5;
   }
 }
 
@@ -62,17 +72,17 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Minimal sleek scrollbars */
+/* Restrained technical scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
