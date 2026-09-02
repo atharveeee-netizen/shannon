@@ -11,11 +11,17 @@ import {
   compileModel,
   uploadAndCompileModel,
 } from './services/api';
-import { AppHeader } from './components/AppHeader';
-import { CompilerControls } from './components/CompilerControls';
-import { CompileResult } from './components/CompileResult';
-import { OptimizationTable } from './components/OptimizationTable';
-import { TechnicalInspector } from './components/TechnicalInspector';
+
+import { Sidebar, TabType } from './components/Sidebar';
+import { TopBar } from './components/TopBar';
+import { DashboardView } from './components/views/DashboardView';
+import { ImpulseDesignView } from './components/views/ImpulseDesignView';
+import { DspBlockView } from './components/views/DspBlockView';
+import { NnClassifierView } from './components/views/NnClassifierView';
+import { LiveClassificationView } from './components/views/LiveClassificationView';
+import { MemoryArenaView } from './components/views/MemoryArenaView';
+import { DeploymentView } from './components/views/DeploymentView';
+import { SiliconCopilotDrawer } from './components/views/SiliconCopilotDrawer';
 import { CommandPalette } from './components/CommandPalette';
 
 export function App() {
@@ -25,17 +31,18 @@ export function App() {
     return true;
   });
 
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
   const [models] = useState<PresetModel[]>(PRESET_MODELS);
   const [selectedHwId, setSelectedHwId] = useState<string>('ESP32-S3');
   const [selectedModelId, setSelectedModelId] = useState<string>('kws');
   const [customFile, setCustomFile] = useState<File | null>(null);
-  const [customFilename, setCustomFilename] = useState<string | null>(null);
 
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
   const [compilationResult, setCompilationResult] = useState<CompilationResult | null>(null);
+  const [apiConnected, setApiConnected] = useState<boolean>(true);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -49,13 +56,18 @@ export function App() {
 
   useEffect(() => {
     fetchHardware()
-      .then((hw) => setHardwareList(hw))
-      .catch(() => setHardwareList(HARDWARE_PROFILES));
+      .then((hw) => {
+        setHardwareList(hw);
+        setApiConnected(true);
+      })
+      .catch(() => {
+        setHardwareList(HARDWARE_PROFILES);
+        setApiConnected(false);
+      });
   }, []);
 
   const runCompilation = async (modelId: string, hwId: string, fileToUpload: File | null = customFile) => {
     setIsCompiling(true);
-    setErrorMessage(null);
     try {
       let res: CompilationResult;
       if (fileToUpload) {
@@ -64,9 +76,10 @@ export function App() {
         res = await compileModel(modelId, hwId);
       }
       setCompilationResult(res);
+      setApiConnected(true);
     } catch (err: any) {
       console.error('Compilation error:', err);
-      setErrorMessage(err.message || 'Failed to connect to Shannon Compiler backend. Ensure server is running on http://localhost:8000.');
+      setApiConnected(false);
     } finally {
       setIsCompiling(false);
     }
@@ -78,13 +91,11 @@ export function App() {
 
   const handleSelectModel = (id: string) => {
     setCustomFile(null);
-    setCustomFilename(null);
     setSelectedModelId(id);
   };
 
   const handleUploadCustom = (file: File) => {
     setCustomFile(file);
-    setCustomFilename(file.name);
     runCompilation('custom', selectedHwId, file);
   };
 
@@ -99,78 +110,130 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
-  const handleToggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
-  };
-
-  const currentHw = hardwareList.find((h) => h.id === selectedHwId) || hardwareList[0];
+  const selectedModel = models.find((m) => m.id === selectedModelId) || null;
+  const selectedHw = hardwareList.find((h) => h.name === selectedHwId) || hardwareList[0];
 
   return (
-    <div className="min-h-screen bg-canvas text-text-primary font-sans flex flex-col antialiased">
+    <div className="flex h-screen bg-slate-950 text-slate-100 font-sans overflow-hidden">
+      {/* 1. Left Sidebar Navigation (Edge Impulse Studio Standard) */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        selectedModel={selectedModel}
+        selectedHw={selectedHw}
+        isCopilotOpen={isCopilotOpen}
+        setIsCopilotOpen={setIsCopilotOpen}
+      />
+
+      {/* 2. Main Workspace Shell */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Navigation Bar */}
+        <TopBar
+          selectedModel={selectedModel}
+          models={models}
+          onSelectModel={handleSelectModel}
+          hardwareList={hardwareList}
+          selectedHw={selectedHw}
+          onSelectHw={(hwName) => setSelectedHwId(hwName)}
+          onUploadCustom={handleUploadCustom}
+          isCompiling={isCompiling}
+          onRecompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
+          onDownloadHeader={handleDownloadHeader}
+          isCopilotOpen={isCopilotOpen}
+          setIsCopilotOpen={setIsCopilotOpen}
+          isDarkMode={isDarkMode}
+          setIsDarkMode={setIsDarkMode}
+          apiConnected={apiConnected}
+        />
+
+        {/* Dynamic Studio Tab View Body */}
+        <main className="flex-1 overflow-y-auto bg-slate-950 custom-scrollbar">
+          {activeTab === 'dashboard' && (
+            <DashboardView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              models={models}
+              onSelectModel={handleSelectModel}
+              selectedHw={selectedHw}
+              onNavigateToTab={setActiveTab}
+              onUploadCustom={handleUploadCustom}
+            />
+          )}
+
+          {activeTab === 'impulse' && (
+            <ImpulseDesignView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+              onNavigateToTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'dsp' && (
+            <DspBlockView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+            />
+          )}
+
+          {activeTab === 'classifier' && (
+            <NnClassifierView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+            />
+          )}
+
+          {activeTab === 'live' && (
+            <LiveClassificationView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+            />
+          )}
+
+          {activeTab === 'arena' && (
+            <MemoryArenaView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+            />
+          )}
+
+          {activeTab === 'deployment' && (
+            <DeploymentView
+              result={compilationResult}
+              selectedModel={selectedModel}
+              selectedHw={selectedHw}
+              onDownloadHeader={handleDownloadHeader}
+            />
+          )}
+        </main>
+      </div>
+
+      {/* 3. Silicon Copilot Assistant Drawer */}
+      <SiliconCopilotDrawer
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        result={compilationResult}
+        selectedModel={selectedModel}
+        selectedHw={selectedHw}
+      />
+
+      {/* Global Command Palette (Ctrl+K) */}
       <CommandPalette
         isOpen={isCmdOpen}
         onClose={() => setIsCmdOpen(false)}
-        onSelectHardware={setSelectedHwId}
+        models={models}
+        hardwareList={hardwareList}
         onSelectModel={handleSelectModel}
+        onSelectHardware={(hwName) => setSelectedHwId(hwName)}
         onTriggerCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
         onDownloadHeader={handleDownloadHeader}
-        onToggleTheme={handleToggleTheme}
+        onToggleTheme={() => setIsDarkMode(!isDarkMode)}
         isDarkMode={isDarkMode}
-        hardwareList={hardwareList}
-        models={models}
       />
-
-      <AppHeader
-        onOpenCommandPalette={() => setIsCmdOpen(true)}
-        isDarkMode={isDarkMode}
-        onToggleTheme={handleToggleTheme}
-      />
-
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {errorMessage && (
-          <div className="p-3 bg-danger/10 border border-danger/30 rounded-[4px] text-danger text-xs flex items-center justify-between">
-            <span>{errorMessage}</span>
-            <button
-              onClick={() => runCompilation(selectedModelId, selectedHwId, customFile)}
-              className="px-2 py-1 bg-danger text-canvas rounded text-[11px] font-medium hover:opacity-90 transition"
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        <CompilerControls
-          models={models}
-          selectedModelId={selectedModelId}
-          onSelectModel={handleSelectModel}
-          customFilename={customFilename}
-          onUploadCustom={handleUploadCustom}
-          hardwareList={hardwareList}
-          selectedHwId={selectedHwId}
-          onSelectHardware={setSelectedHwId}
-          isCompiling={isCompiling}
-          onCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
-        />
-
-        {compilationResult && (
-          <>
-            <CompileResult
-              result={compilationResult}
-              targetHw={currentHw}
-            />
-
-            <OptimizationTable
-              result={compilationResult}
-            />
-
-            <TechnicalInspector
-              result={compilationResult}
-              targetHw={currentHw}
-              onDownloadHeader={handleDownloadHeader}
-            />
-          </>
-        )}
-      </main>
     </div>
   );
 }
