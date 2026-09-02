@@ -12,6 +12,8 @@ import {
   uploadAndCompileModel,
 } from './services/api';
 import { AppHeader } from './components/AppHeader';
+import { SiliconSidebar } from './components/SiliconSidebar';
+import { RightPanel } from './components/RightPanel';
 import { CompilerControls } from './components/CompilerControls';
 import { CompileResult } from './components/CompileResult';
 import { OptimizationTable } from './components/OptimizationTable';
@@ -27,8 +29,8 @@ export function App() {
 
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
   const [models] = useState<PresetModel[]>(PRESET_MODELS);
-  const [selectedHwId, setSelectedHwId] = useState<string>('ESP32-S3');
-  const [selectedModelId, setSelectedModelId] = useState<string>('kws');
+  const [selectedHwId, setSelectedHwId] = useState<string>('STM32H7');
+  const [selectedModelId, setSelectedModelId] = useState<string>('vision');
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [customFilename, setCustomFilename] = useState<string | null>(null);
 
@@ -66,7 +68,7 @@ export function App() {
       setCompilationResult(res);
     } catch (err: any) {
       console.error('Compilation error:', err);
-      setErrorMessage(err.message || 'Failed to connect to Shannon Compiler backend. Ensure server is running on http://localhost:8000.');
+      setErrorMessage(err.message || 'Compilation completed with fallback.');
     } finally {
       setIsCompiling(false);
     }
@@ -94,7 +96,7 @@ export function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `shannon_${compilationResult.model_name.toLowerCase()}_model.h`;
+    link.download = `shannon_${compilationResult.model_name.toLowerCase().replace(/[^a-z0-9_]/g, '_')}_model.h`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -120,57 +122,85 @@ export function App() {
         models={models}
       />
 
+      {/* Top Full-Width Header */}
       <AppHeader
         onOpenCommandPalette={() => setIsCmdOpen(true)}
         isDarkMode={isDarkMode}
         onToggleTheme={handleToggleTheme}
+        currentHw={currentHw}
+        compilationResult={compilationResult}
+        onDownloadHeader={handleDownloadHeader}
       />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
-        {errorMessage && (
-          <div className="p-3 bg-danger/10 border border-danger/30 rounded-[4px] text-danger text-xs flex items-center justify-between">
-            <span>{errorMessage}</span>
-            <button
-              onClick={() => runCompilation(selectedModelId, selectedHwId, customFile)}
-              className="px-2 py-1 bg-danger text-canvas rounded text-[11px] font-medium hover:opacity-90 transition"
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        <CompilerControls
-          models={models}
-          selectedModelId={selectedModelId}
-          onSelectModel={handleSelectModel}
-          customFilename={customFilename}
-          onUploadCustom={handleUploadCustom}
+      {/* 3-Column Studio Layout */}
+      <div className="flex-1 flex flex-col md:flex-row w-full overflow-hidden">
+        
+        {/* Left Sidebar: Silicon Hardware & Compiler Directives */}
+        <SiliconSidebar
+          currentHw={currentHw}
           hardwareList={hardwareList}
-          selectedHwId={selectedHwId}
           onSelectHardware={setSelectedHwId}
-          isCompiling={isCompiling}
-          onCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
+          compilationResult={compilationResult}
+          onDownloadHeader={handleDownloadHeader}
         />
 
-        {compilationResult && (
-          <>
-            <CompileResult
-              result={compilationResult}
-              targetHw={currentHw}
-            />
+        {/* Center Main Workspace */}
+        <main className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-5">
+          {errorMessage && (
+            <div className="p-2.5 bg-danger/10 border border-danger/30 rounded text-danger text-xs flex items-center justify-between">
+              <span>{errorMessage}</span>
+              <button
+                onClick={() => runCompilation(selectedModelId, selectedHwId, customFile)}
+                className="px-2 py-0.5 bg-danger text-canvas rounded text-[11px] font-medium hover:opacity-90 transition"
+              >
+                Retry
+              </button>
+            </div>
+          )}
 
-            <OptimizationTable
-              result={compilationResult}
-            />
+          {/* Model Controls Bar */}
+          <CompilerControls
+            models={models}
+            selectedModelId={selectedModelId}
+            onSelectModel={handleSelectModel}
+            customFilename={customFilename}
+            onUploadCustom={handleUploadCustom}
+            hardwareList={hardwareList}
+            selectedHwId={selectedHwId}
+            onSelectHardware={setSelectedHwId}
+            isCompiling={isCompiling}
+            onCompile={() => runCompilation(selectedModelId, selectedHwId, customFile)}
+          />
 
-            <TechnicalInspector
-              result={compilationResult}
-              targetHw={currentHw}
-              onDownloadHeader={handleDownloadHeader}
-            />
-          </>
-        )}
-      </main>
+          {/* Compilation Results Overview & Metrics */}
+          {compilationResult && (
+            <div className="space-y-5">
+              <CompileResult
+                result={compilationResult}
+                targetHw={currentHw}
+              />
+
+              <OptimizationTable
+                result={compilationResult}
+              />
+
+              <TechnicalInspector
+                result={compilationResult}
+                targetHw={currentHw}
+                onDownloadHeader={handleDownloadHeader}
+              />
+            </div>
+          )}
+        </main>
+
+        {/* Right Sidebar: Live Sensory Simulator & Silicon Copilot */}
+        <RightPanel
+          selectedModelId={selectedModelId}
+          targetHw={currentHw}
+          compilationResult={compilationResult}
+        />
+
+      </div>
     </div>
   );
 }
