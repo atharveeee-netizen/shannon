@@ -4,68 +4,72 @@
 
 @layer base {
   :root {
-    --bg: #F7F7F5;
-    --surface: #FFFFFF;
-    --surface-raised: #F0F0EC;
-    --surface-hover: #EAEAE5;
-    --border: #E0E0DC;
-    --border-strong: #C8C8C2;
-    --text: #141413;
-    --text-secondary: #60605C;
-    --text-muted: #8C8C87;
-    --accent: #106BA3;
-    --accent-hover: #0E5A8A;
-    --success: #0D8050;
-    --danger: #C23030;
-    --code-bg: #141414;
-    --code-text: #E6E6E6;
-  }
-
-  .dark {
-    --bg: #0A0A0A;
-    --surface: #121212;
-    --surface-raised: #181818;
-    --surface-hover: #222222;
-    --border: #262626;
-    --border-strong: #383838;
-    --text: #F5F5F5;
-    --text-secondary: #8E8E8E;
-    --text-muted: #5C5C5C;
-    --accent: #2B95D6;
-    --accent-hover: #48AFF0;
-    --success: #0D8050;
-    --danger: #C23030;
-    --code-bg: #0E0E0E;
-    --code-text: #E6E6E6;
+    --bg-main: #0E131F;
+    --bg-sidebar: #1B2431;
+    --bg-header: #151B26;
+    --bg-card: #151D2A;
+    --bg-card-darker: #101620;
+    --border-color: #202B3C;
+    --border-light: #2A3649;
+    --brand-green: #20E28B;
+    --brand-green-hover: #1BC97B;
+    --brand-blue: #3B82F6;
+    --brand-amber: #F59E0B;
+    --brand-purple: #8B5CF6;
+    --text-primary: #FFFFFF;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
   }
 
   body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 }
 
-/* Monospace with tabular numerals for data tables, hex offsets, and code */
+/* Tabular Numerals & Monospace */
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   font-variant-numeric: tabular-nums;
 }
 
-/* Minimal scrollbars */
+/* Edge Impulse style custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #0E131F;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
+  background: #253041;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
+  background: #334155;
+}
+
+/* Edge Impulse Visual Impulse Flow Nodes */
+.impulse-node-blue {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-top: 3px solid #3B82F6;
+}
+
+.impulse-node-amber {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-top: 3px solid #F59E0B;
+}
+
+.impulse-node-green {
+  background: linear-gradient(180deg, rgba(32, 226, 139, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-top: 3px solid #20E28B;
+}
+
+.impulse-node-purple {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.08) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-top: 3px solid #8B5CF6;
 }

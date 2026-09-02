@@ -76,8 +76,8 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, agentMsg]);
-    } catch (err) {
-      const flashKb = result ? (result.optimized_int8.flash_bytes / 1024).toFixed(1) : '24';
+    } catch {
+      const flashKb = result ? (result.optimized_int8.flash_bytes / 1024).toFixed(1) : '24.0';
       const sramKb = result ? (result.optimized_int8.peak_sram_bytes / 1024).toFixed(2) : '1.12';
       const fallbackMsg: ChatMessage = {
         sender: 'agent',
@@ -93,11 +93,11 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-slate-900 border-l border-slate-800 shadow-2xl z-50 flex flex-col select-none">
+    <div className="fixed inset-y-0 right-0 w-96 bg-[#151D2A] border-l border-[#202B3C] shadow-2xl z-50 flex flex-col select-none">
       {/* Drawer Header */}
-      <div className="h-16 px-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+      <div className="h-16 px-5 border-b border-[#202B3C] flex items-center justify-between bg-[#151B26]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <div className="w-8 h-8 rounded-lg bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
             <Bot className="w-4 h-4" />
           </div>
           <div>
@@ -107,21 +107,21 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
                 Gemini
               </span>
             </div>
-            <span className="text-[11px] text-slate-400">Embedded AI Architect</span>
+            <span className="text-[11px] text-[#94A3B8]">Embedded Hardware AI</span>
           </div>
         </div>
 
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="p-1.5 rounded-md text-[#94A3B8] hover:text-white hover:bg-[#1B2431] transition-colors"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
       {/* Suggested Quick Prompts */}
-      <div className="p-3 border-b border-slate-800 bg-slate-950/40 space-y-1.5">
-        <span className="text-[10px] font-mono text-slate-500 px-1 block">QUICK HARDWARE AUDITS:</span>
+      <div className="p-3 border-b border-[#202B3C] bg-[#121924] space-y-1.5">
+        <span className="text-[10px] font-mono text-[#64748B] px-1 block">QUICK SILICON AUDITS:</span>
         <div className="flex flex-wrap gap-1.5">
           {[
             'Audit hardware fit',
@@ -131,7 +131,7 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
             <button
               key={prompt}
               onClick={() => handleSendMessage(prompt)}
-              className="text-[11px] font-mono px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700/80 transition-all text-left truncate max-w-full"
+              className="text-[11px] font-mono px-2 py-1 rounded-md bg-[#1B2431] hover:bg-[#232E3E] text-[#CBD5E1] border border-[#2A3649] transition-all text-left truncate max-w-full"
             >
               ⚡ {prompt}
             </button>
@@ -148,16 +148,16 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
               key={idx}
               className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-1`}
             >
-              <div className="flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#64748B]">
                 <span>{isUser ? 'Developer' : 'Gemini Copilot'}</span>
                 <span>•</span>
                 <span>{msg.time}</span>
               </div>
               <div
-                className={`p-3.5 rounded-2xl max-w-[90%] leading-relaxed ${
+                className={`p-3.5 rounded-lg max-w-[90%] leading-relaxed ${
                   isUser
-                    ? 'bg-emerald-500 text-slate-950 font-medium rounded-tr-none'
-                    : 'bg-slate-800/80 border border-slate-700 text-slate-200 rounded-tl-none font-mono text-[11px]'
+                    ? 'bg-[#20E28B] text-[#0E131F] font-semibold'
+                    : 'bg-[#101620] border border-[#202B3C] text-[#CBD5E1] font-mono text-[11px]'
                 }`}
               >
                 {msg.text}
@@ -166,7 +166,7 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
           );
         })}
         {isLoading && (
-          <div className="flex items-center gap-2 text-slate-400 font-mono text-xs py-2">
+          <div className="flex items-center gap-2 text-[#94A3B8] font-mono text-xs py-2">
             <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-400" />
             <span>Auditing silicon telemetry...</span>
           </div>
@@ -175,7 +175,7 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
       </div>
 
       {/* Input Box */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/80">
+      <div className="p-3 border-t border-[#202B3C] bg-[#121924]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -188,12 +188,12 @@ export const SiliconCopilotDrawer: React.FC<SiliconCopilotDrawerProps> = ({
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Ask Copilot about MCU RAM, battery, or latency..."
-            className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400 font-sans"
+            className="flex-1 bg-[#101620] border border-[#202B3C] rounded-md px-3 py-2 text-xs text-white placeholder-[#64748B] focus:outline-none focus:ring-1 focus:ring-[#20E28B] font-sans"
           />
           <button
             type="submit"
             disabled={!inputText.trim() || isLoading}
-            className="p-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition-all disabled:opacity-50"
+            className="p-2 rounded-md bg-[#20E28B] hover:bg-[#1BC97B] text-[#0E131F] font-bold transition-all disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
           </button>

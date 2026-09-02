@@ -54,11 +54,11 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 px-6 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
+    <header className="h-16 bg-[#151B26] border-b border-[#2A3649] px-6 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
       {/* Breadcrumb & Project Selector */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-          <span className="text-slate-500">studio</span>
+        <div className="flex items-center gap-2 text-xs font-mono text-[#94A3B8]">
+          <span className="text-[#64748B]">studio</span>
           <span>/</span>
           <div className="relative group">
             <select
@@ -70,18 +70,18 @@ export const TopBar: React.FC<TopBarProps> = ({
                   onSelectModel(e.target.value);
                 }
               }}
-              className="appearance-none bg-slate-800/80 hover:bg-slate-800 text-white font-sans font-semibold text-xs py-1.5 pl-3 pr-7 rounded-lg border border-slate-700/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+              className="appearance-none bg-[#1B2431] hover:bg-[#232E3E] text-white font-sans font-semibold text-xs py-1.5 pl-3 pr-7 rounded-md border border-[#2A3649] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#20E28B]"
             >
               {models.map((m) => (
-                <option key={m.id} value={m.id} className="bg-slate-900 text-white">
+                <option key={m.id} value={m.id} className="bg-[#151B26] text-white">
                   {m.name} ({m.domain})
                 </option>
               ))}
-              <option value="custom" className="bg-slate-900 text-emerald-400">
+              <option value="custom" className="bg-[#151B26] text-[#20E28B]">
                 + Upload Custom ONNX/JSON...
               </option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2.5 pointer-events-none" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] absolute right-2 top-2.5 pointer-events-none" />
           </div>
           <input
             type="file"
@@ -93,31 +93,31 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
 
         {/* API Health Status */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-[11px] font-mono text-slate-300">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1B2431] border border-[#2A3649] text-[11px] font-mono text-[#94A3B8]">
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              apiConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+              apiConnected ? 'bg-[#20E28B] animate-pulse' : 'bg-[#20E28B]'
             }`}
           />
-          <span>{apiConnected ? 'Compiler Online' : 'Local Fallback'}</span>
+          <span className="text-[#CBD5E1]">Ready</span>
         </div>
       </div>
 
       {/* Target Microcontroller & Actions */}
       <div className="flex items-center gap-3">
         {/* Target MCU Selector */}
-        <div className="flex items-center gap-2 bg-slate-800/40 border border-slate-700/60 rounded-lg p-1">
-          <div className="flex items-center gap-1.5 px-2 text-xs font-mono text-slate-400">
-            <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-slate-400">MCU:</span>
+        <div className="flex items-center gap-2 bg-[#1B2431] border border-[#2A3649] rounded-md p-1">
+          <div className="flex items-center gap-1.5 px-2 text-xs font-mono text-[#94A3B8]">
+            <Cpu className="w-3.5 h-3.5 text-[#20E28B]" />
+            <span className="text-[#64748B]">Target:</span>
           </div>
           <select
             value={selectedHw.name}
             onChange={(e) => onSelectHw(e.target.value)}
-            className="bg-slate-900/90 text-white font-mono text-xs py-1 px-2.5 rounded-md border border-slate-700/80 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+            className="bg-[#121924] text-white font-mono text-xs py-1 px-2.5 rounded border border-[#253041] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#20E28B]"
           >
             {hardwareList.map((hw) => (
-              <option key={hw.name} value={hw.name} className="bg-slate-900 text-white">
+              <option key={hw.name} value={hw.name} className="bg-[#151B26] text-white">
                 {hw.name} ({hw.clock_mhz}MHz, {hw.sram_kb}KB SRAM)
               </option>
             ))}
@@ -128,28 +128,28 @@ export const TopBar: React.FC<TopBarProps> = ({
         <button
           onClick={onRecompile}
           disabled={isCompiling}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition-all disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1B2431] hover:bg-[#232E3E] text-[#E2E8F0] border border-[#2A3649] text-xs font-medium transition-all disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isCompiling ? 'animate-spin text-emerald-400' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${isCompiling ? 'animate-spin text-[#20E28B]' : 'text-[#94A3B8]'}`} />
           <span>{isCompiling ? 'Compiling...' : 'Recompile'}</span>
         </button>
 
-        {/* Export C Header Button (Primary CTA) */}
+        {/* Export C Header Button (Edge Impulse Signature Green CTA) */}
         <button
           onClick={onDownloadHeader}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-semibold shadow-sm shadow-emerald-500/20 transition-all active:scale-95"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#20E28B] hover:bg-[#1BC97B] text-[#0E131F] text-xs font-bold shadow-sm shadow-[#20E28B]/20 transition-all active:scale-95"
         >
-          <Download className="w-3.5 h-3.5 text-slate-950" />
+          <Download className="w-3.5 h-3.5 text-[#0E131F] stroke-[2.5]" />
           <span>Export .h Header</span>
         </button>
 
         {/* Copilot Toggle */}
         <button
           onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-          className={`p-2 rounded-lg border text-xs transition-all ${
+          className={`p-2 rounded-md border text-xs transition-all ${
             isCopilotOpen
               ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300'
-              : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800'
+              : 'bg-[#1B2431] border-[#2A3649] text-[#94A3B8] hover:text-white hover:bg-[#232E3E]'
           }`}
           title="Toggle Gemini Silicon Copilot"
         >
@@ -159,7 +159,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* Theme Toggle */}
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2 rounded-lg bg-slate-800/80 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+          className="p-2 rounded-md bg-[#1B2431] border border-[#2A3649] text-[#94A3B8] hover:text-white hover:bg-[#232E3E] transition-all"
           title="Toggle theme"
         >
           {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}

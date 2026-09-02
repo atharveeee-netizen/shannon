@@ -1,17 +1,22 @@
 import React from 'react';
 import {
   GitMerge,
-  Settings,
-  Cpu,
+  Waves,
+  BrainCircuit,
+  Radio,
+  ArrowRight,
+  Sliders,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 import { CompilationResult, HardwareProfile, PresetModel } from '../../types';
+import { TabType } from '../Sidebar';
 
 interface ImpulseDesignViewProps {
   result: CompilationResult | null;
   selectedModel: PresetModel | null;
   selectedHw: HardwareProfile;
-  onNavigateToTab: (tab: any) => void;
+  onNavigateToTab: (tab: TabType) => void;
 }
 
 export const ImpulseDesignView: React.FC<ImpulseDesignViewProps> = ({
@@ -23,234 +28,211 @@ export const ImpulseDesignView: React.FC<ImpulseDesignViewProps> = ({
   const isAudio = selectedModel?.id === 'kws';
   const isVision = selectedModel?.id === 'vision';
 
-  const inputTitle = isAudio
-    ? 'Time-Series Audio Data'
-    : isVision
-    ? 'Grayscale Image Frame'
-    : 'Vibration Accelerometer Data';
-
-  const inputSpecs = isAudio
-    ? { sampleRate: '16000 Hz', windowSize: '1000 ms', axes: '1 (Mono I2S Mic)', length: '16000 samples' }
-    : isVision
-    ? { dimensions: '48 x 48 px', channels: '1 (Grayscale)', sensor: 'OV2640 Camera', depth: '8-bit pixels' }
-    : { sampleRate: '1000 Hz', windowSize: '128 ms', axes: '3 (X, Y, Z Accel)', fftBins: '128 FFT Bins' };
-
-  const dspTitle = isAudio
-    ? 'Audio MFCC Spectrogram'
-    : isVision
-    ? 'Spatial Normalization & Patch'
-    : 'Spectral FFT Power Density';
-
-  const nnTitle = isAudio
-    ? '1D-CNN Acoustic Classifier'
-    : isVision
-    ? 'MobileNet-Tiny Depthwise 2D'
-    : '5-Layer Reconstruction Autoencoder';
-
-  const outputLabels = isAudio
-    ? ['yes', 'no', 'up', 'down', 'left', 'right', 'on', 'off', 'stop', 'go', 'silence', 'unknown']
-    : isVision
-    ? ['person', 'background']
-    : ['Normal Operation', 'Bearing Defect Anomaly'];
-
-  const flashBytes = result?.optimized_int8.flash_bytes || 24576;
-  const sramBytes = result?.optimized_int8.peak_sram_bytes || 1144;
-  const latencyMs = result?.optimized_int8.estimated_latency_ms || 1.84;
-  const totalMacs = result?.optimized_int8.total_macs || 46368;
-
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Title Header */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
-          <GitMerge className="w-4 h-4" />
-          <span>IMPULSE DESIGN PIPELINE</span>
+    <div className="p-8 space-y-8 max-w-7xl mx-auto bg-[#0E131F]">
+      {/* 1. Impulse Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#202B3C] pb-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#20E28B]">
+            <GitMerge className="w-4 h-4" />
+            <span>VISUAL DATAFLOW PIPELINE</span>
+          </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Create Impulse
+          </h1>
+          <p className="text-xs text-[#94A3B8]">
+            An impulse takes raw sensor data, uses signal processing to extract features, and then uses a learning block to classify new data.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
-          Silicon Computation Graph
-        </h1>
-        <p className="text-xs text-slate-400">
-          Visual dataflow from raw physical sensor acquisition → DSP spectral preprocessing → neural network inference → output prediction.
-        </p>
+
+        <button
+          onClick={() => onNavigateToTab('dsp')}
+          className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#20E28B] hover:bg-[#1BC97B] text-[#0E131F] font-bold text-xs shadow-md shadow-[#20E28B]/20 transition-all active:scale-95 self-start"
+        >
+          <span>Save Impulse & Proceed</span>
+          <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+        </button>
       </div>
 
-      {/* Impulse Interactive Block Flow Diagram */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
-        {/* Block 1: Time Series / Image Input */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-md flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                INPUT BLOCK
-              </span>
-              <Settings className="w-3.5 h-3.5 text-slate-500 hover:text-slate-300 cursor-pointer" />
-            </div>
-            <h3 className="text-sm font-bold text-white">{inputTitle}</h3>
-            <p className="text-[11px] text-slate-400">Physical sensor ingestion buffer mapped to DMA memory.</p>
-          </div>
-
-          <div className="space-y-1.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] font-mono text-slate-400">
-            {Object.entries(inputSpecs).map(([k, v]) => (
-              <div key={k} className="flex justify-between">
-                <span className="text-slate-500">{k}:</span>
-                <span className="text-slate-200">{v}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>Buffer: Direct DMA Stream</span>
-          </div>
+      {/* 2. Visual Impulse Flow Diagram (Edge Impulse 4-Block Pipeline) */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between text-xs font-mono text-[#94A3B8]">
+          <span>IMPULSE PIPELINE GRAPH: SENSOR DMA ➔ DSP SPECTRAL ➔ NN INFERENCE ➔ OUTPUT</span>
+          <span className="text-[#20E28B]">● All blocks compiled to static memory</span>
         </div>
 
-        {/* Block 2: DSP Preprocessing */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-md flex flex-col justify-between">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+          {/* Node 1: Time Series Data Input (Blue Accent) */}
+          <div className="p-5 rounded-lg bg-[#151D2A] border border-[#202B3C] border-t-4 border-t-[#3B82F6] space-y-3 relative group">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                PROCESSING BLOCK
+              <span className="text-[10px] font-mono font-bold text-[#3B82F6] uppercase tracking-wider">
+                1. SENSOR INPUT
               </span>
+              <Radio className="w-4 h-4 text-[#3B82F6]" />
+            </div>
+            <div className="text-sm font-bold text-white">
+              {isAudio ? 'Time series audio' : isVision ? 'Camera Frame' : 'Vibration DMA'}
+            </div>
+            <p className="text-xs text-[#94A3B8]">
+              {isAudio
+                ? '16000Hz, 1000ms window (16000 samples) via I2S microphone DMA.'
+                : isVision
+                ? '48x48 Grayscale image capture from camera sensor.'
+                : '128-axis 3-axis accelerometer acceleration stream.'}
+            </p>
+            <div className="pt-3 border-t border-[#202B3C] flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+              <span>Shape: {selectedModel?.input_shape || '1x49x10'}</span>
+              <span className="text-blue-400">DMA Ringbuf</span>
+            </div>
+          </div>
+
+          {/* Node 2: Processing Block (DSP MFCC / FFT) (Amber Accent) */}
+          <div className="p-5 rounded-lg bg-[#151D2A] border border-[#202B3C] border-t-4 border-t-[#F59E0B] space-y-3 relative group">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold text-[#F59E0B] uppercase tracking-wider">
+                2. PROCESSING BLOCK
+              </span>
+              <Waves className="w-4 h-4 text-[#F59E0B]" />
+            </div>
+            <div className="text-sm font-bold text-white">
+              {isAudio ? 'Audio (MFCC)' : isVision ? 'Image Normalizer' : 'Spectral Analysis'}
+            </div>
+            <p className="text-xs text-[#94A3B8]">
+              {isAudio
+                ? 'Extracts time-frequency mel-filterbank power coefficients.'
+                : isVision
+                ? 'Zero-malloc 8-bit image resize & uint8 normalization.'
+                : '128-point Fast Fourier Transform (FFT) power spectral bins.'}
+            </p>
+            <div className="pt-3 border-t border-[#202B3C] flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+              <span>490 Features</span>
               <button
                 onClick={() => onNavigateToTab('dsp')}
-                className="text-xs text-purple-400 hover:underline flex items-center gap-0.5"
+                className="text-[#F59E0B] hover:underline flex items-center gap-1"
               >
-                Inspect
+                <span>Edit DSP</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
-            <h3 className="text-sm font-bold text-white">{dspTitle}</h3>
-            <p className="text-[11px] text-slate-400">Fixed-point integer spectral transformation & filterbank.</p>
           </div>
 
-          <div className="space-y-1.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] font-mono text-slate-400">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Output Features:</span>
-              <span className="text-white font-bold">{isAudio ? '490 values' : isVision ? '2,304 values' : '128 values'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Quantization:</span>
-              <span className="text-emerald-400">INT8 Scale Factor</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Arithmetic:</span>
-              <span className="text-purple-300">Jacob Bitshift</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => onNavigateToTab('dsp')}
-            className="w-full py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-mono font-medium border border-purple-500/30 transition-all text-center"
-          >
-            Configure DSP & FFT
-          </button>
-        </div>
-
-        {/* Block 3: Neural Network Classifier */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-emerald-500/40 space-y-4 shadow-lg shadow-emerald-500/5 flex flex-col justify-between">
-          <div className="space-y-2">
+          {/* Node 3: Learning Block (NN Classifier) (Green Accent) */}
+          <div className="p-5 rounded-lg bg-[#151D2A] border border-[#202B3C] border-t-4 border-t-[#20E28B] space-y-3 relative group">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                LEARNING BLOCK
+              <span className="text-[10px] font-mono font-bold text-[#20E28B] uppercase tracking-wider">
+                3. LEARNING BLOCK
               </span>
+              <BrainCircuit className="w-4 h-4 text-[#20E28B]" />
+            </div>
+            <div className="text-sm font-bold text-white">
+              Classification (Keras/PyTorch)
+            </div>
+            <p className="text-xs text-[#94A3B8]">
+              {selectedModel?.architecture || '1D Depthwise-Separable CNN'}. Quantized with Pareto-optimal INT8 symmetric weights.
+            </p>
+            <div className="pt-3 border-t border-[#202B3C] flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+              <span>96.6% Accuracy</span>
               <button
                 onClick={() => onNavigateToTab('classifier')}
-                className="text-xs text-emerald-400 hover:underline flex items-center gap-0.5"
+                className="text-[#20E28B] hover:underline flex items-center gap-1"
               >
-                Layers
+                <span>Edit NN</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
-            <h3 className="text-sm font-bold text-white">{nnTitle}</h3>
-            <p className="text-[11px] text-slate-400">Symmetric INT8 quantized neural topology.</p>
           </div>
 
-          <div className="space-y-1.5 p-3 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] font-mono text-slate-400">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Total Layers:</span>
-              <span className="text-white font-bold">{result?.layers?.length || 5} Layers</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Flash ROM:</span>
-              <span className="text-white font-bold">{(flashBytes / 1024).toFixed(1)} KB</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">SRAM Arena:</span>
-              <span className="text-emerald-400 font-bold">{(sramBytes / 1024).toFixed(2)} KB</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => onNavigateToTab('classifier')}
-            className="w-full py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 text-xs font-mono font-medium border border-emerald-500/30 transition-all text-center"
-          >
-            Inspect NN Weights & Confusion
-          </button>
-        </div>
-
-        {/* Block 4: Output Features */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-md flex flex-col justify-between">
-          <div className="space-y-2">
+          {/* Node 4: Output Features (Purple Accent) */}
+          <div className="p-5 rounded-lg bg-[#151D2A] border border-[#202B3C] border-t-4 border-t-[#8B5CF6] space-y-3 relative group">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                OUTPUT FEATURES
+              <span className="text-[10px] font-mono font-bold text-[#8B5CF6] uppercase tracking-wider">
+                4. OUTPUT FEATURES
               </span>
-              <span className="text-[10px] font-mono text-slate-500">
-                {outputLabels.length} Classes
-              </span>
+              <CheckCircle2 className="w-4 h-4 text-[#8B5CF6]" />
             </div>
-            <h3 className="text-sm font-bold text-white">Classification Target</h3>
-            <p className="text-[11px] text-slate-400">Real-time inference probabilities & thresholding.</p>
+            <div className="text-sm font-bold text-white">
+              {isAudio ? '12 Target Classes' : isVision ? 'Person / No-Person' : 'Normal / Fault'}
+            </div>
+            <p className="text-xs text-[#94A3B8]">
+              {isAudio
+                ? 'Emits confidence vector across "yes", "no", "up", "down", "stop", "go", etc.'
+                : isVision
+                ? 'High-precision boolean presence detection probability.'
+                : 'Continuous anomaly score with adaptive Euclidean boundary.'}
+            </p>
+            <div className="pt-3 border-t border-[#202B3C] flex items-center justify-between text-[11px] font-mono text-[#64748B]">
+              <span>Latency: {result?.optimized_int8.estimated_latency_ms.toFixed(2) || '1.84'}ms</span>
+              <span className="text-purple-400">Class Probabilities</span>
+            </div>
           </div>
-
-          <div className="flex flex-wrap gap-1 p-3 rounded-lg bg-slate-950/60 border border-slate-800 max-h-24 overflow-y-auto custom-scrollbar">
-            {outputLabels.map((lbl) => (
-              <span
-                key={lbl}
-                className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700"
-              >
-                {lbl}
-              </span>
-            ))}
-          </div>
-
-          <button
-            onClick={() => onNavigateToTab('live')}
-            className="w-full py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-mono font-medium border border-amber-500/30 transition-all text-center"
-          >
-            Test Live Classification
-          </button>
         </div>
       </div>
 
-      {/* Hardware Latency & SIMD Vectorization Stats */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-        <div className="flex items-center justify-between">
+      {/* 3. Impulse Hardware Profiling Summary */}
+      <div className="p-6 rounded-lg bg-[#151D2A] border border-[#202B3C] space-y-5">
+        <div className="flex items-center justify-between border-b border-[#202B3C] pb-4">
           <div className="flex items-center gap-2">
-            <Cpu className="w-4 h-4 text-emerald-400" />
-            <h3 className="text-sm font-bold text-white">Target Silicon Execution Profile</h3>
+            <Sliders className="w-4 h-4 text-[#20E28B]" />
+            <h2 className="text-sm font-bold text-white">
+              Target Hardware Compute Budget ({selectedHw.name})
+            </h2>
           </div>
-          <span className="text-xs font-mono text-slate-400">
-            {selectedHw.name} @ {selectedHw.clock_mhz} MHz
+          <span className="text-xs font-mono text-[#94A3B8]">
+            Arch: {selectedHw.arch}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
-            <span className="text-slate-500 block">Total Multiply-Accumulates</span>
-            <span className="text-lg font-bold text-white">
-              {totalMacs.toLocaleString()} MACs
-            </span>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+          <div className="p-4 rounded-md bg-[#101620] border border-[#202B3C] space-y-1">
+            <span className="text-[#64748B] text-[11px]">INFERENCE TIME</span>
+            <div className="text-lg font-bold text-white">
+              {result?.optimized_int8.estimated_latency_ms.toFixed(2) || '1.84'} ms
+            </div>
+            <div className="text-[10px] text-[#20E28B]">
+              ⚡ Optimized with {selectedHw.simd}
+            </div>
           </div>
-          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
-            <span className="text-slate-500 block">Inference Clock Cycles</span>
-            <span className="text-lg font-bold text-emerald-400">
-              {Math.round(latencyMs * selectedHw.clock_mhz * 1000).toLocaleString()} cycles
-            </span>
+
+          <div className="p-4 rounded-md bg-[#101620] border border-[#202B3C] space-y-1">
+            <span className="text-[#64748B] text-[11px]">PEAK RAM USAGE</span>
+            <div className="text-lg font-bold text-cyan-400">
+              {result ? (result.optimized_int8.peak_sram_bytes / 1024).toFixed(2) : '1.12'} KB
+            </div>
+            <div className="text-[10px] text-[#94A3B8]">
+              0 dynamic mallocs (Static Arena)
+            </div>
           </div>
-          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
-            <span className="text-slate-500 block">Memory Arena Allocations</span>
-            <span className="text-lg font-bold text-cyan-400">0 Bytes (MISRA-C Certified)</span>
+
+          <div className="p-4 rounded-md bg-[#101620] border border-[#202B3C] space-y-1">
+            <span className="text-[#64748B] text-[11px]">FLASH ROM FOOTPRINT</span>
+            <div className="text-lg font-bold text-[#20E28B]">
+              {result ? (result.optimized_int8.flash_bytes / 1024).toFixed(1) : '24.0'} KB
+            </div>
+            <div className="text-[10px] text-[#94A3B8]">
+              75.0% reduction from FP32
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* 4. Action Banner */}
+      <div className="p-5 rounded-lg bg-gradient-to-r from-[#151D2A] to-[#182438] border border-[#202B3C] flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-white">
+            <Sparkles className="w-4 h-4 text-[#20E28B]" />
+            <span>Ready to fine-tune digital signal preprocessing?</span>
+          </div>
+          <p className="text-xs text-[#94A3B8]">
+            Configure MFCC window size, frame stride, filter frequency bins, and FFT resolution.
+          </p>
+        </div>
+
+        <button
+          onClick={() => onNavigateToTab('dsp')}
+          className="px-4 py-2 rounded-md bg-[#1B2431] hover:bg-[#232E3E] text-white border border-[#2A3649] text-xs font-semibold transition-all"
+        >
+          Open Spectral DSP Block
+        </button>
       </div>
     </div>
   );

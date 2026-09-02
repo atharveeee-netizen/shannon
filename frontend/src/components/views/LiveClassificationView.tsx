@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Radio,
-  Mic,
-  MicOff,
-  Activity,
-  Volume2,
+  Play,
+  Square,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 import { CompilationResult, HardwareProfile, PresetModel } from '../../types';
 
@@ -16,227 +16,164 @@ interface LiveClassificationViewProps {
 
 export const LiveClassificationView: React.FC<LiveClassificationViewProps> = ({
   result,
-  selectedModel,
   selectedHw,
 }) => {
-  const isAudio = selectedModel?.id === 'kws';
-  const isVision = selectedModel?.id === 'vision';
-  const isAnomaly = selectedModel?.id === 'anomaly';
+  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [activeWord, setActiveWord] = useState<string>('yes');
+  const [confidence, setConfidence] = useState<number>(97.4);
 
-  const [isListening, setIsListening] = useState<boolean>(false);
-  const [activeWord, setActiveWord] = useState<string>('stop');
-  const [probabilities, setProbabilities] = useState<{ label: string; score: number }[]>([
-    { label: 'stop', score: 0.964 },
-    { label: 'go', score: 0.012 },
-    { label: 'yes', score: 0.008 },
-    { label: 'no', score: 0.005 },
-    { label: 'silence', score: 0.006 },
-    { label: 'unknown', score: 0.005 },
-  ]);
+  const testClasses = [
+    { label: 'yes', prob: activeWord === 'yes' ? confidence : 0.4 },
+    { label: 'no', prob: activeWord === 'no' ? confidence : 0.2 },
+    { label: 'stop', prob: activeWord === 'stop' ? confidence : 0.3 },
+    { label: 'go', prob: activeWord === 'go' ? confidence : 0.1 },
+    { label: 'up', prob: activeWord === 'up' ? confidence : 0.2 },
+    { label: 'down', prob: activeWord === 'down' ? confidence : 0.1 },
+    { label: '_noise', prob: activeWord === '_noise' ? 88.0 : 1.2 },
+  ];
 
-  const [isAnomalous, setIsAnomalous] = useState<boolean>(false);
-
-  useEffect(() => {
-    let interval: any;
-    if (isListening) {
-      interval = setInterval(() => {
-        if (isAudio) {
-          const words = ['yes', 'no', 'stop', 'go', 'on', 'off'];
-          const picked = words[Math.floor(Math.random() * words.length)];
-          setActiveWord(picked);
-          setProbabilities([
-            { label: picked, score: 0.94 + Math.random() * 0.05 },
-            { label: 'silence', score: 0.02 },
-            { label: 'unknown', score: 0.01 },
-            { label: 'other', score: 0.01 },
-          ]);
-        }
-      }, 1200);
-    }
-    return () => clearInterval(interval);
-  }, [isListening, isAudio]);
-
-  const latencyMs = result?.optimized_int8.estimated_latency_ms || 1.84;
-  const sramBytes = result?.optimized_int8.peak_sram_bytes || 1144;
+  const handleSimulateWord = (word: string) => {
+    setActiveWord(word);
+    setConfidence(94.0 + Math.random() * 5.5);
+  };
 
   return (
-    <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-8 space-y-8 max-w-7xl mx-auto bg-[#0E131F]">
+      {/* 1. Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#202B3C] pb-6">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
-            <Radio className="w-4 h-4" />
-            <span>REAL-TIME SENSOR TESTING</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-[#20E28B]">
+            <Radio className="w-4 h-4 animate-pulse" />
+            <span>REAL-TIME INFERENCE TESTER</span>
           </div>
           <h1 className="text-2xl font-bold text-white tracking-tight">
-            Live Classification Studio
+            Live Classification & Sensor Simulation
           </h1>
-          <p className="text-xs text-slate-400">
-            Simulate and test real-time INT8 model inference before deploying code to physical microcontroller silicon.
+          <p className="text-xs text-[#94A3B8]">
+            Test live audio streaming or accelerometer signals in real time using the compiled 0-malloc inference kernel.
           </p>
         </div>
 
+        {/* Live Stream Toggle Button */}
         <button
-          onClick={() => setIsListening(!isListening)}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs transition-all shadow-md ${
-            isListening
-              ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20'
-              : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20'
+          onClick={() => setIsRunning(!isRunning)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all self-start ${
+            isRunning
+              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30'
+              : 'bg-[#20E28B] text-[#0E131F] hover:bg-[#1BC97B]'
           }`}
         >
-          {isListening ? (
-            <>
-              <MicOff className="w-4 h-4" />
-              <span>Stop Live Simulation</span>
-            </>
-          ) : (
-            <>
-              <Mic className="w-4 h-4" />
-              <span>Start Live Sensor Stream</span>
-            </>
-          )}
+          {isRunning ? <Square className="w-3.5 h-3.5 fill-rose-400" /> : <Play className="w-3.5 h-3.5 fill-[#0E131F]" />}
+          <span>{isRunning ? 'Pause Live Stream' : 'Start Live Stream'}</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Columns: Live Sensor Canvas & Inference Stream */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Live Waveform / Visualizer Card */}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Volume2 className="w-4 h-4 text-emerald-400" />
-                <h2 className="text-sm font-bold text-white">
-                  {isAudio ? 'Acoustic DMA Waveform Stream' : isVision ? 'Camera Frame 48x48 Matrix' : '3-Axis Vibration Sensor PSD'}
-                </h2>
-              </div>
-              <span className="flex items-center gap-1.5 text-xs font-mono text-slate-400">
-                <span className={`w-2 h-2 rounded-full ${isListening ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}`} />
-                {isListening ? 'STREAMING ACTIVE' : 'STANDBY'}
-              </span>
-            </div>
-
-            {/* Visualizer Canvas Simulation */}
-            <div className="h-44 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
-              {isListening ? (
-                <div className="flex items-end gap-1.5 h-full w-full justify-center">
-                  {Array.from({ length: 32 }).map((_, i) => {
-                    const height = Math.min(100, Math.max(15, Math.sin(i * 0.4 + Date.now() * 0.005) * 50 + 50));
-                    return (
-                      <div
-                        key={i}
-                        className="w-2.5 bg-gradient-to-t from-emerald-500/30 to-emerald-400 rounded-t transition-all duration-150"
-                        style={{ height: `${height}%` }}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="text-center space-y-2">
-                  <Activity className="w-8 h-8 text-slate-600 mx-auto" />
-                  <p className="text-xs text-slate-500 font-mono">Click "Start Live Sensor Stream" to begin real-time inference</p>
-                </div>
-              )}
-
-              {/* Detected Trigger Badge Overlay */}
-              {isListening && isAudio && (
-                <div className="absolute top-4 right-4 px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs">
-                  DETECTED: "{activeWord.toUpperCase()}"
-                </div>
-              )}
-            </div>
-
-            {/* Quick Test Sample Trigger Buttons */}
-            {isAudio && (
-              <div className="space-y-2 pt-2">
-                <span className="text-[11px] font-mono text-slate-500">Inject Simulated Voice Sample:</span>
-                <div className="flex flex-wrap gap-2">
-                  {['yes', 'no', 'stop', 'go', 'on', 'off'].map((w) => (
-                    <button
-                      key={w}
-                      onClick={() => {
-                        setActiveWord(w);
-                        setProbabilities([
-                          { label: w, score: 0.97 },
-                          { label: 'silence', score: 0.01 },
-                          { label: 'unknown', score: 0.01 },
-                          { label: 'other', score: 0.01 },
-                        ]);
-                      }}
-                      className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-200 border border-slate-700 transition-all"
-                    >
-                      🗣️ "{w}"
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {isAnomaly && (
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  onClick={() => setIsAnomalous(!isAnomalous)}
-                  className={`px-4 py-2 rounded-xl text-xs font-mono font-bold border transition-all ${
-                    isAnomalous
-                      ? 'bg-rose-500/20 border-rose-500 text-rose-300'
-                      : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-750'
-                  }`}
-                >
-                  {isAnomalous ? 'Simulating Bearing Fault (Defect)' : 'Simulate Bearing Defect Injection'}
-                </button>
-              </div>
-            )}
+      {/* 2. Audio Waveform Simulator Card */}
+      <div className="p-6 rounded-lg bg-[#151D2A] border border-[#202B3C] space-y-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Radio className="w-4 h-4 text-[#20E28B]" />
+            <h2 className="text-sm font-bold text-white">Live Microphone Signal (16kHz PCM DMA)</h2>
           </div>
+          <span className="text-xs font-mono text-[#94A3B8]">
+            Sample Rate: 16,000 Hz | Window: 1000ms
+          </span>
         </div>
 
-        {/* Right 1 Column: Real-Time Prediction Confidences */}
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h3 className="text-sm font-bold text-white">Live Prediction Scores</h3>
-            <span className="text-[11px] font-mono text-emerald-400">
-              {latencyMs.toFixed(2)} ms
-            </span>
-          </div>
+        {/* Dynamic Simulated Waveform Bars */}
+        <div className="h-32 bg-[#101620] rounded-lg border border-[#202B3C] p-4 flex items-center justify-center gap-1 overflow-hidden">
+          {Array.from({ length: 64 }).map((_, idx) => {
+            const h = isRunning
+              ? Math.sin((idx + Date.now() / 300) * 0.3) * 45 + Math.cos(idx * 0.6) * 35 + 15
+              : 8;
+            const clampedH = Math.max(6, Math.min(95, h));
+            const isCenter = idx > 22 && idx < 42;
 
-          {/* Probabilities Bars */}
-          <div className="space-y-4">
-            {probabilities.map((item, idx) => (
-              <div key={idx} className="space-y-1.5 font-mono text-xs">
-                <div className="flex justify-between items-center">
-                  <span className="text-white font-semibold capitalize">{item.label}</span>
-                  <span className={item.score > 0.5 ? 'text-emerald-400 font-bold' : 'text-slate-400'}>
-                    {(item.score * 100).toFixed(1)}%
+            return (
+              <div
+                key={idx}
+                className={`flex-1 rounded-full transition-all duration-150 ${
+                  isCenter
+                    ? 'bg-[#20E28B]'
+                    : 'bg-[#334155]'
+                }`}
+                style={{ height: `${clampedH}%` }}
+              />
+            );
+          })}
+        </div>
+
+        {/* Quick Acoustic Trigger Test Buttons */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-mono text-[#64748B] block">
+            INJECT SIMULATED VOICE DATA:
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {['yes', 'no', 'stop', 'go', 'up', 'down', '_noise'].map((word) => (
+              <button
+                key={word}
+                onClick={() => handleSimulateWord(word)}
+                className={`px-3 py-1.5 rounded-md text-xs font-mono font-bold transition-all ${
+                  activeWord === word
+                    ? 'bg-[#20E28B] text-[#0E131F] shadow-sm shadow-[#20E28B]/20'
+                    : 'bg-[#1B2431] text-[#CBD5E1] border border-[#2A3649] hover:bg-[#232E3E]'
+                }`}
+              >
+                "{word}"
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Real-Time Classification Output Meters */}
+      <div className="p-6 rounded-lg bg-[#151D2A] border border-[#202B3C] space-y-5">
+        <div className="flex items-center justify-between border-b border-[#202B3C] pb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#20E28B]" />
+            <h3 className="text-sm font-bold text-white">Class Confidence Vectors</h3>
+          </div>
+          <span className="text-xs font-mono text-[#20E28B]">
+            Latency: {result?.optimized_int8.estimated_latency_ms.toFixed(2) || '1.84'} ms ({selectedHw.name})
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {testClasses.map((item) => {
+            const isTop = item.prob > 50;
+            return (
+              <div key={item.label} className="space-y-1">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className={`font-bold ${isTop ? 'text-white text-sm' : 'text-[#94A3B8]'}`}>
+                    {item.label}
+                  </span>
+                  <span className={`font-bold ${isTop ? 'text-[#20E28B]' : 'text-[#64748B]'}`}>
+                    {item.prob.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                <div className="w-full bg-[#101620] h-2 rounded-full overflow-hidden">
                   <div
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      item.score > 0.5 ? 'bg-emerald-500' : 'bg-slate-700'
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      isTop
+                        ? 'bg-[#20E28B]'
+                        : 'bg-[#253041]'
                     }`}
-                    style={{ width: `${Math.min(100, item.score * 100)}%` }}
+                    style={{ width: `${item.prob}%` }}
                   />
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Microcontroller Silicon Execution Proof */}
-          <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs font-mono">
-            <div className="text-slate-500 font-bold">SILICON TELEMETRY</div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Target Chip:</span>
-              <span className="text-white font-bold">{selectedHw.name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Heap Allocations:</span>
-              <span className="text-emerald-400 font-bold">0 bytes malloc</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">SRAM Arena Used:</span>
-              <span className="text-cyan-300 font-bold">{(sramBytes / 1024).toFixed(2)} KB</span>
-            </div>
-          </div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* 4. Telemetry Footer */}
+      <div className="p-4 rounded-lg bg-[#151D2A] border border-[#202B3C] flex items-center justify-between text-xs font-mono text-[#94A3B8]">
+        <div className="flex items-center gap-2">
+          <Zap className="w-4 h-4 text-amber-400" />
+          <span>DMA Buffer: 1,000 samples @ 16-bit PCM (0 Heap Allocations)</span>
+        </div>
+        <span className="text-[#20E28B] font-bold">100% Deterministic Execution</span>
       </div>
     </div>
   );
