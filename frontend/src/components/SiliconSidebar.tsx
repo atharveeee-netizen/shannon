@@ -1,6 +1,6 @@
 import React from 'react';
 import { HardwareProfile, CompilationResult } from '../types';
-import { Cpu, Zap, Battery, Download, ShieldCheck, Settings2, FileCode } from 'lucide-react';
+import { Cpu, Battery, Download, ShieldCheck, Settings2, FileCode } from 'lucide-react';
 
 interface SiliconSidebarProps {
   currentHw: HardwareProfile;
