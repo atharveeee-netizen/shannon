@@ -189,7 +189,7 @@ class TestShannonCompiler(unittest.TestCase):
         res = self.client.post("/api/presets/kws/optimize", json={"target_hardware": "ESP32-S3", "bits": 8})
         self.assertEqual(res.status_code, 200)
         data = res.json()
-        self.assertEqual(data["model_name"], "KeywordSpotter_v1")
+        self.assertIn("KeywordSpotter", data["model_name"])
         self.assertTrue(data["zero_malloc_verified"])
         self.assertIn("c_header_code", data)
 

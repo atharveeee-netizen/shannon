@@ -5,7 +5,7 @@ import {
   Copy,
   Check,
   Search,
-  ShieldCheck,
+  CheckCircle2,
   RotateCcw,
   Edit3,
   Eye,
@@ -34,10 +34,10 @@ export const CodeGenView: React.FC = () => {
 
   if (!loadedModel || !compilationResult || !compilationResult.c_header_code) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 w-full max-w-none">
         <EmptyState
           title="Generated C Header Not Available"
-          description="Compile a model to emit standalone, zero-dependency MISRA-C:2012 certified C code for microcontrollers."
+          description="Compile a model to emit standalone ANSI C99 inference code with zero runtime heap allocation (malloc = 0 B)."
           allowCompile={true}
         />
       </div>
@@ -87,11 +87,11 @@ export const CodeGenView: React.FC = () => {
     : lines.map((l, i) => ({ text: l, num: i + 1, match: false }));
 
   return (
-    <div className="p-6 space-y-4 max-w-7xl mx-auto h-full flex flex-col">
+    <div className="p-6 space-y-4 w-full max-w-none h-full flex flex-col">
       {/* 1. Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4 flex-shrink-0">
         <div className="space-y-0.5">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <FileCode className="w-4 h-4" />
             <span>STANDALONE SILICON CODE GENERATION & LIVE EDITOR</span>
           </div>
@@ -100,7 +100,7 @@ export const CodeGenView: React.FC = () => {
               Header: <code>shannon_{compilationResult.model_name.toLowerCase()}_model.h</code>
             </h1>
             {isModified && (
-              <span className="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] font-mono font-semibold flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] font-mono font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                 User Modified
               </span>
@@ -110,11 +110,11 @@ export const CodeGenView: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* View / Edit Mode Toggle */}
-          <div className="flex items-center border border-border rounded bg-surface-raised p-0.5 text-xs font-mono">
+          <div className="flex items-center border border-border rounded-md bg-surface-raised p-0.5 text-xs font-mono">
             <button
               onClick={() => setIsEditMode(true)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
-                isEditMode ? 'bg-accent text-black font-bold shadow-sm' : 'text-text-secondary hover:text-text-primary'
+              className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                isEditMode ? 'bg-primary text-white font-bold shadow-sm' : 'text-text-secondary hover:text-text-primary'
               }`}
               title="Interactive code editor with direct editing"
             >
@@ -123,8 +123,8 @@ export const CodeGenView: React.FC = () => {
             </button>
             <button
               onClick={() => setIsEditMode(false)}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors ${
-                !isEditMode ? 'bg-accent text-black font-bold shadow-sm' : 'text-text-secondary hover:text-text-primary'
+              className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors cursor-pointer ${
+                !isEditMode ? 'bg-primary text-white font-bold shadow-sm' : 'text-text-secondary hover:text-text-primary'
               }`}
               title="Read-only view with line search"
             >
@@ -137,7 +137,7 @@ export const CodeGenView: React.FC = () => {
           {isModified && (
             <button
               onClick={handleReset}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-surface-raised hover:bg-surface-hover border border-border text-amber-400 hover:text-amber-300 text-xs font-medium transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-amber-400 hover:text-amber-300 text-xs font-medium transition-colors cursor-pointer"
               title="Revert modifications to original compiler output"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -154,21 +154,21 @@ export const CodeGenView: React.FC = () => {
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
                 placeholder="Find in source..."
-                className="bg-surface-raised text-text-primary text-xs pl-8 pr-3 py-1.5 rounded border border-border focus:outline-none focus:ring-1 focus:ring-accent font-mono w-40"
+                className="bg-surface-raised text-text-primary text-xs pl-8 pr-3 py-1.5 rounded-md border border-border focus:outline-none focus:ring-1 focus:ring-primary font-mono w-40"
               />
             </div>
           )}
 
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-colors cursor-pointer"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-accent" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy'}</span>
           </button>
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-accent hover:bg-accent-hover text-black text-xs font-bold shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download .h</span>
@@ -177,8 +177,8 @@ export const CodeGenView: React.FC = () => {
       </div>
 
       {/* 2. Main Full-Height Code Area */}
-      <div className="flex-1 rounded bg-code border border-border overflow-hidden font-mono text-xs flex flex-col min-h-0">
-        <div className="px-4 py-2 border-b border-border bg-surface-raised/40 flex items-center justify-between text-[11px] text-text-secondary flex-shrink-0">
+      <div className="flex-1 rounded-xl bg-surface border border-border overflow-hidden font-mono text-xs flex flex-col min-h-0">
+        <div className="px-4 py-2 border-b border-border bg-surface-raised/60 flex items-center justify-between text-[11px] text-text-secondary flex-shrink-0">
           <div className="flex items-center gap-2">
             <span>ISO C99 / C++11 STANDALONE EMISSION</span>
             {isEditMode && (
@@ -190,11 +190,11 @@ export const CodeGenView: React.FC = () => {
 
         {isEditMode ? (
           /* Interactive Code Editor with synchronized line numbering gutter */
-          <div className="flex-1 flex overflow-hidden relative min-h-0">
+          <div className="flex-1 flex overflow-hidden relative min-h-0 bg-canvas">
             {/* Gutter with line numbers */}
             <div
               ref={gutterRef}
-              className="w-12 bg-surface-raised/20 border-r border-border py-4 px-2 select-none text-right text-text-muted font-mono text-xs overflow-hidden leading-relaxed opacity-60"
+              className="w-12 bg-surface-raised/30 border-r border-border py-4 px-2 select-none text-right text-text-muted font-mono text-xs overflow-hidden leading-relaxed opacity-60"
             >
               {lines.map((_, i) => (
                 <div key={i} className="h-6">
@@ -216,12 +216,12 @@ export const CodeGenView: React.FC = () => {
           </div>
         ) : (
           /* Formatted Viewer with Search Match Highlighting */
-          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-canvas">
             {filteredLines.map((line) => (
               <div
                 key={line.num}
                 className={`flex items-start gap-4 py-0.5 px-2 rounded ${
-                  line.match ? 'bg-accent/15 text-accent font-bold' : 'hover:bg-surface-raised/30 text-text-secondary'
+                  line.match ? 'bg-primary/15 text-primary font-bold' : 'hover:bg-surface-raised/30 text-text-secondary'
                 }`}
               >
                 <span className="w-8 select-none text-text-muted text-right text-[11px] opacity-50">
@@ -234,11 +234,11 @@ export const CodeGenView: React.FC = () => {
         )}
 
         {/* 3. Bottom Status Bar */}
-        <div className="px-4 py-2.5 border-t border-border bg-surface-raised/40 flex flex-wrap items-center justify-between text-xs text-text-secondary gap-2 flex-shrink-0">
+        <div className="px-4 py-2.5 border-t border-border bg-surface-raised/60 flex flex-wrap items-center justify-between text-xs text-text-secondary gap-2 flex-shrink-0">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-emerald-400 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>MISRA-C:2012 Rule 21.3 (0 B Malloc)</span>
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Static Memory Arena (0 B Dynamic Allocation)</span>
             </span>
             <span>Static Arena: <strong className="text-cyan-400 font-mono">{compilationResult.optimized_int8.peak_sram_bytes} Bytes</strong></span>
             <span>Flash Weights: <strong className="text-text-primary font-mono">{compilationResult.optimized_int8.flash_bytes} Bytes</strong></span>

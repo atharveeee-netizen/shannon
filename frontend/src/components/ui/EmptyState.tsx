@@ -18,8 +18,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   const { loadedModel, triggerCompile, setActiveTab, loadPreset } = useCompiler();
 
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center rounded-none border border-border bg-surface/40 max-w-2xl mx-auto my-8 space-y-4">
-      <div className="w-12 h-12 rounded-none bg-surface-raised border border-border flex items-center justify-center text-text-muted">
+    <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl border border-border bg-surface/60 max-w-2xl mx-auto my-8 space-y-4">
+      <div className="w-12 h-12 rounded-lg bg-surface-raised border border-border flex items-center justify-center text-text-muted">
         <Icon className="w-6 h-6" />
       </div>
 
@@ -28,11 +28,11 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         <p className="text-xs text-text-secondary max-w-md leading-relaxed">{description}</p>
       </div>
 
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
         {loadedModel && allowCompile && (
           <button
             onClick={() => triggerCompile()}
-            className="flex items-center gap-2 px-4 py-2 rounded-none bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
             <span>Compile {loadedModel.name}</span>
@@ -43,23 +43,23 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           <>
             <button
               onClick={() => setActiveTab('models')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-none bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all cursor-pointer"
             >
               <span>Browse Reference Models</span>
             </button>
             <button
               onClick={() => setActiveTab('import')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-none bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all cursor-pointer"
             >
               <Upload className="w-3.5 h-3.5 text-primary" />
               <span>Import Model</span>
             </button>
             <button
               onClick={() => loadPreset('kws', true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-none bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-semibold transition-all cursor-pointer"
             >
-              <span>Load Reference Model</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Quick Load Reference (KWS)</span>
+              <ArrowRight className="w-3 h-3" />
             </button>
           </>
         )}

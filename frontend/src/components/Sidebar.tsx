@@ -1,51 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import {
-  LayoutDashboard,
-  Box,
-  Upload,
   GitMerge,
-  Binary,
   Cpu,
-  Zap,
   Code2,
-  Workflow,
-  Search,
-  Activity,
-  Scale,
-  BarChart3,
-  FlaskConical,
-  HardDrive,
-  Download,
-  Terminal,
-  Settings,
   ChevronDown,
   ChevronRight,
-  ShieldCheck,
   Bot,
-  Sparkles,
   PanelLeftClose,
   PanelLeftOpen,
-  FlaskRound,
+  LayoutDashboard,
+  Binary,
+  Scale,
+  HardDrive,
+  Terminal,
 } from 'lucide-react';
 import { useCompiler } from '../context/CompilerContext';
 
-interface SidebarSection {
+interface NavItem {
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  tag?: string;
+}
+
+interface NavSection {
   title: string;
-  items: {
-    id: string;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-    badge?: string;
-  }[];
+  items: NavItem[];
 }
 
 export const Sidebar: React.FC = () => {
   const {
     activeTab,
     setActiveTab,
-    loadedModel,
     selectedHw,
-    modelStatus,
     isCopilotOpen,
     setIsCopilotOpen,
   } = useCompiler();
@@ -55,7 +42,7 @@ export const Sidebar: React.FC = () => {
   });
 
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
-    EXPERIMENTAL: true, // Default collapsed per submission requirements
+    EXPERIMENTAL: true,
   });
 
   useEffect(() => {
@@ -66,229 +53,200 @@ export const Sidebar: React.FC = () => {
     setCollapsedSections((prev) => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const sections: SidebarSection[] = [
+  const sections: NavSection[] = [
     {
       title: 'WORKSPACE',
       items: [
         { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
-        { id: 'graph', label: 'Computation Graph', icon: GitMerge, badge: 'DAG' },
-        { id: 'models', label: 'Reference Models', icon: Box },
-        { id: 'import', label: 'Import Model', icon: Upload, badge: 'ONNX/JSON' },
+        { id: 'graph', label: 'Computation Graph', icon: GitMerge, tag: 'DAG' },
+        { id: 'models', label: 'Reference Models' },
+        { id: 'import', label: 'Import Model' },
       ],
     },
     {
       title: 'COMPILE',
       items: [
-        { id: 'quantization', label: 'INT8 Quantization', icon: Binary, badge: 'INT8' },
-        { id: 'memory', label: 'SRAM Memory Arena', icon: Cpu, badge: '0-Malloc' },
-        { id: 'optimization', label: 'MCU Optimization', icon: Zap },
-        { id: 'codegen', label: 'Code Generation', icon: Code2, badge: '.h' },
+        { id: 'quantization', label: 'INT8 Quantization', icon: Binary, tag: 'INT8' },
+        { id: 'memory', label: 'SRAM Memory Arena', icon: Cpu, tag: '0-Malloc' },
+        { id: 'optimization', label: 'MCU Optimization' },
+        { id: 'codegen', label: 'Code Generation', icon: Code2, tag: '.h' },
       ],
     },
     {
       title: 'VALIDATE',
       items: [
         { id: 'parity', label: 'Numerical Parity', icon: Scale },
-        { id: 'benchmarks', label: 'Multi-MCU Matrix', icon: BarChart3 },
-        { id: 'testbench', label: 'Execution Verification', icon: FlaskConical },
+        { id: 'benchmarks', label: 'Multi-MCU Matrix' },
+        { id: 'testbench', label: 'Execution Verification' },
       ],
     },
     {
       title: 'TARGET',
       items: [
-        { id: 'targets', label: 'Silicon Targets', icon: HardDrive },
-        { id: 'deployment', label: 'Deployment & Firmware', icon: Download },
+        { id: 'targets', label: 'Hardware Targets', icon: HardDrive },
+        { id: 'deployment', label: 'Deployment & Firmware' },
       ],
     },
     {
       title: 'SYSTEM',
       items: [
         { id: 'logs', label: 'Compiler Logs', icon: Terminal },
-        { id: 'settings', label: 'Settings', icon: Settings },
+        { id: 'settings', label: 'Settings' },
       ],
     },
     {
       title: 'EXPERIMENTAL',
       items: [
-        { id: 'waveforms', label: 'Waveforms & FFT', icon: Activity, badge: 'Simulation' },
-        { id: 'signalflow', label: 'Execution Architecture', icon: Workflow, badge: 'Diagram' },
-        { id: 'tensor', label: 'Tensor Inspector', icon: Search },
+        { id: 'waveforms', label: 'Waveforms & FFT' },
+        { id: 'signalflow', label: 'Execution Architecture' },
+        { id: 'tensor', label: 'Tensor Inspector' },
       ],
     },
   ];
 
   return (
     <aside
-      className={`bg-surface border-r border-border flex flex-col flex-shrink-0 select-none h-screen sticky top-0 transition-all duration-150 rounded-none ${
-        isCollapsed ? 'w-14' : 'w-60'
+      className={`h-screen bg-surface border-r border-border flex flex-col justify-between transition-all duration-200 select-none z-20 flex-shrink-0 ${
+        isCollapsed ? 'w-14' : 'w-[248px]'
       }`}
     >
-      {/* Brand Header */}
-      <div className="h-12 flex items-center justify-between px-3 border-b border-border bg-surface-raised/50 rounded-none">
-        <div className="flex items-center gap-2 overflow-hidden">
-          <div className="w-6 h-6 bg-primary text-white flex items-center justify-center font-bold text-xs flex-shrink-0 rounded-none">
-            S
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-text-primary tracking-tight text-xs font-mono">SHANNON</span>
-                <span className="text-[10px] px-1 py-0.2 bg-surface-raised text-text-muted font-mono border border-border rounded-none">
-                  EDA
-                </span>
+      {/* Top Branding & Collapse Trigger */}
+      <div>
+        <div className="h-14 px-3.5 border-b border-border flex items-center justify-between">
+          {!isCollapsed ? (
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                <Cpu className="w-3.5 h-3.5 text-primary" />
               </div>
-              <span className="text-[10px] text-text-secondary">TinyML Silicon Compiler</span>
+              <div className="min-w-0">
+                <div className="text-xs font-bold tracking-tight text-text-primary uppercase flex items-center gap-1.5">
+                  <span>Shannon</span>
+                  <span className="text-[9px] font-mono font-medium px-1 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                    EDA
+                  </span>
+                </div>
+                <div className="text-[10px] text-text-muted truncate font-mono">TinyML Compiler</div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full flex justify-center">
+              <Cpu className="w-4 h-4 text-primary" />
             </div>
           )}
+
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1.5 rounded-md hover:bg-surface-raised text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {isCollapsed ? (
+              <PanelLeftOpen className="w-4 h-4" />
+            ) : (
+              <PanelLeftClose className="w-4 h-4" />
+            )}
+          </button>
         </div>
 
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors rounded-none"
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          {isCollapsed ? <PanelLeftOpen className="w-3.5 h-3.5" /> : <PanelLeftClose className="w-3.5 h-3.5" />}
-        </button>
+        {/* Navigation Sections */}
+        <div className="p-2 space-y-3 overflow-y-auto max-h-[calc(100vh-140px)] custom-scrollbar">
+          {sections.map((sec) => {
+            const isSecCollapsed = collapsedSections[sec.title];
+
+            return (
+              <div key={sec.title} className="space-y-0.5">
+                {!isCollapsed && (
+                  <button
+                    onClick={() => toggleSection(sec.title)}
+                    className="w-full flex items-center justify-between px-2 py-1 text-[11px] font-mono tracking-wider font-semibold text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                  >
+                    <span>{sec.title}</span>
+                    {isSecCollapsed ? (
+                      <ChevronRight className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    )}
+                  </button>
+                )}
+
+                {(!isSecCollapsed || isCollapsed) && (
+                  <div className="space-y-0.5">
+                    {sec.items.map((item) => {
+                      const isActive = activeTab === item.id;
+                      const Icon = item.icon;
+
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => setActiveTab(item.id)}
+                          title={isCollapsed ? item.label : undefined}
+                          className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors text-left cursor-pointer ${
+                            isActive
+                              ? 'bg-primary/10 text-primary border-l-2 border-primary font-semibold'
+                              : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover border-l-2 border-transparent'
+                          }`}
+                        >
+                          {Icon ? (
+                            <Icon
+                              className={`w-3.5 h-3.5 flex-shrink-0 ${
+                                isActive ? 'text-primary' : 'text-text-muted'
+                              }`}
+                            />
+                          ) : (
+                            <span className="w-1.5 h-1.5 rounded-full bg-border-strong flex-shrink-0 ml-1 mr-1" />
+                          )}
+
+                          {!isCollapsed && (
+                            <div className="flex items-center justify-between w-full min-w-0">
+                              <span className="truncate">{item.label}</span>
+                              {item.tag && (
+                                <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-surface-raised border border-border text-text-muted flex-shrink-0 ml-1">
+                                  {item.tag}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Active Target & Model Context Header */}
-      {!isCollapsed && (
-        <div className="p-2.5 border-b border-border bg-surface-raised/20 space-y-1 rounded-none text-xs">
-          <div className="flex items-center justify-between text-[11px] font-mono">
-            <span className="text-text-muted">STATUS</span>
-            <span
-              className={`flex items-center gap-1 font-semibold ${
-                modelStatus === 'SUCCESS'
-                  ? 'text-emerald-500'
-                  : modelStatus === 'COMPILING'
-                  ? 'text-primary animate-pulse'
-                  : modelStatus === 'READY'
-                  ? 'text-amber-500'
-                  : 'text-text-muted'
+      {/* Bottom: Silicon Copilot Trigger & Active Target Telemetry */}
+      <div className="p-2 border-t border-border bg-surface">
+        {!isCollapsed ? (
+          <div className="space-y-2">
+            <div className="px-2.5 py-1.5 rounded-lg bg-surface-raised border border-border flex items-center justify-between text-[11px] font-mono">
+              <span className="text-text-muted truncate">{selectedHw.name}</span>
+              <span className="text-primary font-semibold">{selectedHw.sram_kb}KB</span>
+            </div>
+
+            <button
+              onClick={() => setIsCopilotOpen(!isCopilotOpen)}
+              className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                isCopilotOpen
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-surface-raised hover:bg-surface-hover border-border text-text-primary'
               }`}
             >
-              <span
-                className={`w-1.5 h-1.5 rounded-none ${
-                  modelStatus === 'SUCCESS'
-                    ? 'bg-emerald-500'
-                    : modelStatus === 'COMPILING'
-                    ? 'bg-primary'
-                    : modelStatus === 'READY'
-                    ? 'bg-amber-500'
-                    : 'bg-text-muted'
-                }`}
-              />
-              {modelStatus}
-            </span>
-          </div>
-          <div className="text-xs font-semibold text-text-primary truncate">
-            {loadedModel ? loadedModel.name : 'No model loaded'}
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-text-secondary font-mono">
-            <span className="text-text-primary font-medium">{selectedHw.name}</span>
-            <span className="text-text-muted">({selectedHw.clock_mhz} MHz)</span>
-          </div>
-        </div>
-      )}
-
-      {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto px-1.5 py-2 space-y-2.5 custom-scrollbar text-xs">
-        {sections.map((sec) => {
-          const isSecCollapsed = collapsedSections[sec.title];
-          return (
-            <div key={sec.title}>
-              {!isCollapsed && (
-                <button
-                  onClick={() => toggleSection(sec.title)}
-                  className="w-full flex items-center justify-between text-[10px] font-mono font-semibold text-text-muted tracking-wider px-2 py-0.5 hover:text-text-primary transition-colors rounded-none"
-                >
-                  <span className="flex items-center gap-1">
-                    {sec.title === 'EXPERIMENTAL' && <FlaskRound className="w-3 h-3 text-amber-500" />}
-                    <span>{sec.title}</span>
-                  </span>
-                  {isSecCollapsed ? <ChevronRight className="w-3 h-3 text-text-muted" /> : <ChevronDown className="w-3 h-3 text-text-muted" />}
-                </button>
-              )}
-
-              {(!isSecCollapsed || isCollapsed) && (
-                <div className="space-y-0.5 mt-0.5">
-                  {sec.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = activeTab === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => setActiveTab(item.id)}
-                        title={isCollapsed ? item.label : undefined}
-                        className={`w-full flex items-center ${
-                          isCollapsed ? 'justify-center px-1' : 'justify-between px-2'
-                        } py-1.5 text-xs transition-all group rounded-none ${
-                          isActive
-                            ? 'bg-surface-raised text-text-primary font-semibold border-l-2 border-primary'
-                            : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover/60 border-l-2 border-transparent'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <Icon
-                            className={`w-3.5 h-3.5 flex-shrink-0 ${
-                              isActive ? 'text-primary' : 'text-text-muted group-hover:text-text-secondary'
-                            }`}
-                          />
-                          {!isCollapsed && <span className="truncate">{item.label}</span>}
-                        </div>
-                        {!isCollapsed && item.badge && (
-                          <span
-                            className={`text-[9px] px-1 py-0.2 font-mono rounded-none flex-shrink-0 ${
-                              isActive
-                                ? 'bg-primary/15 text-primary font-medium'
-                                : 'bg-surface-raised text-text-muted border border-border'
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Silicon Copilot AI Auditor Drawer Trigger */}
-      <div className="p-2 border-t border-border bg-surface-raised/20 space-y-1.5 rounded-none">
-        <button
-          onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-          title={isCollapsed ? 'Silicon Copilot Auditor' : undefined}
-          className={`w-full flex items-center ${
-            isCollapsed ? 'justify-center p-1.5' : 'justify-between p-1.5'
-          } border text-xs transition-all rounded-none ${
-            isCopilotOpen
-              ? 'bg-surface-raised border-primary/50 text-text-primary'
-              : 'bg-surface border-border text-text-primary hover:bg-surface-hover'
-          }`}
-        >
-          <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 bg-surface-raised border border-border flex items-center justify-center text-primary flex-shrink-0 rounded-none">
               <Bot className="w-3.5 h-3.5" />
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col text-left">
-                <span className="font-semibold text-xs leading-tight">Silicon Copilot</span>
-                <span className="text-[9px] text-text-muted">Hardware Auditor</span>
-              </div>
-            )}
+              <span>Silicon Copilot</span>
+            </button>
           </div>
-          {!isCollapsed && <Sparkles className="w-3 h-3 text-primary flex-shrink-0" />}
-        </button>
-
-        {!isCollapsed && (
-          <div className="flex items-center justify-center gap-1 text-[10px] text-text-muted font-mono">
-            <ShieldCheck className="w-3 h-3 text-emerald-500" />
-            <span>0 B Malloc Verification</span>
-          </div>
+        ) : (
+          <button
+            onClick={() => setIsCopilotOpen(!isCopilotOpen)}
+            title="Toggle Silicon Copilot"
+            className={`w-full p-2 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+              isCopilotOpen ? 'bg-primary text-white' : 'hover:bg-surface-raised text-text-muted'
+            }`}
+          >
+            <Bot className="w-4 h-4" />
+          </button>
         )}
       </div>
     </aside>

@@ -1,21 +1,22 @@
 import React from 'react';
-import { HardDrive } from 'lucide-react';
+import { HardDrive, CheckCircle2 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
+import { SpotlightCard } from '../react-bits/SpotlightCard';
 
 export const TargetsView: React.FC = () => {
   const { hardwareList, selectedHw, setHardware } = useCompiler();
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <HardDrive className="w-4 h-4" />
             <span>SILICON HARDWARE TARGET CATALOG</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">Microcontroller Targets</h1>
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-text-secondary max-w-4xl">
             Datasheets, clock frequencies, memory limits, and vector SIMD hardware accelerator profiles.
           </p>
         </div>
@@ -25,24 +26,22 @@ export const TargetsView: React.FC = () => {
         {hardwareList.map((hw) => {
           const isSelected = selectedHw.id === hw.id;
           return (
-            <div
+            <SpotlightCard
               key={hw.id}
-              className={`p-5 rounded border transition-all space-y-4 ${
-                isSelected
-                  ? 'bg-surface border-accent ring-1 ring-accent'
-                  : 'bg-surface border-border hover:border-border-strong hover:bg-surface-raised/40'
+              className={`p-5 space-y-4 ${
+                isSelected ? 'ring-2 ring-primary border-primary bg-surface-raised/40' : ''
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-text-primary">{hw.name}</span>
                 {isSelected ? (
-                  <span className="px-2 py-0.5 rounded bg-accent/15 text-accent font-mono text-[11px] font-bold">
-                    SELECTED
+                  <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 font-mono text-[11px] font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> ACTIVE
                   </span>
                 ) : (
                   <button
                     onClick={() => setHardware(hw.id)}
-                    className="px-2.5 py-1 rounded bg-surface-raised border border-border text-text-primary hover:border-accent text-xs font-medium transition-colors"
+                    className="px-2.5 py-1 rounded-md bg-surface-raised border border-border text-text-primary hover:border-primary text-xs font-medium transition-colors cursor-pointer"
                   >
                     Select Target
                   </button>
@@ -56,7 +55,7 @@ export const TargetsView: React.FC = () => {
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span>Clock Frequency:</span>
-                  <span className="text-accent font-bold">{hw.clock_mhz} MHz</span>
+                  <span className="text-primary font-bold">{hw.clock_mhz} MHz</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span>SRAM Pool:</span>
@@ -71,7 +70,7 @@ export const TargetsView: React.FC = () => {
                   <span className="text-text-primary">{hw.simd}</span>
                 </div>
               </div>
-            </div>
+            </SpotlightCard>
           );
         })}
       </div>

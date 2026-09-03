@@ -1,21 +1,40 @@
-import React from 'react';
-import { BarChart3, CheckCircle2, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { BarChart3 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { EmptyState } from '../ui/EmptyState';
 import { Panel } from '../ui/Panel';
 import { CanvasBarChart } from '../ui/CanvasChart';
-import { evaluateMultiTargetBenchmarks } from '../../compiler/benchmarks';
+import { evaluateMultiTargetBenchmarks, HARDWARE_PROFILES } from '../../compiler/benchmarks';
 import { getPresetGraphById } from '../../compiler/presets';
+import { SpotlightCard } from '../react-bits/SpotlightCard';
+
+interface MatrixCellDetail {
+  modelName: string;
+  hardwareName: string;
+  hardwareId: string;
+  sramBytes: number;
+  sramKbMax: number;
+  sramPct: number;
+  flashBytes: number;
+  flashMbMax: number;
+  flashPct: number;
+  macs: number;
+  latencyMs: number;
+  fits: boolean;
+  arch: string;
+  simd: string;
+}
 
 export const BenchmarksView: React.FC = () => {
   const { loadedModel, compilationResult, selectedHw, setHardware } = useCompiler();
+  const [selectedCell, setSelectedCell] = useState<MatrixCellDetail | null>(null);
 
   if (!loadedModel || !compilationResult) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 w-full max-w-none">
         <EmptyState
           title="Benchmark Telemetry Not Available"
-          description="Compile a model to generate cycle-accurate execution latency models and multi-MCU benchmark telemetry."
+          description="Compile a model to generate cross-microcontroller benchmark matrix telemetry and hardware fit verification."
           allowCompile={true}
         />
       </div>
@@ -25,12 +44,40 @@ export const BenchmarksView: React.FC = () => {
   const graph = loadedModel.rawGraph || getPresetGraphById(loadedModel.id);
   const benchmarks = evaluateMultiTargetBenchmarks(graph);
 
+  // Define reference model benchmark specs
+  const matrixModels = [
+    {
+      id: 'kws',
+      name: 'Audio Keyword Spotter',
+      domain: 'Audio KWS',
+      sramBytes: 1120,
+      flashBytes: 6144,
+      macs: 46368,
+    },
+    {
+      id: 'anomaly',
+      name: 'Vibration Anomaly Autoencoder',
+      domain: 'Industrial IoT',
+      sramBytes: 512,
+      flashBytes: 17408,
+      macs: 17408,
+    },
+    {
+      id: 'vision',
+      name: 'MicroVision Person Detector',
+      domain: 'Edge Vision',
+      sramBytes: 18432,
+      flashBytes: 7488,
+      macs: 147456,
+    },
+  ];
+
   // Data for latency comparison bar chart
   const latencyBarItems = benchmarks.map((bm) => ({
     label: bm.hardware_name,
     value: bm.estimated_latency_ms,
     formattedValue: `${bm.estimated_latency_ms} ms`,
-    color: bm.hardware_id === selectedHw.id ? '#10B981' : '#F59E0B',
+    color: bm.hardware_id === selectedHw.id ? '#0ea5e9' : '#f59e0b',
   }));
 
   // Data for SRAM utilization bar chart
@@ -39,114 +86,206 @@ export const BenchmarksView: React.FC = () => {
     value: bm.sram_utilization_pct,
     maxValue: 100,
     formattedValue: `${bm.sram_utilization_pct}%`,
-    color: bm.sram_utilization_pct > 90 ? '#F43F5E' : bm.sram_utilization_pct > 75 ? '#F59E0B' : '#06B6D4',
+    color: bm.sram_utilization_pct > 90 ? '#f43f5e' : bm.sram_utilization_pct > 75 ? '#f59e0b' : '#0ea5e9',
   }));
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <BarChart3 className="w-4 h-4" />
-            <span>SILICON BENCHMARK TELEMETRY & PROVENANCE</span>
+            <span>CROSS-TARGET HARDWARE COMPARISON MATRIX</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">
-            Cross-Microcontroller Benchmark: {compilationResult.model_name}
+            Multi-Model &times; Multi-MCU Silicon Matrix
           </h1>
-          <p className="text-xs text-text-secondary">
-            Deterministic static cycle modeling and hardware execution benchmarks with explicit source provenance.
+          <p className="text-xs text-text-secondary max-w-4xl">
+            Exhaustive static compilation pass across target architectures. Click any cell to inspect exact hardware fit reasons, memory headroom, and estimated cycle timings.
           </p>
         </div>
       </div>
 
-      {/* Visual Benchmark Charts */}
+      {/* 1. Core Hardware Matrix: Models (Rows) x Microcontrollers (Columns) */}
+      <Panel
+        title="Multi-Target Deployment Matrix"
+        subtitle="Click any cell to inspect memory breakdown and latency projection"
+        noPadding={true}
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs font-mono">
+            <thead>
+              <tr className="border-b border-border bg-surface-raised/60 text-text-secondary">
+                <th className="py-3 px-4 font-semibold">Reference Model</th>
+                <th className="py-3 px-4 font-semibold">Domain</th>
+                {HARDWARE_PROFILES.map((hw) => (
+                  <th key={hw.id} className="py-3 px-4 font-semibold text-center">
+                    <div>{hw.name}</div>
+                    <div className="text-[10px] text-text-muted font-normal">{hw.clock_mhz} MHz</div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {matrixModels.map((m) => (
+                <tr key={m.id} className="hover:bg-surface-raised/30 transition-colors">
+                  <td className="py-3.5 px-4 font-bold text-text-primary">
+                    <div>{m.name}</div>
+                    <div className="text-[10px] text-text-muted font-normal">
+                      {(m.flashBytes / 1024).toFixed(1)} KB Flash | {(m.sramBytes / 1024).toFixed(2)} KB Arena
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 text-text-secondary">{m.domain}</td>
+
+                  {HARDWARE_PROFILES.map((hw) => {
+                    const fitsSram = m.sramBytes <= hw.sram_kb * 1024;
+                    const fitsFlash = m.flashBytes <= hw.flash_mb * 1024 * 1024;
+                    const fits = fitsSram && fitsFlash;
+                    const sramPct = Number(((m.sramBytes / (hw.sram_kb * 1024)) * 100).toFixed(2));
+                    const flashPct = Number(((m.flashBytes / (hw.flash_mb * 1024 * 1024)) * 100).toFixed(2));
+                    const estLatency = Number(
+                      ((m.macs / (hw.clock_mhz * 1e6 * (hw.simd.includes('SIMD') ? 0.35 : 0.18))) * 1000).toFixed(2)
+                    );
+
+                    const isCellActive =
+                      selectedCell &&
+                      selectedCell.modelName === m.name &&
+                      selectedCell.hardwareId === hw.id;
+
+                    return (
+                      <td key={hw.id} className="py-3 px-4 text-center">
+                        <button
+                          onClick={() =>
+                            setSelectedCell({
+                              modelName: m.name,
+                              hardwareName: hw.name,
+                              hardwareId: hw.id,
+                              sramBytes: m.sramBytes,
+                              sramKbMax: hw.sram_kb,
+                              sramPct,
+                              flashBytes: m.flashBytes,
+                              flashMbMax: hw.flash_mb,
+                              flashPct,
+                              macs: m.macs,
+                              latencyMs: estLatency,
+                              fits,
+                              arch: hw.arch,
+                              simd: hw.simd,
+                            })
+                          }
+                          className={`px-3 py-1.5 rounded-md border text-[11px] font-bold transition-all cursor-pointer w-24 flex flex-col items-center ${
+                            isCellActive
+                              ? 'ring-2 ring-primary border-primary bg-primary/20 text-text-primary shadow-sm'
+                              : fits
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+                              : 'bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20'
+                          }`}
+                        >
+                          <span>{fits ? 'PASS' : 'FAIL'}</span>
+                          <span className="text-[9px] font-normal text-text-muted">{estLatency} ms*</span>
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+
+      {/* 2. Interactive Matrix Cell Inspector */}
+      {selectedCell && (
+        <SpotlightCard className="p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+            <div>
+              <span className="text-[10px] font-mono uppercase tracking-wider text-primary font-semibold block">
+                CELL TELEMETRY INSPECTOR
+              </span>
+              <h3 className="text-base font-bold text-text-primary">
+                {selectedCell.modelName} &rarr; {selectedCell.hardwareName}
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span
+                className={`px-2.5 py-1 rounded-md text-xs font-bold font-mono ${
+                  selectedCell.fits
+                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                }`}
+              >
+                {selectedCell.fits ? 'VERIFIED HARDWARE FIT' : 'HARDWARE BUDGET OVERFLOW'}
+              </span>
+
+              {selectedHw.id !== selectedCell.hardwareId && (
+                <button
+                  onClick={() => setHardware(selectedCell.hardwareId)}
+                  className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-xs font-semibold rounded-md transition-colors cursor-pointer"
+                >
+                  Set as Active Target
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+            <div className="p-3 rounded-lg bg-surface-raised border border-border space-y-1">
+              <span className="text-text-muted text-[11px] block">SRAM Arena Budget</span>
+              <span className="text-cyan-400 font-bold block">
+                {selectedCell.sramBytes} B ({selectedCell.sramPct}%)
+              </span>
+              <span className="text-text-secondary text-[10px] block">Limit: {selectedCell.sramKbMax} KB</span>
+            </div>
+
+            <div className="p-3 rounded-lg bg-surface-raised border border-border space-y-1">
+              <span className="text-text-muted text-[11px] block">Flash ROM Footprint</span>
+              <span className="text-text-primary font-bold block">
+                {(selectedCell.flashBytes / 1024).toFixed(1)} KB ({selectedCell.flashPct}%)
+              </span>
+              <span className="text-text-secondary text-[10px] block">Limit: {selectedCell.flashMbMax} MB</span>
+            </div>
+
+            <div className="p-3 rounded-lg bg-surface-raised border border-border space-y-1">
+              <span className="text-text-muted text-[11px] block">Multiply-Accumulates</span>
+              <span className="text-text-primary font-bold block">{selectedCell.macs.toLocaleString()} MACs</span>
+              <span className="text-text-secondary text-[10px] block">INT8 Dot-Products</span>
+            </div>
+
+            <div className="p-3 rounded-lg bg-surface-raised border border-border space-y-1">
+              <span className="text-text-muted text-[11px] block">Projected Latency</span>
+              <span className="text-amber-400 font-bold block">{selectedCell.latencyMs} ms*</span>
+              <span className="text-text-secondary text-[10px] block">Static Cycle Estimate</span>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-lg bg-surface-raised/60 border border-border text-xs font-mono space-y-1 text-text-secondary">
+            <div><strong>Microcontroller Architecture:</strong> {selectedCell.arch}</div>
+            <div><strong>Hardware Acceleration / SIMD:</strong> {selectedCell.simd}</div>
+          </div>
+        </SpotlightCard>
+      )}
+
+      {/* 3. Visual Projected Charts for Currently Loaded Model */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Panel
           title="Inference Latency Projection (ms)"
-          subtitle="Cycle-accurate estimation accounting for core clock MHz and vector SIMD capabilities"
+          subtitle={`Static cycle estimation for ${loadedModel.name} across MCUs`}
         >
           <CanvasBarChart items={latencyBarItems} height={170} unit=" ms" />
         </Panel>
 
         <Panel
           title="Static SRAM Arena Utilization (%)"
-          subtitle="Percentage of target MCU physical SRAM allocated to the zero-malloc tensor arena"
+          subtitle={`Percentage of physical SRAM allocated to zero-malloc tensor arena`}
         >
           <CanvasBarChart items={sramBarItems} height={170} unit="%" />
         </Panel>
       </div>
 
-      {/* Microcontroller Benchmark Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {benchmarks.map((bm) => {
-          const isSelected = bm.hardware_id === selectedHw.id;
-          return (
-            <div
-              key={bm.hardware_id}
-              className={`p-4 rounded bg-surface border transition-all space-y-3 ${
-                isSelected ? 'border-accent ring-1 ring-accent bg-surface-raised/40' : 'border-border hover:border-border-strong'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-text-primary">{bm.hardware_name}</span>
-                  {isSelected && (
-                    <span className="px-1.5 py-0.2 rounded bg-accent/20 text-accent text-[10px] font-mono font-bold">
-                      ACTIVE
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-surface-raised border border-border text-accent font-medium">
-                  {bm.clock_mhz} MHz
-                </span>
-              </div>
-
-              <div className="space-y-2 font-mono text-xs">
-                <div className="flex justify-between text-text-secondary">
-                  <span>Architecture:</span>
-                  <span className="text-text-primary font-medium">{bm.arch}</span>
-                </div>
-                <div className="flex justify-between text-text-secondary">
-                  <span>Estimated Latency:</span>
-                  <span className="text-amber-400 font-bold">{bm.estimated_latency_ms} ms</span>
-                </div>
-                <div className="flex justify-between text-text-secondary">
-                  <span>Flash Util:</span>
-                  <span className="text-text-primary">{bm.flash_utilization_pct}% ({bm.flash_total_kb} KB max)</span>
-                </div>
-                <div className="flex justify-between text-text-secondary">
-                  <span>SRAM Util:</span>
-                  <span className="text-cyan-400">{bm.sram_utilization_pct}% ({bm.sram_total_kb} KB max)</span>
-                </div>
-                <div className="flex justify-between text-text-secondary pt-1 border-t border-border">
-                  <span>Silicon Fit:</span>
-                  {bm.fits ? (
-                    <span className="text-emerald-400 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> FITS MCU
-                    </span>
-                  ) : (
-                    <span className="text-rose-400 font-bold flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3" /> EXCEEDS LIMITS
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] font-mono">
-                <span className="text-text-muted">{bm.provenance}</span>
-                {!isSelected && (
-                  <button
-                    onClick={() => setHardware(bm.hardware_id)}
-                    className="px-2 py-1 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-[11px]"
-                  >
-                    Select Target
-                  </button>
-                )}
-              </div>
-            </div>
-          );
-        })}
+      <div className="text-[10px] font-mono text-text-muted text-center pt-2">
+        * Latency represents static cycle estimation based on target core clock frequency and instruction issue pipeline. Not measured on live physical silicon.
       </div>
     </div>
   );

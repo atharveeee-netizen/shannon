@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"IBM Plex Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
         canvas: 'var(--bg)',
@@ -17,6 +17,7 @@ export default {
           DEFAULT: 'var(--surface)',
           raised: 'var(--surface-raised)',
           hover: 'var(--surface-hover)',
+          elevated: 'var(--surface-elevated)',
           panel: 'var(--panel)',
         },
         border: {
@@ -29,15 +30,15 @@ export default {
           muted: 'var(--text-muted)',
         },
         primary: {
-          DEFAULT: '#0f62fe',
-          hover: '#0353e9',
-          pressed: '#002d9c',
-          subtle: 'rgba(15, 98, 254, 0.12)',
+          DEFAULT: '#0ea5e9',
+          hover: '#0284c7',
+          pressed: '#0369a1',
+          subtle: 'rgba(14, 165, 233, 0.12)',
         },
         accent: {
-          DEFAULT: '#0f62fe',
-          hover: '#0353e9',
-          subtle: 'rgba(15, 98, 254, 0.12)',
+          DEFAULT: '#0ea5e9',
+          hover: '#0284c7',
+          subtle: 'rgba(14, 165, 233, 0.12)',
         },
         success: {
           DEFAULT: 'var(--success)',
@@ -52,8 +53,8 @@ export default {
           subtle: 'var(--danger-subtle)',
         },
         info: {
-          DEFAULT: '#0f62fe',
-          subtle: 'rgba(15, 98, 254, 0.12)',
+          DEFAULT: '#0ea5e9',
+          subtle: 'rgba(14, 165, 233, 0.12)',
         },
         code: {
           DEFAULT: 'var(--code-bg)',
@@ -62,13 +63,14 @@ export default {
       },
       borderRadius: {
         none: '0px',
-        DEFAULT: '0px',
-        sm: '0px',
-        md: '0px',
-        lg: '0px',
-        xl: '0px',
-        '2xl': '0px',
-        full: '0px',
+        sm: '4px',
+        DEFAULT: '6px',
+        md: '8px',
+        lg: '10px',
+        xl: '12px',
+        '2xl': '14px',
+        '3xl': '16px',
+        full: '9999px',
       },
     },
   },

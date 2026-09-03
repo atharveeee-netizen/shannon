@@ -22,7 +22,7 @@ export class CCodeGenerator {
     return `/*
  * =========================================================================================
  * SHANNON AUTONOMOUS TINYML COMPILER - SILICON C CODE EMISSION
- * Standard: MISRA-C:2012 Rule 21.3 Certified (0 Dynamic Heap Malloc / Fixed Static Arena)
+ * Memory Model: Static BSS Arena (0 Dynamic Heap Allocations / 0 B malloc)
  * Model Graph: ${graph.name}
  * Target Silicon: ${this.targetMcu}
  * Flash Weights: ${flashSize} Bytes | Peak Static SRAM Arena: ${arenaSize} Bytes | MACs: ${graph.total_macs.toLocaleString()}

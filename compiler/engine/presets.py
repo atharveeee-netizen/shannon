@@ -1,28 +1,25 @@
 """
-Shannon TinyML Preset Models & Benchmarks
-Loads production-grade trained models with real neural network weights.
+Shannon TinyML Reference Models & Architectural Benchmarks
+Provides deterministic reference graph topologies with synthetic reference weights.
+Explicitly designated as compiler demonstration and memory arena planning benchmarks,
+not as deployed pre-trained production weights.
 """
 
 import numpy as np
-try:
-    import torch
-except ImportError:
-    torch = None
 from .ir import ModelGraph, Tensor, Layer
 
 def get_keyword_spotting_model() -> ModelGraph:
     """
-    Audio Keyword Spotting (KWS) 1D-CNN Model (Trained on Google Speech Commands)
-    Input: Audio Spectrogram (49 time steps x 10 MFCC features = 490)
-    Output: 4 Classes (Silence, Unknown, "Yes", "No")
+    Audio Keyword Spotting (KWS) 1D-CNN Reference Model (Synthetic Reference Weights).
+    Compiler demonstration topology for voice wake-word architectures.
+    Input: Audio Spectrogram (49 time steps x 10 MFCC features = 490 elements)
+    Output: 4 Classes (Silence, Unknown, 'Yes', 'No')
     """
-    g = ModelGraph("KeywordSpotter_v1")
+    g = ModelGraph("KeywordSpotter_Reference")
     
-    # Layer 1: Conv2D (16, 10, 3, 1)
-    # Realistic trained acoustic formant weights
+    # Layer 1: Conv2D (16, 10, 3, 1) - Synthetic Reference Weights
     np.random.seed(1337)
     conv1_w = np.random.randn(16, 10, 3, 1).astype(np.float32) * 0.18
-    # Reinforce acoustic formant sensitivity on speech channels
     conv1_w[2:8, 6:10, :, 0] += 0.25
     conv1_b = np.zeros(16, dtype=np.float32)
 
@@ -38,7 +35,7 @@ def get_keyword_spotting_model() -> ModelGraph:
     l2 = Layer("pool1", "MaxPool2D", ["conv1_out"], ["pool1_out"], {"stride": 2, "pool_size": 2})
     g.add_layer(l2)
 
-    # Layer 3: Dense (368 -> 64)
+    # Layer 3: Dense (368 -> 64) - Synthetic Reference Weights
     dense1_w = np.random.randn(23 * 16, 64).astype(np.float32) * 0.08
     dense1_b = np.zeros(64, dtype=np.float32)
     l3 = Layer("dense1", "Dense", ["pool1_out"], ["dense1_out"], {"in_features": 23 * 16, "out_features": 64})
@@ -46,7 +43,7 @@ def get_keyword_spotting_model() -> ModelGraph:
     l3.bias = Tensor("dense1_b", (64,), "float32", dense1_b)
     g.add_layer(l3)
 
-    # Layer 4: Output Classifier (64 -> 4)
+    # Layer 4: Output Classifier (64 -> 4) - Synthetic Reference Weights
     cls_w = np.random.randn(64, 4).astype(np.float32) * 0.12
     cls_b = np.zeros(4, dtype=np.float32)
     l4 = Layer("classifier", "Dense", ["dense1_out"], ["output_logits"], {"in_features": 64, "out_features": 4})
@@ -68,11 +65,12 @@ def get_keyword_spotting_model() -> ModelGraph:
 
 def get_anomaly_detection_model() -> ModelGraph:
     """
-    Industrial Motor Anomaly Detector (5-Layer Autoencoder on NASA Bearing IMS Dataset)
+    Industrial Motor Anomaly Detector Reference Model (Synthetic Reference Weights).
+    Compiler demonstration topology for vibration anomaly autoencoder architectures.
     Input: 128-point vibration spectrum
     Output: Reconstructed 128 features (Reconstruction Error = Anomaly Score)
     """
-    g = ModelGraph("MotorVibration_Autoencoder")
+    g = ModelGraph("MotorVibration_Reference")
     
     np.random.seed(999)
     # Encoder 1: 128 -> 64
@@ -121,11 +119,12 @@ def get_anomaly_detection_model() -> ModelGraph:
 
 def get_vision_classifier_model() -> ModelGraph:
     """
-    Micro-Vision Person Detection (MobileNet-style Depthwise Separable CNN on VWW)
+    MicroVision Person Detection Reference Model (Synthetic Reference Weights).
+    Compiler demonstration topology for depthwise-separable visual wake-word CNNs.
     Input: Grayscale 48x48 Image (2,304 pixels)
     Output: 2 Classes (Person / No Person)
     """
-    g = ModelGraph("MicroVision_PersonDetect")
+    g = ModelGraph("MicroVision_Reference")
     
     np.random.seed(42)
     # Conv1 (Stride 2) -> (16, 1, 3, 3)

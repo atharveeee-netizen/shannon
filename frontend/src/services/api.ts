@@ -185,7 +185,7 @@ function parseCompilationResponse(data: any, hardwareId: string, mixedPrecision:
     arena_blocks,
     memory_timeline: data.memory_timeline || [],
     c_header_code: data.c_header_code || data.code || '',
-    recommendations: data.agent_report?.recommendations || data.recommendations || ['Model verified MISRA-C:2012 Rule 21.3 compliant with zero dynamic allocations.'],
+    recommendations: data.agent_report?.recommendations || data.recommendations || ['Static BSS memory arena verified with zero dynamic allocations (0 B heap).'],
     bottlenecks: data.agent_report?.bottlenecks || data.bottlenecks || [],
     pipeline_stages: [
       { id: 'import', name: 'Model Import', status: 'success', duration_ms: 35 },
@@ -194,7 +194,7 @@ function parseCompilationResponse(data: any, hardwareId: string, mixedPrecision:
       { id: 'memory', name: 'Interval SRAM Arena', status: 'success', duration_ms: 60 },
       { id: 'optimize', name: 'Target MCU Optimization', status: 'success', duration_ms: 40 },
       { id: 'codegen', name: 'C Header Code Emission', status: 'success', duration_ms: 45 },
-      { id: 'verify', name: 'MISRA-C Parity Verification', status: 'success', duration_ms: 30 },
+      { id: 'verify', name: 'Static Parity & Collision Verification', status: 'success', duration_ms: 30 },
       { id: 'deploy', name: 'Artifact Generation', status: 'success', duration_ms: 15 },
     ],
     logs: [

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, ShieldCheck, Moon, Sun } from 'lucide-react';
+import { Settings, Moon, Sun, CheckCircle2 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { Panel } from '../ui/Panel';
 
@@ -11,16 +11,16 @@ export const SettingsView: React.FC = () => {
   const [quantMode, setQuantMode] = useState<'symmetric' | 'asymmetric'>('symmetric');
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <Settings className="w-4 h-4" />
             <span>STUDIO & COMPILER CONFIGURATION</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">Compiler Settings</h1>
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-text-secondary max-w-4xl">
             Tune memory arena alignment, physical base section offsets, and quantization pass parameters.
           </p>
         </div>
@@ -35,7 +35,7 @@ export const SettingsView: React.FC = () => {
               <select
                 value={alignment}
                 onChange={(e) => setAlignment(Number(e.target.value))}
-                className="w-full bg-surface-raised border border-border rounded p-2.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full bg-surface-raised border border-border rounded-md p-2.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value={4}>4-Byte Word Alignment (32-bit ARM Cortex / Xtensa Native)</option>
                 <option value={8}>8-Byte Double Word Alignment (64-bit / DMA Native)</option>
@@ -49,7 +49,7 @@ export const SettingsView: React.FC = () => {
                 type="text"
                 value={baseAddressHex}
                 onChange={(e) => setBaseAddressHex(e.target.value)}
-                className="w-full bg-surface-raised border border-border rounded p-2.5 text-text-primary font-mono focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full bg-surface-raised border border-border rounded-md p-2.5 text-text-primary font-mono focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
@@ -58,9 +58,9 @@ export const SettingsView: React.FC = () => {
               <div className="grid grid-cols-2 gap-2 font-sans">
                 <button
                   onClick={() => setQuantMode('symmetric')}
-                  className={`p-2.5 rounded border text-center text-xs transition-all ${
+                  className={`p-2.5 rounded-md border text-center text-xs transition-all cursor-pointer ${
                     quantMode === 'symmetric'
-                      ? 'bg-accent/15 border-accent text-accent font-bold'
+                      ? 'bg-primary/15 border-primary text-primary font-bold'
                       : 'bg-surface-raised border-border text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -68,13 +68,13 @@ export const SettingsView: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setQuantMode('asymmetric')}
-                  className={`p-2.5 rounded border text-center text-xs transition-all ${
+                  className={`p-2.5 rounded-md border text-center text-xs transition-all cursor-pointer ${
                     quantMode === 'asymmetric'
-                      ? 'bg-accent/15 border-accent text-accent font-bold'
+                      ? 'bg-primary/15 border-primary text-primary font-bold'
                       : 'bg-surface-raised border-border text-text-secondary hover:text-text-primary'
                   }`}
                 >
-                  Asymmetric (Z ≠ 0)
+                  Asymmetric (Z &ne; 0)
                 </button>
               </div>
             </div>
@@ -91,17 +91,17 @@ export const SettingsView: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-raised border border-border hover:bg-surface-hover text-text-primary transition-colors text-xs font-medium"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-colors cursor-pointer"
               >
-                {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                {isDarkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-primary" />}
                 <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
               </button>
             </div>
 
             <div className="space-y-2 text-text-secondary font-sans text-xs">
-              <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-medium">
-                <ShieldCheck className="w-4 h-4" />
-                <span>MISRA-C:2012 Rule 21.3 Enforcement Active</span>
+              <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Static BSS Arena Memory Model Active (0 B Malloc)</span>
               </div>
               <p className="text-xs leading-relaxed text-text-secondary">
                 The compiler automatically enforces zero dynamic heap allocations (<code>malloc</code>, <code>calloc</code>, <code>free</code>) for all output embedded C code.

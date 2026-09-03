@@ -99,6 +99,9 @@ export const CompilerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setHardwareList(HARDWARE_PROFILES);
         setApiConnected(false);
       });
+
+    // Auto-load default benchmark model on mount so studio is instantly functional
+    loadPreset('kws', true);
   }, []);
 
   const setHardware = (hwId: string) => {
@@ -206,7 +209,10 @@ export const CompilerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const triggerCompile = async () => {
-    if (!loadedModel) return;
+    if (!loadedModel) {
+      await loadPreset('kws', true);
+      return;
+    }
     await executeCompilation(loadedModel.id, selectedHw.id, loadedModel.file || null);
   };
 

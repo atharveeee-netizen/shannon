@@ -50,7 +50,7 @@ function StudioContent() {
       {/* Main Studio Shell */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-canvas">
         {/* Top Navigation Bar */}
-        <TopBar onOpenCommandPalette={() => setIsCmdOpen(true)} />
+        <TopBar />
 
         {/* Dynamic Studio Workspace Body */}
         <main className="flex-1 overflow-y-auto bg-canvas custom-scrollbar">

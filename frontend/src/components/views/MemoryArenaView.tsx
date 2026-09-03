@@ -3,6 +3,7 @@ import { Cpu, ShieldCheck, Grid, Clock, CheckCircle2 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { EmptyState } from '../ui/EmptyState';
 import { Panel } from '../ui/Panel';
+import { SpotlightCard } from '../react-bits/SpotlightCard';
 
 export const MemoryArenaView: React.FC = () => {
   const { loadedModel, compilationResult, selectedHw } = useCompiler();
@@ -11,7 +12,7 @@ export const MemoryArenaView: React.FC = () => {
 
   if (!loadedModel || !compilationResult) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 w-full max-w-none">
         <EmptyState
           title="Memory Plan Not Available"
           description="Compile a model to generate the static Greedy Interval Graph Coloring SRAM memory allocation plan."
@@ -27,31 +28,31 @@ export const MemoryArenaView: React.FC = () => {
   const maxLayers = Math.max(1, layers.length);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <Cpu className="w-4 h-4" />
             <span>GREEDY INTERVAL GRAPH ARENA ALLOCATOR</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">
             SRAM Memory Arena: {compilationResult.model_name}
           </h1>
-          <p className="text-xs text-text-secondary">
-            Physical Section <code>0x20000000</code>. Non-overlapping buffer lifecycle intervals achieve 100% zero-malloc static memory safety.
+          <p className="text-xs text-text-secondary leading-relaxed max-w-4xl">
+            Physical Section <code>0x20000000</code>. Non-overlapping buffer lifecycle intervals achieve 100% zero runtime dynamic memory allocation (0 B malloc/heap).
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs">
-          <ShieldCheck className="w-3.5 h-3.5 text-accent" />
-          <span>MISRA-C:2012 Certified (0 B Malloc)</span>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs">
+          <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+          <span>Static BSS Arena (0 B Dynamic Allocation)</span>
         </div>
       </div>
 
-      {/* 2. Top Summary Metrics */}
+      {/* 2. Top Summary Metrics via SpotlightCards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
             Peak SRAM Arena
           </span>
@@ -59,9 +60,9 @@ export const MemoryArenaView: React.FC = () => {
             {arenaBytes} <span className="text-xs text-text-secondary font-normal font-sans">Bytes</span>
           </div>
           <p className="text-xs text-text-secondary font-mono">{(arenaBytes / 1024).toFixed(2)} KB Total Pool</p>
-        </div>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
             Target Utilization
           </span>
@@ -69,17 +70,17 @@ export const MemoryArenaView: React.FC = () => {
             {((arenaBytes / (selectedHw.sram_kb * 1024)) * 100).toFixed(2)}%
           </div>
           <p className="text-xs text-text-secondary font-mono">of {selectedHw.sram_kb} KB {selectedHw.name}</p>
-        </div>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
             Word Alignment
           </span>
-          <div className="text-2xl font-bold text-accent font-mono">4-Byte</div>
+          <div className="text-2xl font-bold text-primary font-mono">4-Byte</div>
           <p className="text-xs text-text-secondary font-mono">32-Bit Microcontroller Native</p>
-        </div>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
             Collision Check
           </span>
@@ -88,7 +89,7 @@ export const MemoryArenaView: React.FC = () => {
             <span>VERIFIED</span>
           </div>
           <p className="text-xs text-text-secondary font-mono">0 Interval Overlaps in Arena</p>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* 3. Physical Visual SRAM Interval Map with 2D Heatmap Mode */}
@@ -99,11 +100,11 @@ export const MemoryArenaView: React.FC = () => {
         <div className="space-y-4">
           {/* View Mode Switcher */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 border border-border rounded bg-surface-raised p-0.5 text-xs font-mono">
+            <div className="flex items-center gap-1.5 border border-border rounded-md bg-surface-raised p-0.5 text-xs font-mono">
               <button
                 onClick={() => setViewMode('2d')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
-                  viewMode === '2d' ? 'bg-accent text-black font-bold' : 'text-text-secondary hover:text-text-primary'
+                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors cursor-pointer ${
+                  viewMode === '2d' ? 'bg-primary text-white font-bold' : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -111,8 +112,8 @@ export const MemoryArenaView: React.FC = () => {
               </button>
               <button
                 onClick={() => setViewMode('timeline')}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
-                  viewMode === 'timeline' ? 'bg-accent text-black font-bold' : 'text-text-secondary hover:text-text-primary'
+                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors cursor-pointer ${
+                  viewMode === 'timeline' ? 'bg-primary text-white font-bold' : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
                 <Clock className="w-3.5 h-3.5" />
@@ -122,11 +123,11 @@ export const MemoryArenaView: React.FC = () => {
 
             <div className="text-[11px] font-mono text-text-muted">
               Base Offset: <span className="text-cyan-400 font-semibold">0x20000000</span> | Max:{' '}
-              <span className="text-accent font-semibold">0x{(0x20000000 + arenaBytes).toString(16).toUpperCase()}</span>
+              <span className="text-primary font-semibold">0x{(0x20000000 + arenaBytes).toString(16).toUpperCase()}</span>
             </div>
           </div>
 
-          <div className="p-4 rounded bg-surface-raised/40 border border-border overflow-x-auto custom-scrollbar space-y-3">
+          <div className="p-4 rounded-xl bg-surface-raised/40 border border-border overflow-x-auto custom-scrollbar space-y-3">
             <div className="flex items-center justify-between text-xs font-mono text-text-secondary border-b border-border pb-2">
               <span>SRAM OFFSET (0x0000 &rarr; 0x{arenaBytes.toString(16).toUpperCase()})</span>
               <span>LIFETIME INTERVALS (Step 0 &rarr; Step {maxLayers})</span>
@@ -134,7 +135,7 @@ export const MemoryArenaView: React.FC = () => {
 
             {viewMode === '2d' ? (
               /* 2D Physical Address Map: X = Time (layer execution step), Y = Physical Byte Offset */
-              <div className="relative min-w-[640px] h-72 bg-black/40 rounded border border-border p-3 overflow-hidden">
+              <div className="relative min-w-[640px] h-72 bg-canvas/80 rounded-lg border border-border p-3 overflow-hidden">
                 {/* Layer Step Vertical Grid Lines */}
                 <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-20">
                   {Array.from({ length: maxLayers + 1 }).map((_, i) => (
@@ -152,7 +153,7 @@ export const MemoryArenaView: React.FC = () => {
                   <div className="border-b border-border text-[9px] font-mono text-text-muted pl-1">
                     0x{Math.round(arenaBytes * 0.5).toString(16).toUpperCase()}
                   </div>
-                  <div className="border-b border-accent text-[9px] font-mono text-accent pl-1">
+                  <div className="border-b border-primary text-[9px] font-mono text-primary pl-1">
                     0x{arenaBytes.toString(16).toUpperCase()}
                   </div>
                 </div>
@@ -177,10 +178,10 @@ export const MemoryArenaView: React.FC = () => {
                         key={idx}
                         onClick={() => setSelectedBlockIdx(idx)}
                         onMouseEnter={() => setSelectedBlockIdx(idx)}
-                        className={`absolute rounded p-1.5 flex flex-col justify-between font-mono text-[10px] cursor-pointer transition-all border ${
+                        className={`absolute rounded-md p-1.5 flex flex-col justify-between font-mono text-[10px] cursor-pointer transition-all border ${
                           isHovered
-                            ? 'ring-2 ring-accent border-accent text-white bg-surface-raised z-20 shadow-lg'
-                            : 'text-text-primary bg-surface-raised/80 hover:bg-surface-raised border-border/80 z-10'
+                            ? 'ring-2 ring-primary border-primary text-white bg-surface-elevated z-20 shadow-lg'
+                            : 'text-text-primary bg-surface-raised/90 hover:bg-surface-raised border-border/80 z-10'
                         }`}
                         style={{
                           left: `${leftPct}%`,
@@ -190,7 +191,7 @@ export const MemoryArenaView: React.FC = () => {
                         }}
                       >
                         <span className="font-bold truncate text-[10px]">{block.name}</span>
-                        <div className="flex items-center justify-between text-[9px] text-accent">
+                        <div className="flex items-center justify-between text-[9px] text-cyan-400">
                           <span>{block.hex_address}</span>
                           <span className="font-semibold">{block.size_bytes} B</span>
                         </div>
@@ -201,7 +202,7 @@ export const MemoryArenaView: React.FC = () => {
               </div>
             ) : (
               /* Interval Timeline Gantt List */
-              <div className="relative min-w-[640px] h-56 bg-surface rounded border border-border p-3 flex flex-col justify-between">
+              <div className="relative min-w-[640px] h-56 bg-surface rounded-lg border border-border p-3 flex flex-col justify-between">
                 <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-25">
                   {Array.from({ length: maxLayers + 1 }).map((_, i) => (
                     <div key={i} className="h-full border-r border-border flex flex-col justify-end">
@@ -226,10 +227,10 @@ export const MemoryArenaView: React.FC = () => {
                         key={idx}
                         onClick={() => setSelectedBlockIdx(idx)}
                         onMouseEnter={() => setSelectedBlockIdx(idx)}
-                        className={`h-7 rounded px-2.5 flex items-center justify-between font-mono text-xs cursor-pointer transition-all border ${
+                        className={`h-7 rounded-md px-2.5 flex items-center justify-between font-mono text-xs cursor-pointer transition-all border ${
                           isHovered
-                            ? 'ring-1 ring-accent border-accent text-white bg-surface-raised'
-                            : 'text-text-primary bg-surface-raised/60 hover:bg-surface-raised border-border'
+                            ? 'ring-1 ring-primary border-primary text-white bg-surface-elevated'
+                            : 'text-text-primary bg-surface-raised/70 hover:bg-surface-raised border-border'
                         }`}
                         style={{
                           marginLeft: `${leftPct}%`,
@@ -237,7 +238,7 @@ export const MemoryArenaView: React.FC = () => {
                         }}
                       >
                         <span className="font-bold truncate text-xs">{block.name}</span>
-                        <span className="text-xs font-semibold text-accent">{block.size_bytes} B</span>
+                        <span className="text-xs font-semibold text-cyan-400">{block.size_bytes} B</span>
                       </div>
                     );
                   })}
@@ -248,9 +249,9 @@ export const MemoryArenaView: React.FC = () => {
 
           {/* Selected Block Info Card */}
           {selectedBlockIdx !== null && arenaBlocks[selectedBlockIdx] && (
-            <div className="p-3.5 rounded bg-surface-raised border border-border text-xs font-mono flex flex-wrap items-center justify-between gap-3">
+            <div className="p-3.5 rounded-lg bg-surface-raised border border-border text-xs font-mono flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4">
-                <span className="font-bold text-accent">{arenaBlocks[selectedBlockIdx].name}</span>
+                <span className="font-bold text-primary">{arenaBlocks[selectedBlockIdx].name}</span>
                 <span className="text-text-secondary">
                   Lifetime: [{arenaBlocks[selectedBlockIdx].lifetime[0]}, {arenaBlocks[selectedBlockIdx].lifetime[1]}]
                 </span>
@@ -293,7 +294,7 @@ export const MemoryArenaView: React.FC = () => {
                   <td className="py-3 px-4 text-cyan-400 font-bold">{b.hex_address}</td>
                   <td className="py-3 px-4 text-text-primary font-semibold">{b.size_bytes} Bytes</td>
                   <td className="py-3 px-4">
-                    <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
                       0-COLLISION
                     </span>
                   </td>

@@ -39,7 +39,7 @@ export const WaveformsView: React.FC = () => {
 
   if (!loadedModel || !compilationResult) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 w-full max-w-none">
         <EmptyState
           title="Waveform Trace Not Available"
           description="Compile a model and explore simulated streaming sensor DMA time-domain signals and frequency spectrograms."
@@ -144,7 +144,7 @@ export const WaveformsView: React.FC = () => {
   }, [activeLayer, timeDomainWaveform]);
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
@@ -152,7 +152,7 @@ export const WaveformsView: React.FC = () => {
             <Activity className="w-3.5 h-3.5" />
             <span>EXPERIMENTAL SIMULATION ENVIRONMENT</span>
           </div>
-          <h1 className="text-xl font-light text-text-primary tracking-tight">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight">
             Synthetic Signal Visualization: {compilationResult.model_name}
           </h1>
           <p className="text-xs text-text-secondary">
@@ -164,7 +164,7 @@ export const WaveformsView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsPlaying((p) => !p)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
               isPlaying
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                 : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
@@ -176,7 +176,7 @@ export const WaveformsView: React.FC = () => {
 
           <button
             onClick={() => setTimeStep(0)}
-            className="p-1.5 rounded-none bg-surface-raised border border-border text-text-muted hover:text-text-primary transition-colors"
+            className="p-1.5 rounded-md bg-surface-raised border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
             title="Reset simulation step"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -185,7 +185,7 @@ export const WaveformsView: React.FC = () => {
       </div>
 
       {/* Explicit Disclaimer per Submission Requirements */}
-      <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs rounded-none flex items-center gap-2.5">
+      <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs rounded-lg flex items-center gap-2.5">
         <Info className="w-4 h-4 flex-shrink-0" />
         <span>NOTICE: Synthetic signal visualization for offline testing - not measured hardware telemetry.</span>
       </div>

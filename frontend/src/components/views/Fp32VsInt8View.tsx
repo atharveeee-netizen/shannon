@@ -4,6 +4,7 @@ import { useCompiler } from '../../context/CompilerContext';
 import { EmptyState } from '../ui/EmptyState';
 import { Panel } from '../ui/Panel';
 import { CanvasDualCurve, CanvasBarChart } from '../ui/CanvasChart';
+import { SpotlightCard } from '../react-bits/SpotlightCard';
 
 export const Fp32VsInt8View: React.FC = () => {
   const { loadedModel, compilationResult } = useCompiler();
@@ -25,7 +26,7 @@ export const Fp32VsInt8View: React.FC = () => {
 
   if (!loadedModel || !compilationResult) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 w-full max-w-none">
         <EmptyState
           title="Parity Comparison Not Available"
           description="Compile a model to analyze the true quantization error margin, SQNR (dB), and parameter drift between FP32 and INT8."
@@ -42,7 +43,7 @@ export const Fp32VsInt8View: React.FC = () => {
       label: m.layer_id,
       value: m.mse,
       formattedValue: m.mse.toExponential(2),
-      color: m.sqnr_db > 40 ? '#10B981' : '#F59E0B',
+      color: m.sqnr_db > 40 ? '#10b981' : '#f59e0b',
     }));
 
   const globalSqnr = metrics?.sqnr_db !== undefined ? `${metrics.sqnr_db.toFixed(1)} dB` : '48.2 dB';
@@ -50,56 +51,56 @@ export const Fp32VsInt8View: React.FC = () => {
   const globalMaxErr = metrics?.max_error !== undefined ? metrics.max_error.toFixed(5) : '0.00820';
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-6 space-y-6 w-full max-w-none">
       {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <GitCompare className="w-4 h-4" />
             <span>VERIFIED ARITHMETIC PRECISION & SQNR ANALYSIS</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">
             FP32 vs INT8 Numerical Parity: {compilationResult.model_name}
           </h1>
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-text-secondary max-w-4xl">
             Deterministic tensor-by-tensor comparison of 32-bit floating point weights vs calibrated symmetric 8-bit integer multipliers.
           </p>
         </div>
       </div>
 
-      {/* 2. Top Summary Metrics (Derived from true quantization execution) */}
+      {/* 2. Top Summary Metrics via SpotlightCards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 font-mono text-xs">
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
             Signal-to-Quantization Noise
           </span>
-          <div className="text-2xl font-bold text-accent">{globalSqnr}</div>
+          <div className="text-2xl font-bold text-primary">{globalSqnr}</div>
           <p className="text-text-secondary text-xs font-sans">Computed across all parameter tensors</p>
-        </div>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
             Mean Squared Error (MSE)
           </span>
           <div className="text-2xl font-bold text-cyan-400">{globalMse}</div>
-          <p className="text-text-secondary text-xs font-sans">Noise variance $\sigma^2$ drift</p>
-        </div>
+          <p className="text-text-secondary text-xs font-sans">Bounded noise power variance</p>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
             Max Absolute Error
           </span>
           <div className="text-2xl font-bold text-amber-400">{globalMaxErr}</div>
           <p className="text-text-secondary text-xs font-sans">Worst-case single parameter delta</p>
-        </div>
+        </SpotlightCard>
 
-        <div className="p-4 rounded bg-surface border border-border space-y-1">
+        <SpotlightCard className="p-4 space-y-1">
           <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
             Flash ROM Reduction
           </span>
           <div className="text-2xl font-bold text-emerald-400">{compilationResult.optimized_int8.flash_reduction_pct}%</div>
           <p className="text-text-secondary text-xs font-sans">{compilationResult.optimized_int8.compression_ratio}x Parameter Compression</p>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* 3. Interactive Dual-Curve Plot */}
@@ -123,9 +124,9 @@ export const Fp32VsInt8View: React.FC = () => {
                   <button
                     key={m.layer_id}
                     onClick={() => setSelectedLayerId(m.layer_id)}
-                    className={`px-3 py-1 rounded border text-xs font-mono transition-all flex-shrink-0 ${
+                    className={`px-3 py-1 rounded-md border text-xs font-mono transition-all flex-shrink-0 cursor-pointer ${
                       isSel
-                        ? 'bg-surface-raised border-accent text-accent font-bold ring-1 ring-accent'
+                        ? 'bg-surface-elevated border-primary text-primary font-bold ring-1 ring-primary'
                         : 'bg-surface border-border text-text-secondary hover:text-text-primary'
                     }`}
                   >
@@ -166,7 +167,7 @@ export const Fp32VsInt8View: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs font-mono">
             <thead>
-              <tr className="border-b border-border bg-surface-raised/40 text-text-secondary text-xs">
+              <tr className="border-b border-border bg-surface-raised/60 text-text-secondary">
                 <th className="py-3 px-4 font-semibold">Layer ID</th>
                 <th className="py-3 px-4 font-semibold">Operator</th>
                 <th className="py-3 px-4 font-semibold">FP32 ROM</th>
@@ -185,14 +186,14 @@ export const Fp32VsInt8View: React.FC = () => {
                   <tr
                     key={l.layer_id}
                     onClick={() => hasWeights && setSelectedLayerId(l.layer_id)}
-                    className={`hover:bg-surface-raised/60 transition-colors ${
+                    className={`hover:bg-surface-raised/40 transition-colors ${
                       hasWeights ? 'cursor-pointer' : ''
                     } ${activeMetric?.layer_id === l.layer_id ? 'bg-surface-raised' : ''}`}
                   >
                     <td className="py-3 px-4 text-text-primary font-bold">{l.layer_id}</td>
                     <td className="py-3 px-4 text-text-secondary">{l.op_type}</td>
                     <td className="py-3 px-4 text-text-secondary">{l.flash_bytes * 4} B</td>
-                    <td className="py-3 px-4 text-accent font-bold">{l.flash_bytes} B</td>
+                    <td className="py-3 px-4 text-primary font-bold">{l.flash_bytes} B</td>
                     <td className="py-3 px-4 text-text-primary">{l.scale_factor.toFixed(6)}</td>
                     <td className="py-3 px-4 text-cyan-400 font-mono">
                       {metric && metric.mse > 0 ? metric.mse.toExponential(2) : '-'}

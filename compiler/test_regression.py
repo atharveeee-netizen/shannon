@@ -48,7 +48,7 @@ class TestCompilerRegressionSuite(unittest.TestCase):
         self.assertNotEqual(kws_arena, anomaly_arena, "Peak SRAM arena must differ across models")
         self.assertNotEqual(kws_code, anomaly_code, "Emitted C header code must be distinct across models")
         self.assertIn("KeywordSpotter", kws_code)
-        self.assertIn("MotorVibration_Autoencoder", anomaly_code)
+        self.assertIn("MotorVibration", anomaly_code)
 
     def test_2_malformed_model_rejection(self):
         """
@@ -206,6 +206,68 @@ class TestCompilerRegressionSuite(unittest.TestCase):
         code2 = codegen.generate_header(q2)
         
         self.assertEqual(code1, code2, "Generated C code must be bit-for-bit deterministic")
+
+    def test_7_genuine_onnx_parsing_and_rejection(self):
+        """
+        Verifies genuine ONNX model parsing, weight extraction, and explicit rejection of unsupported ops.
+        """
+        import onnx
+        from onnx import helper, TensorProto
+        import tempfile
+        import os
+
+        # 1. Valid ONNX Model
+        w = np.random.randn(8, 1, 3, 3).astype(np.float32)
+        init_w = helper.make_tensor('w', TensorProto.FLOAT, [8, 1, 3, 3], w.tobytes(), raw=True)
+        node_conv = helper.make_node('Conv', ['X', 'w'], ['Y'], kernel_shape=[3, 3])
+        node_relu = helper.make_node('Relu', ['Y'], ['Z'])
+
+        graph_def = helper.make_graph(
+            [node_conv, node_relu],
+            'ValidOnnxNet',
+            [helper.make_tensor_value_info('X', TensorProto.FLOAT, [1, 1, 16, 16])],
+            [helper.make_tensor_value_info('Z', TensorProto.FLOAT, [1, 8, 16, 16])],
+            [init_w]
+        )
+        model_def = helper.make_model(graph_def, producer_name='shannon_test')
+
+        with tempfile.NamedTemporaryFile(suffix='.onnx', delete=False) as tf:
+            onnx_path = tf.name
+            onnx.save(model_def, onnx_path)
+
+        try:
+            parsed = ModelParser.parse_onnx(onnx_path)
+            self.assertEqual(parsed.name, 'ValidOnnxNet')
+            self.assertEqual(len(parsed.layers), 2)
+            self.assertEqual(parsed.layers[0].op_type, 'Conv2D')
+            self.assertEqual(parsed.layers[1].op_type, 'Relu')
+            self.assertIsNotNone(parsed.layers[0].weights)
+            self.assertEqual(parsed.layers[0].weights.shape, (8, 1, 3, 3))
+        finally:
+            if os.path.exists(onnx_path):
+                os.remove(onnx_path)
+
+        # 2. Unsupported ONNX Operator (Must raise ValueError, ZERO silent fallback)
+        node_unsupported = helper.make_node('NonExistentCustomOp', ['X'], ['Z'])
+        bad_graph_def = helper.make_graph(
+            [node_unsupported],
+            'BadOnnxNet',
+            [helper.make_tensor_value_info('X', TensorProto.FLOAT, [1, 1, 16, 16])],
+            [helper.make_tensor_value_info('Z', TensorProto.FLOAT, [1, 1, 16, 16])]
+        )
+        bad_model_def = helper.make_model(bad_graph_def, producer_name='shannon_test')
+
+        with tempfile.NamedTemporaryFile(suffix='.onnx', delete=False) as tf:
+            bad_onnx_path = tf.name
+            onnx.save(bad_model_def, bad_onnx_path)
+
+        try:
+            with self.assertRaises(ValueError) as ctx:
+                ModelParser.parse_onnx(bad_onnx_path)
+            self.assertIn("Unsupported ONNX operator", str(ctx.exception))
+        finally:
+            if os.path.exists(bad_onnx_path):
+                os.remove(bad_onnx_path)
 
 
 if __name__ == "__main__":

@@ -88,7 +88,7 @@ export const SiliconCopilotDrawer: React.FC = () => {
         ...newMessages,
         {
           sender: 'agent',
-          text: `**Silicon Copilot Summary for ${selectedHw.name}**:\n- Model: ${loadedModel ? loadedModel.name : 'No model loaded'}\n- SRAM Arena: ${compilationResult ? compilationResult.optimized_int8.peak_sram_bytes + ' Bytes' : 'Awaiting compile'}\n- MISRA-C Safety: Verified 0 dynamic allocations.`,
+          text: `**Silicon Copilot Summary for ${selectedHw.name}**:\n- Model: ${loadedModel ? loadedModel.name : 'No model loaded'}\n- SRAM Arena: ${compilationResult ? compilationResult.optimized_int8.peak_sram_bytes + ' Bytes' : 'Awaiting compile'}\n- Memory Safety: Verified 0 dynamic allocations (0 B malloc).`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
