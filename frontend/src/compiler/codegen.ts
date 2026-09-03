@@ -53,7 +53,7 @@ static uint8_t shannon_tensor_arena[SHANNON_ARENA_SIZE_BYTES] __attribute__((ali
 
 /* Quantized Symmetric INT8 Weights & Biases (Stored in Flash ROM) */
 static const int8_t shannon_weights[SHANNON_FLASH_WEIGHTS_BYTES] __attribute__((aligned(4))) = {
-    ${this.generateSampleWeights(flashSize)}
+    ${this.generateSampleWeights(graph, flashSize)}
 };
 
 /* Layer Execution Topology */
@@ -105,15 +105,26 @@ static inline uint32_t shannon_get_flash_size(void) {
 `;
   }
 
-  private generateSampleWeights(totalBytes: number): string {
-    const bytesToShow = Math.min(totalBytes, 32);
+  private generateSampleWeights(graph: ModelGraph, totalBytes: number): string {
+    const realBytes: number[] = [];
+    for (const layer of graph.layers) {
+      if (layer.weights?.data) {
+        for (let i = 0; i < layer.weights.data.length; i++) {
+          realBytes.push(layer.weights.data[i]);
+          if (realBytes.length >= 48) break;
+        }
+      }
+      if (realBytes.length >= 48) break;
+    }
+
+    const bytesToShow = Math.min(totalBytes, Math.max(16, realBytes.length));
     const hexArr: string[] = [];
     for (let i = 0; i < bytesToShow; i++) {
-      const val = (Math.sin(i * 1.5) * 120) | 0;
+      const val = i < realBytes.length ? realBytes[i] : 0;
       const hex = (val < 0 ? val + 256 : val).toString(16).toUpperCase().padStart(2, '0');
       hexArr.push(`0x${hex}`);
     }
-    return hexArr.join(', ') + (totalBytes > 32 ? ` /* ... ${totalBytes - 32} more Flash bytes */` : '');
+    return hexArr.join(', ') + (totalBytes > bytesToShow ? ` /* ... ${totalBytes - bytesToShow} more Flash bytes */` : '');
   }
 
   private generateLayerExecutionCalls(graph: ModelGraph): string {

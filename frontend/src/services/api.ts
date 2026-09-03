@@ -179,6 +179,7 @@ function parseCompilationResponse(data: any, hardwareId: string, mixedPrecision:
       flash_reduction_pct: 75.0,
     },
     battery_energy: data.battery_energy,
+    quantization_metrics: data.quantization_metrics,
     layers,
     tensors: {},
     arena_blocks,

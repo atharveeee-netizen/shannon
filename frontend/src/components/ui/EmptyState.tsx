@@ -42,6 +42,12 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         {!loadedModel && (
           <>
             <button
+              onClick={() => setActiveTab('models')}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all"
+            >
+              <span>Browse Model Zoo</span>
+            </button>
+            <button
               onClick={() => setActiveTab('import')}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded bg-surface-raised hover:bg-surface-hover border border-border text-text-primary text-xs font-medium transition-all"
             >

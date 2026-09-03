@@ -1,5 +1,5 @@
 import { ModelGraph } from './ir';
-import { Quantizer } from './quantizer';
+import { Quantizer, computeQuantizationMetrics } from './quantizer';
 import { MemoryPlanner } from './memory_planner';
 import { CCodeGenerator } from './codegen';
 import { CompilationResult, PipelineStage, CompilerLogEntry, LayerData, TensorInfo } from '../types';
@@ -40,80 +40,99 @@ export async function runLocalCompilerPipeline(
   // Stage 1: Import
   stages[0].status = 'running';
   stages[0].started_at = new Date().toISOString();
+  const t0 = performance.now();
   addLog('INFO', 'IMPORT', `Ingesting model topology: '${inputGraph.name}'`);
-  await new Promise((r) => setTimeout(r, 40));
+  await new Promise((r) => setTimeout(r, 20));
+  stages[0].duration_ms = Math.max(1, Math.round(performance.now() - t0));
   stages[0].status = 'success';
-  stages[0].duration_ms = 42;
   stages[0].completed_at = new Date().toISOString();
   addLog('SUCCESS', 'IMPORT', `Ingestion completed with ${inputGraph.layers.length} layers.`);
 
   // Stage 2: Parse & Stats
   stages[1].status = 'running';
+  stages[1].started_at = new Date().toISOString();
+  const t1 = performance.now();
   inputGraph.computeStats(clockMhz);
   const fp32Flash = inputGraph.flash_bytes;
   const fp32Macs = inputGraph.total_macs;
   const fp32Latency = inputGraph.estimated_latency_ms;
   addLog('INFO', 'PARSE', `Computed FP32 baseline: ${fp32Flash} Flash bytes, ${fp32Macs} total MACs.`);
-  await new Promise((r) => setTimeout(r, 50));
+  await new Promise((r) => setTimeout(r, 20));
+  stages[1].duration_ms = Math.max(1, Math.round(performance.now() - t1));
   stages[1].status = 'success';
-  stages[1].duration_ms = 55;
   stages[1].completed_at = new Date().toISOString();
 
   // Stage 3: Quantize
   stages[2].status = 'running';
+  stages[2].started_at = new Date().toISOString();
+  const t2 = performance.now();
   const quantizer = new Quantizer({ bits, symmetric: true, mixed_precision: mixedPrecision });
   const quantizedGraph = quantizer.quantizeGraph(inputGraph);
   quantizedGraph.computeStats(clockMhz);
+  const quantMetrics = computeQuantizationMetrics(inputGraph, quantizedGraph);
   addLog('INFO', 'QUANTIZE', `Quantized ${quantizedGraph.layers.length} layers to symmetric INT${bits}.`);
   addLog('INFO', 'QUANTIZE', `Flash reduced from ${fp32Flash} B to ${quantizedGraph.flash_bytes} B.`);
-  await new Promise((r) => setTimeout(r, 60));
+  addLog('INFO', 'QUANTIZE', `Verified SQNR: ${quantMetrics.sqnr_db} dB, MSE: ${quantMetrics.mse}`);
+  await new Promise((r) => setTimeout(r, 25));
+  stages[2].duration_ms = Math.max(1, Math.round(performance.now() - t2));
   stages[2].status = 'success';
-  stages[2].duration_ms = 62;
   stages[2].completed_at = new Date().toISOString();
 
   // Stage 4: Memory Arena
   stages[3].status = 'running';
+  stages[3].started_at = new Date().toISOString();
+  const t3 = performance.now();
   const planner = new MemoryPlanner(4, 0x20000000);
   const { peakSramBytes, timeline, arenaBlocks } = planner.planTensorArena(quantizedGraph);
   const isZeroCollision = planner.verifyZeroCollisions(quantizedGraph);
   addLog('INFO', 'MEMORY', `Greedy interval coloring planned ${arenaBlocks.length} activation buffers.`);
   addLog('INFO', 'MEMORY', `Peak static SRAM arena: ${peakSramBytes} bytes (Base: 0x20000000).`);
   addLog('SUCCESS', 'MEMORY', `Zero dynamic allocations (malloc=0 B) formally verified.`);
-  await new Promise((r) => setTimeout(r, 70));
+  await new Promise((r) => setTimeout(r, 25));
+  stages[3].duration_ms = Math.max(1, Math.round(performance.now() - t3));
   stages[3].status = 'success';
-  stages[3].duration_ms = 74;
   stages[3].completed_at = new Date().toISOString();
 
   // Stage 5: Target Optimization
   stages[4].status = 'running';
+  stages[4].started_at = new Date().toISOString();
+  const t4 = performance.now();
   addLog('INFO', 'OPTIMIZE', `Applying SIMD vectorization for ${selectedHw.arch} (${selectedHw.simd}).`);
-  await new Promise((r) => setTimeout(r, 50));
+  await new Promise((r) => setTimeout(r, 20));
+  stages[4].duration_ms = Math.max(1, Math.round(performance.now() - t4));
   stages[4].status = 'success';
-  stages[4].duration_ms = 52;
   stages[4].completed_at = new Date().toISOString();
 
   // Stage 6: Codegen
   stages[5].status = 'running';
+  stages[5].started_at = new Date().toISOString();
+  const t5 = performance.now();
   const codegen = new CCodeGenerator(targetHwId);
   const cHeaderCode = codegen.generateHeader(quantizedGraph);
   addLog('INFO', 'CODEGEN', `Emitted standalone C header: 'shannon_${quantizedGraph.name.toLowerCase()}_model.h'.`);
-  await new Promise((r) => setTimeout(r, 50));
+  await new Promise((r) => setTimeout(r, 20));
+  stages[5].duration_ms = Math.max(1, Math.round(performance.now() - t5));
   stages[5].status = 'success';
-  stages[5].duration_ms = 53;
   stages[5].completed_at = new Date().toISOString();
 
   // Stage 7: Verify
   stages[6].status = 'running';
+  stages[6].started_at = new Date().toISOString();
+  const t6 = performance.now();
   addLog('INFO', 'VERIFY', `Running MISRA-C:2012 Rule 21.3 compliance check.`);
   addLog('SUCCESS', 'VERIFY', `All tensors mapped to static ROM / fixed SRAM section.`);
-  await new Promise((r) => setTimeout(r, 40));
+  await new Promise((r) => setTimeout(r, 15));
+  stages[6].duration_ms = Math.max(1, Math.round(performance.now() - t6));
   stages[6].status = 'success';
-  stages[6].duration_ms = 44;
   stages[6].completed_at = new Date().toISOString();
 
   // Stage 8: Deploy
+  stages[7].status = 'running';
+  stages[7].started_at = new Date().toISOString();
+  const t7 = performance.now();
+  await new Promise((r) => setTimeout(r, 10));
+  stages[7].duration_ms = Math.max(1, Math.round(performance.now() - t7));
   stages[7].status = 'success';
-  stages[7].duration_ms = 20;
   stages[7].completed_at = new Date().toISOString();
   addLog('SUCCESS', 'DEPLOY', `Compilation complete in ${(Date.now() - startTime)} ms.`);
 
@@ -149,6 +168,15 @@ export async function runLocalCompilerPipeline(
 
   const fitsHw = quantizedGraph.flash_bytes <= selectedHw.flash_mb * 1024 * 1024 && peakSramBytes <= selectedHw.sram_kb * 1024;
 
+  const dutyCycle = Math.min(1.0, (quantizedGraph.estimated_latency_ms / 1000.0) * 1.0);
+  const avgCurrentMa = (selectedHw.active_ma || 50) * dutyCycle + ((selectedHw.sleep_ua || 10) / 1000.0) * (1.0 - dutyCycle);
+  const avgPowerMw = Number((avgCurrentMa * 3.3).toFixed(2));
+  const batteryCapacityMah = 500;
+  const batteryHours = batteryCapacityMah / Math.max(0.001, avgCurrentMa);
+  const batteryDays = Math.round(batteryHours / 24.0);
+  const batteryYears = Number((batteryDays / 365.25).toFixed(2));
+  const activeEnergyUj = Number((quantizedGraph.estimated_latency_ms * 3.3 * (selectedHw.active_ma || 50)).toFixed(1));
+
   return {
     model_name: inputGraph.name,
     target_hardware: targetHwId,
@@ -170,11 +198,12 @@ export async function runLocalCompilerPipeline(
       compression_ratio: Number((fp32Flash / Math.max(quantizedGraph.flash_bytes, 1)).toFixed(2)),
       flash_reduction_pct: Number(((1 - quantizedGraph.flash_bytes / Math.max(fp32Flash, 1)) * 100).toFixed(1)),
     },
+    quantization_metrics: quantMetrics,
     battery_energy: {
-      battery_life_days: Math.round(500 / ((selectedHw.active_ma || 50) * (quantizedGraph.estimated_latency_ms / 1000) * 0.1 + (selectedHw.sleep_ua || 10) * 0.001)),
-      battery_life_years: 0.6,
-      avg_power_mw: 0.12,
-      active_energy_uj: Number((quantizedGraph.estimated_latency_ms * 3.3 * (selectedHw.active_ma || 50)).toFixed(1)),
+      battery_life_days: batteryDays,
+      battery_life_years: batteryYears,
+      avg_power_mw: avgPowerMw,
+      active_energy_uj: activeEnergyUj,
     },
     layers,
     tensors: tensorsDict,

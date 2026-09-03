@@ -100,6 +100,22 @@ export interface CompilerLogEntry {
   message: string;
 }
 
+export interface LayerQuantMetric {
+  layer_id: string;
+  mse: number;
+  sqnr_db: number;
+  max_error: number;
+  sample_fp32: number[];
+  sample_int8: number[];
+}
+
+export interface QuantizationMetrics {
+  sqnr_db: number;
+  mse: number;
+  max_error: number;
+  layer_metrics: LayerQuantMetric[];
+}
+
 export interface CompilationResult {
   model_name: string;
   target_hardware: string;
@@ -121,6 +137,7 @@ export interface CompilationResult {
     compression_ratio: number;
     flash_reduction_pct: number;
   };
+  quantization_metrics?: QuantizationMetrics;
   battery_energy?: {
     battery_life_days: number;
     battery_life_years: number;

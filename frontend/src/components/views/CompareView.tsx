@@ -78,9 +78,15 @@ export const CompareView: React.FC = () => {
                     <td className="py-3 px-4 text-cyan-400">{item.sram_utilization_pct}%</td>
                     <td className="py-3 px-4 text-amber-400 font-bold">{item.estimated_latency_ms} ms</td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
-                        FITS MCU
-                      </span>
+                      {item.fits ? (
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                          FITS MCU
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[11px] font-medium">
+                          EXCEEDS MCU
+                        </span>
+                      )}
                     </td>
                     <td className="py-3 px-4">
                       {!isCurrent && (

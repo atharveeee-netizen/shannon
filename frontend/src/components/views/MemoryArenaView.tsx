@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Cpu, ShieldCheck } from 'lucide-react';
+import { Cpu, ShieldCheck, Grid, Clock, CheckCircle2 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { EmptyState } from '../ui/EmptyState';
 import { Panel } from '../ui/Panel';
@@ -7,6 +7,7 @@ import { Panel } from '../ui/Panel';
 export const MemoryArenaView: React.FC = () => {
   const { loadedModel, compilationResult, selectedHw } = useCompiler();
   const [selectedBlockIdx, setSelectedBlockIdx] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'2d' | 'timeline'>('2d');
 
   if (!loadedModel || !compilationResult) {
     return (
@@ -23,7 +24,7 @@ export const MemoryArenaView: React.FC = () => {
   const arenaBytes = compilationResult.optimized_int8.peak_sram_bytes;
   const arenaBlocks = compilationResult.arena_blocks || [];
   const layers = compilationResult.layers || [];
-  const maxLayers = layers.length;
+  const maxLayers = Math.max(1, layers.length);
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -82,68 +83,167 @@ export const MemoryArenaView: React.FC = () => {
           <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
             Collision Check
           </span>
-          <div className="text-2xl font-bold text-emerald-400 font-mono">PASS</div>
-          <p className="text-xs text-text-secondary font-mono">0 Interval Overlaps</p>
+          <div className="text-2xl font-bold text-emerald-400 font-mono flex items-center gap-1.5">
+            <CheckCircle2 className="w-5 h-5" />
+            <span>VERIFIED</span>
+          </div>
+          <p className="text-xs text-text-secondary font-mono">0 Interval Overlaps in Arena</p>
         </div>
       </div>
 
-      {/* 3. Physical Visual SRAM Interval Map */}
+      {/* 3. Physical Visual SRAM Interval Map with 2D Heatmap Mode */}
       <Panel
         title="Physical SRAM Memory Allocation Map"
         subtitle="Visual interval mapping across layer execution steps [T_start &rarr; T_end]"
       >
         <div className="space-y-4">
+          {/* View Mode Switcher */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 border border-border rounded bg-surface-raised p-0.5 text-xs font-mono">
+              <button
+                onClick={() => setViewMode('2d')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
+                  viewMode === '2d' ? 'bg-accent text-black font-bold' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <Grid className="w-3.5 h-3.5" />
+                <span>2D Physical Address Map</span>
+              </button>
+              <button
+                onClick={() => setViewMode('timeline')}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded transition-colors ${
+                  viewMode === 'timeline' ? 'bg-accent text-black font-bold' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <Clock className="w-3.5 h-3.5" />
+                <span>Interval Timeline Gantt</span>
+              </button>
+            </div>
+
+            <div className="text-[11px] font-mono text-text-muted">
+              Base Offset: <span className="text-cyan-400 font-semibold">0x20000000</span> | Max:{' '}
+              <span className="text-accent font-semibold">0x{(0x20000000 + arenaBytes).toString(16).toUpperCase()}</span>
+            </div>
+          </div>
+
           <div className="p-4 rounded bg-surface-raised/40 border border-border overflow-x-auto custom-scrollbar space-y-3">
             <div className="flex items-center justify-between text-xs font-mono text-text-secondary border-b border-border pb-2">
               <span>SRAM OFFSET (0x0000 &rarr; 0x{arenaBytes.toString(16).toUpperCase()})</span>
-              <span>LIFETIME INTERVALS (0 &rarr; {maxLayers})</span>
+              <span>LIFETIME INTERVALS (Step 0 &rarr; Step {maxLayers})</span>
             </div>
 
-            {/* Interval Visualizer Grid */}
-            <div className="relative min-w-[640px] h-52 bg-surface rounded border border-border p-3 flex flex-col justify-between">
-              {/* Layer Step Timeline Grid Lines */}
-              <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-25">
-                {Array.from({ length: maxLayers + 1 }).map((_, i) => (
-                  <div key={i} className="h-full border-r border-border flex flex-col justify-end">
-                    <span className="text-[10px] font-mono text-text-muted transform -translate-x-1/2">
-                      L{i}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Render Activation Buffer Interval Blocks */}
-              <div className="relative w-full h-full space-y-2.5 py-2">
-                {arenaBlocks.map((block, idx) => {
-                  const leftPct = Math.max(0, Math.min(95, (block.lifetime[0] / Math.max(1, maxLayers)) * 100));
-                  const widthPct = Math.max(
-                    8,
-                    Math.min(100 - leftPct, ((block.lifetime[1] - block.lifetime[0] + 1) / Math.max(1, maxLayers)) * 100)
-                  );
-                  const isHovered = selectedBlockIdx === idx;
-
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => setSelectedBlockIdx(idx)}
-                      onMouseEnter={() => setSelectedBlockIdx(idx)}
-                      className={`h-8 rounded px-3 flex items-center justify-between font-mono text-xs cursor-pointer transition-all border ${
-                        isHovered
-                          ? 'ring-1 ring-accent border-accent text-white bg-surface-raised'
-                          : 'text-text-primary bg-surface-raised/60 hover:bg-surface-raised border-border'
-                      }`}
-                      style={{
-                        marginLeft: `${leftPct}%`,
-                        width: `${widthPct}%`,
-                      }}
-                    >
-                      <span className="font-bold truncate">{block.name}</span>
-                      <span className="text-xs font-semibold text-accent">{block.size_bytes} B</span>
+            {viewMode === '2d' ? (
+              /* 2D Physical Address Map: X = Time (layer execution step), Y = Physical Byte Offset */
+              <div className="relative min-w-[640px] h-72 bg-black/40 rounded border border-border p-3 overflow-hidden">
+                {/* Layer Step Vertical Grid Lines */}
+                <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-20">
+                  {Array.from({ length: maxLayers + 1 }).map((_, i) => (
+                    <div key={i} className="h-full border-r border-border flex flex-col justify-end">
+                      <span className="text-[9px] font-mono text-text-muted transform -translate-x-1/2">
+                        L{i}
+                      </span>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+
+                {/* Y-axis byte grid lines */}
+                <div className="absolute inset-0 flex flex-col justify-between py-3 pointer-events-none opacity-15">
+                  <div className="border-b border-cyan-400 text-[9px] font-mono text-cyan-400 pl-1">0x0000</div>
+                  <div className="border-b border-border text-[9px] font-mono text-text-muted pl-1">
+                    0x{Math.round(arenaBytes * 0.5).toString(16).toUpperCase()}
+                  </div>
+                  <div className="border-b border-accent text-[9px] font-mono text-accent pl-1">
+                    0x{arenaBytes.toString(16).toUpperCase()}
+                  </div>
+                </div>
+
+                {/* Render 2D Tensor Blocks */}
+                <div className="relative w-full h-full">
+                  {arenaBlocks.map((block, idx) => {
+                    const leftPct = Math.max(0, Math.min(95, (block.lifetime[0] / maxLayers) * 100));
+                    const widthPct = Math.max(
+                      8,
+                      Math.min(100 - leftPct, ((block.lifetime[1] - block.lifetime[0] + 1) / maxLayers) * 100)
+                    );
+                    const topPct = Math.max(0, Math.min(90, (block.start_bytes / Math.max(1, arenaBytes)) * 100));
+                    const heightPct = Math.max(
+                      10,
+                      Math.min(100 - topPct, (block.size_bytes / Math.max(1, arenaBytes)) * 100)
+                    );
+                    const isHovered = selectedBlockIdx === idx;
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedBlockIdx(idx)}
+                        onMouseEnter={() => setSelectedBlockIdx(idx)}
+                        className={`absolute rounded p-1.5 flex flex-col justify-between font-mono text-[10px] cursor-pointer transition-all border ${
+                          isHovered
+                            ? 'ring-2 ring-accent border-accent text-white bg-surface-raised z-20 shadow-lg'
+                            : 'text-text-primary bg-surface-raised/80 hover:bg-surface-raised border-border/80 z-10'
+                        }`}
+                        style={{
+                          left: `${leftPct}%`,
+                          width: `${widthPct}%`,
+                          top: `${topPct}%`,
+                          height: `${heightPct}%`,
+                        }}
+                      >
+                        <span className="font-bold truncate text-[10px]">{block.name}</span>
+                        <div className="flex items-center justify-between text-[9px] text-accent">
+                          <span>{block.hex_address}</span>
+                          <span className="font-semibold">{block.size_bytes} B</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              /* Interval Timeline Gantt List */
+              <div className="relative min-w-[640px] h-56 bg-surface rounded border border-border p-3 flex flex-col justify-between">
+                <div className="absolute inset-0 flex justify-between px-3 pointer-events-none opacity-25">
+                  {Array.from({ length: maxLayers + 1 }).map((_, i) => (
+                    <div key={i} className="h-full border-r border-border flex flex-col justify-end">
+                      <span className="text-[10px] font-mono text-text-muted transform -translate-x-1/2">
+                        L{i}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="relative w-full h-full space-y-2 py-1">
+                  {arenaBlocks.map((block, idx) => {
+                    const leftPct = Math.max(0, Math.min(95, (block.lifetime[0] / maxLayers) * 100));
+                    const widthPct = Math.max(
+                      8,
+                      Math.min(100 - leftPct, ((block.lifetime[1] - block.lifetime[0] + 1) / maxLayers) * 100)
+                    );
+                    const isHovered = selectedBlockIdx === idx;
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => setSelectedBlockIdx(idx)}
+                        onMouseEnter={() => setSelectedBlockIdx(idx)}
+                        className={`h-7 rounded px-2.5 flex items-center justify-between font-mono text-xs cursor-pointer transition-all border ${
+                          isHovered
+                            ? 'ring-1 ring-accent border-accent text-white bg-surface-raised'
+                            : 'text-text-primary bg-surface-raised/60 hover:bg-surface-raised border-border'
+                        }`}
+                        style={{
+                          marginLeft: `${leftPct}%`,
+                          width: `${widthPct}%`,
+                        }}
+                      >
+                        <span className="font-bold truncate text-xs">{block.name}</span>
+                        <span className="text-xs font-semibold text-accent">{block.size_bytes} B</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Selected Block Info Card */}

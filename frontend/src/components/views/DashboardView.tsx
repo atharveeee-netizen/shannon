@@ -8,11 +8,15 @@ import {
   GitMerge,
   Cpu,
   RotateCcw,
+  Box,
+  Sparkles,
 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { Panel } from '../ui/Panel';
 import { StatusBadge } from '../ui/StatusBadge';
 import { PipelineStage } from '../../types';
+import { CanvasDonutGauge, CanvasBarChart } from '../ui/CanvasChart';
+import { PRESET_MODELS } from '../../services/api';
 
 export const DashboardView: React.FC = () => {
   const {
@@ -26,6 +30,7 @@ export const DashboardView: React.FC = () => {
     setActiveTab,
     downloadHeader,
     pipelineStages,
+    loadPreset,
   } = useCompiler();
 
   const isCompiled = compilationResult !== null && !isTargetInvalidated;
@@ -36,12 +41,24 @@ export const DashboardView: React.FC = () => {
   const latencyMs = isCompiled ? compilationResult.optimized_int8.estimated_latency_ms.toFixed(2) : '—';
 
   const flashPct = isCompiled
-    ? Math.min(100, (compilationResult.optimized_int8.flash_bytes / (selectedHw.flash_mb * 1024 * 1024)) * 100).toFixed(2)
-    : null;
+    ? Math.min(100, (compilationResult.optimized_int8.flash_bytes / (selectedHw.flash_mb * 1024 * 1024)) * 100)
+    : 0;
 
   const sramPct = isCompiled
-    ? Math.min(100, (compilationResult.optimized_int8.peak_sram_bytes / (selectedHw.sram_kb * 1024)) * 100).toFixed(2)
-    : null;
+    ? Math.min(100, (compilationResult.optimized_int8.peak_sram_bytes / (selectedHw.sram_kb * 1024)) * 100)
+    : 0;
+
+  // Prepare compute load distribution data across layers
+  const layerComputeItems = isCompiled
+    ? compilationResult.layers
+        .filter((l) => l.macs > 0)
+        .map((l) => ({
+          label: l.layer_id,
+          value: l.macs,
+          formattedValue: `${l.macs.toLocaleString()} MACs`,
+          color: '#10B981',
+        }))
+    : [];
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
@@ -55,12 +72,12 @@ export const DashboardView: React.FC = () => {
             </span>
           </div>
           <h1 className="text-2xl font-bold text-text-primary tracking-tight">
-            {loadedModel ? loadedModel.name : 'No Model Loaded'}
+            {loadedModel ? loadedModel.name : 'Welcome to Shannon TinyML EDA Studio'}
           </h1>
           <p className="text-sm text-text-secondary leading-relaxed max-w-3xl">
             {loadedModel
               ? loadedModel.description
-              : 'Load a verified TinyML neural network from the Model Zoo or import custom ONNX/JSON to compile.'}
+              : 'Autonomous compiler workstation for deploying deep neural networks to microcontrollers with zero runtime dynamic allocation (malloc=0 B).'}
           </p>
         </div>
 
@@ -114,7 +131,51 @@ export const DashboardView: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Compilation Pipeline Flow */}
+      {/* 2. Quick Start Onboarding Cards (When No Model Loaded) */}
+      {!loadedModel && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-mono text-accent">
+              <Sparkles className="w-4 h-4" />
+              <span>GET STARTED WITH VERIFIED BENCHMARK MODELS</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PRESET_MODELS.map((preset) => (
+              <div
+                key={preset.id}
+                className="p-5 rounded bg-surface border border-border hover:border-border-strong hover:bg-surface-raised/40 transition-all flex flex-col justify-between space-y-4 group"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface-raised text-accent font-semibold border border-border">
+                      {preset.domain}
+                    </span>
+                    <Box className="w-4 h-4 text-text-muted group-hover:text-accent transition-colors" />
+                  </div>
+                  <h3 className="text-base font-bold text-text-primary tracking-tight">{preset.name}</h3>
+                  <p className="text-xs text-text-secondary leading-relaxed">{preset.description}</p>
+                  <div className="pt-2 text-[11px] font-mono text-text-muted space-y-1 border-t border-border">
+                    <div>Arch: <span className="text-text-primary font-medium">{preset.architecture}</span></div>
+                    <div>Input: <span className="text-cyan-400 font-medium">{preset.input_shape}</span> ({preset.input_type})</div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => loadPreset(preset.id, true)}
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded bg-surface-raised hover:bg-accent hover:text-black border border-border hover:border-accent text-text-primary text-xs font-bold transition-all"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Load & Compile Model</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Compilation Pipeline Flow */}
       <Panel
         title="Compilation Pipeline Execution"
         subtitle={
@@ -174,71 +235,92 @@ export const DashboardView: React.FC = () => {
         </div>
       </Panel>
 
-      {/* 3. Core Silicon Resource Results */}
-      <Panel
-        title="Silicon Resource Footprint"
-        subtitle={
-          isCompiled
-            ? `Measured for ${compilationResult.model_name} on ${selectedHw.name}`
-            : 'Compile model to inspect static SRAM, Flash ROM, and latency'
-        }
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Flash ROM */}
-          <div className="p-4 rounded bg-surface-raised/40 border border-border space-y-1.5">
-            <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
-              Flash ROM Weights
-            </span>
-            <div className="text-2xl font-bold font-mono text-text-primary">
-              {flashKb} <span className="text-xs text-text-secondary font-normal font-sans">KB</span>
-            </div>
-            <p className="text-xs font-mono text-text-secondary">
-              {flashPct ? `${flashPct}% of ${selectedHw.flash_mb} MB Flash` : 'Static parameter storage'}
-            </p>
+      {/* 4. Core Silicon Resource Footprint */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* Flash ROM */}
+        <div className="p-4 rounded bg-surface border border-border space-y-1.5">
+          <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
+            Flash ROM Weights
+          </span>
+          <div className="text-2xl font-bold font-mono text-text-primary">
+            {flashKb} <span className="text-xs text-text-secondary font-normal font-sans">KB</span>
+          </div>
+          <p className="text-xs font-mono text-text-secondary">
+            {isCompiled ? `${flashPct.toFixed(2)}% of ${selectedHw.flash_mb} MB Flash` : 'Static parameter storage'}
+          </p>
+        </div>
+
+        {/* Peak SRAM Arena */}
+        <div className="p-4 rounded bg-surface border border-border space-y-1.5">
+          <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
+            Peak SRAM Arena
+          </span>
+          <div className="text-2xl font-bold font-mono text-cyan-400">
+            {sramKb} <span className="text-xs text-text-secondary font-normal font-sans">KB</span>
+          </div>
+          <p className="text-xs font-mono text-text-secondary">
+            {isCompiled ? `${sramPct.toFixed(2)}% of ${selectedHw.sram_kb} KB SRAM` : '0 dynamic heap allocations'}
+          </p>
+        </div>
+
+        {/* Inference Latency */}
+        <div className="p-4 rounded bg-surface border border-border space-y-1.5">
+          <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
+            Inference Latency
+          </span>
+          <div className="text-2xl font-bold font-mono text-amber-400">
+            {latencyMs} <span className="text-xs text-text-secondary font-normal font-sans">ms</span>
+          </div>
+          <p className="text-xs font-mono text-text-secondary">
+            {isCompiled ? `@ ${selectedHw.clock_mhz}MHz core clock` : 'Cycle-accurate static model'}
+          </p>
+        </div>
+
+        {/* Compute Operations */}
+        <div className="p-4 rounded bg-surface border border-border space-y-1.5">
+          <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
+            Compute Load
+          </span>
+          <div className="text-2xl font-bold font-mono text-text-primary">
+            {macsFormatted} <span className="text-xs text-text-secondary font-normal font-sans">MACs</span>
+          </div>
+          <p className="text-xs font-mono text-text-secondary">
+            {isCompiled ? 'Vectorized SIMD multipliers' : 'Multiply-accumulate operations'}
+          </p>
+        </div>
+      </div>
+
+      {/* 5. Visual Silicon Utilization Gauges & Layer Compute Distribution */}
+      {isCompiled && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-4">
+            <CanvasDonutGauge
+              percent={flashPct}
+              size={115}
+              label="Flash Utilization"
+              sublabel={`${flashKb} KB of ${selectedHw.flash_mb} MB`}
+            />
+            <CanvasDonutGauge
+              percent={sramPct}
+              size={115}
+              label="SRAM Arena"
+              sublabel={`${sramKb} KB of ${selectedHw.sram_kb} KB`}
+              color="#06B6D4"
+            />
           </div>
 
-          {/* Peak SRAM Arena */}
-          <div className="p-4 rounded bg-surface-raised/40 border border-border space-y-1.5">
-            <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
-              Peak SRAM Arena
-            </span>
-            <div className="text-2xl font-bold font-mono text-cyan-400">
-              {sramKb} <span className="text-xs text-text-secondary font-normal font-sans">KB</span>
-            </div>
-            <p className="text-xs font-mono text-text-secondary">
-              {sramPct ? `${sramPct}% of ${selectedHw.sram_kb} KB SRAM` : '0 dynamic heap allocations'}
-            </p>
-          </div>
-
-          {/* Inference Latency */}
-          <div className="p-4 rounded bg-surface-raised/40 border border-border space-y-1.5">
-            <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
-              Inference Latency
-            </span>
-            <div className="text-2xl font-bold font-mono text-amber-400">
-              {latencyMs} <span className="text-xs text-text-secondary font-normal font-sans">ms</span>
-            </div>
-            <p className="text-xs font-mono text-text-secondary">
-              {isCompiled ? `@ ${selectedHw.clock_mhz}MHz core clock` : 'Cycle-accurate static model'}
-            </p>
-          </div>
-
-          {/* Compute Operations */}
-          <div className="p-4 rounded bg-surface-raised/40 border border-border space-y-1.5">
-            <span className="text-[11px] font-mono font-semibold text-text-muted uppercase tracking-wider">
-              Compute Load
-            </span>
-            <div className="text-2xl font-bold font-mono text-text-primary">
-              {macsFormatted} <span className="text-xs text-text-secondary font-normal font-sans">MACs</span>
-            </div>
-            <p className="text-xs font-mono text-text-secondary">
-              {isCompiled ? 'Vectorized SIMD multipliers' : 'Multiply-accumulate operations'}
-            </p>
+          <div className="lg:col-span-2">
+            <Panel
+              title="Per-Layer Compute Distribution (MACs)"
+              subtitle="Computationally intensive kernel operations"
+            >
+              <CanvasBarChart items={layerComputeItems} height={140} unit=" MACs" />
+            </Panel>
           </div>
         </div>
-      </Panel>
+      )}
 
-      {/* 4. Next Recommended Actions */}
+      {/* 6. Next Recommended Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button
           onClick={() => setActiveTab('graph')}
@@ -291,7 +373,7 @@ export const DashboardView: React.FC = () => {
             </div>
             <h4 className="text-sm font-bold text-text-primary">Generated C/C++ Code</h4>
             <p className="text-xs text-text-secondary leading-relaxed">
-              Inspect and download the MISRA-C:2012 Rule 21.3 compliant standalone embedded C header.
+              Inspect and edit the MISRA-C:2012 Rule 21.3 compliant standalone embedded C header.
             </p>
           </div>
           <div className="flex items-center gap-1 text-xs text-emerald-400 font-semibold">
