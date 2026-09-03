@@ -7,12 +7,17 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      },
       colors: {
         canvas: 'var(--bg)',
         surface: {
           DEFAULT: 'var(--surface)',
           raised: 'var(--surface-raised)',
           hover: 'var(--surface-hover)',
+          panel: 'var(--panel)',
         },
         border: {
           DEFAULT: 'var(--border)',
@@ -22,31 +27,43 @@ export default {
           primary: 'var(--text)',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
-          accent: 'var(--accent)',
+        },
+        primary: {
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
+          subtle: 'var(--primary-subtle)',
         },
         accent: {
-          DEFAULT: 'var(--accent)',
-          hover: 'var(--accent-hover)',
+          DEFAULT: 'var(--primary)',
+          hover: 'var(--primary-hover)',
         },
         success: {
           DEFAULT: 'var(--success)',
-          subtle: 'var(--success-bg)',
+          subtle: 'var(--success-subtle)',
         },
         warning: {
           DEFAULT: 'var(--warning)',
-          subtle: 'var(--warning-bg)',
+          subtle: 'var(--warning-subtle)',
         },
         danger: {
           DEFAULT: 'var(--danger)',
-          subtle: 'var(--danger-bg)',
+          subtle: 'var(--danger-subtle)',
         },
-        code: 'var(--code-bg)',
+        info: {
+          DEFAULT: 'var(--info)',
+          subtle: 'var(--info-subtle)',
+        },
+        code: {
+          DEFAULT: 'var(--code-bg)',
+          text: 'var(--code-text)',
+        }
       },
       borderRadius: {
-        DEFAULT: '3px',
-        sm: '2px',
-        md: '3px',
-        lg: '4px',
+        DEFAULT: '6px',
+        sm: '4px',
+        md: '6px',
+        lg: '8px',
+        xl: '12px',
       },
     },
   },

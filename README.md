@@ -4,8 +4,8 @@
 ### **Autonomous TinyML Compiler & Silicon Optimization Studio**
 *Compressing deep learning intelligence into micro-scale silicon with zero dynamic malloc.*
 
-[![Hackathon: AI Builders 2026](https://img.shields.io/badge/Hackathon-AI%20Builders%202026-blueviolet.svg?style=for-the-badge)](https://ai-builders-hackathon-2026.devpost.com/)
-[![Target Prize: Best SaaS](https://img.shields.io/badge/Target%20Prize-Best%20SaaS%20%28%244%2C000%29-00FFA3.svg?style=for-the-badge)](https://ai-builders-hackathon-2026.devpost.com/)
+[![Hackathon: DevNetwork API, Cloud & AI 2026](https://img.shields.io/badge/Hackathon-DevNetwork%20API%20Cloud%20AI%202026-blueviolet.svg?style=for-the-badge)](https://devpost.com/submit-to/29242-devnetwork-api-cloud-ai-hackathon-2026)
+[![Target Track: AI Developer Tools](https://img.shields.io/badge/Track-AI%20Developer%20Tools%20%26%20APIs-00FFA3.svg?style=for-the-badge)](https://devpost.com/submit-to/29242-devnetwork-api-cloud-ai-hackathon-2026)
 [![MISRA-C:2012](https://img.shields.io/badge/Compliance-MISRA--C%3A2012%20Rule%2021.3-0EA5E9.svg?style=for-the-badge)](https://www.misra.org.uk/)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
@@ -24,11 +24,12 @@
 
 | Parameter | Details |
 | :--- | :--- |
-| **Hackathon Name** | **AI Builders Hackathon 2026** (Powered by NexFellow & Open Source Connect) |
-| **Theme** | *Building the Future of Intelligent Systems. The Internet Needs Better AI.* |
-| **Target Track & Awards** | 🥇 **Best SaaS Product ($4,000 Cash)**<br>🚀 **NexFellow Founder’s Choice Award**<br>✨ **NexFellow Product Excellence & Innovation Award** |
-| **Primary Category** | **AI Developer Tools**, **AI Agents & Multi-Agent Systems**, **TinyML / Edge AI** |
+| **Hackathon Name** | **DevNetwork [API + Cloud + AI] Hackathon 2026** (Co-located with API World 2026) |
+| **Theme** | *API-First Systems, Cloud & Edge Infrastructure, and Autonomous AI Agents* |
+| **Target Track & Awards** | 🥇 **Overall Winner / Best Developer Tool & API**<br>🚀 **Best Use of AI / Autonomous Optimization Engine** |
+| **Primary Category** | **AI Developer Tools**, **API Platforms**, **TinyML / Edge AI** |
 | **Team** | **Team Shannon** ([@atharveeee-netizen](https://github.com/atharveeee-netizen)) |
+| **Live App** | [https://atharveeee-netizen.github.io/shannon/](https://atharveeee-netizen.github.io/shannon/) |
 
 ---
 
@@ -64,9 +65,9 @@ All models in the Shannon Model Zoo are trained with PyTorch using AdamW and a s
 
 | Benchmark Model | Domain | Target Silicon | Validation Metric | INT8 Flash | Flash Savings | Peak SRAM Arena | Total MACs |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Audio Keyword Spotter** | Voice Wake-Word | ESP32-S3 | **95.8% Acc (12 Classes)** | 24.0 KB | **75% (4x)** | **1.12 KB** | 46,368 |
-| **MicroVision Person** | Edge Vision | STM32H7 | **89.1% Acc (48x48)** | 1.13 KB | **65x** | **18.0 KB** | 239,680 |
-| **Vibration Autoencoder** | Industrial IoT | RP2040 Pico | **MSE 0.0003 (85x separation)** | 19.5 KB | **73%** | **0.19 KB** | 18,432 |
+| **Audio Keyword Spotter** | Voice Wake-Word | ESP32-S3 | **96.6% Acc (12 Classes)** | 24.0 KB | **74.5% (4x)** | **1.12 KB** | 46,368 |
+| **MicroVision Person** | Edge Vision | STM32H7 | **96.4% Acc (48x48)** | 18.1 KB | **75.0% (4x)** | **18.0 KB** | 239,680 |
+| **Vibration Autoencoder** | Industrial IoT | RP2040 Pico | **MSE 0.000133 (Normal)** | 19.5 KB | **72.9%** | **0.19 KB** | 18,432 |
 
 ---
 
