@@ -81,7 +81,7 @@ export const ImportView: React.FC = () => {
                 <p className="text-xs text-text-secondary">Genuine ONNX Protobuf parser (.onnx) and JSON layer graphs</p>
               </div>
               <span className="px-2.5 py-1 rounded-md bg-surface border border-border text-[11px] font-mono text-text-muted">
-                Zero Cloud Upload - Parsed In-Browser &amp; Compiled on Local Engine
+                Zero Cloud Upload - Parsed & Compiled In-Browser
               </span>
             </div>
 

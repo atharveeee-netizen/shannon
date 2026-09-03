@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   PanelLeftClose,
   PanelLeftOpen,
-  Bot,
   ChevronRight,
   ChevronDown,
 } from 'lucide-react';
@@ -24,8 +23,6 @@ export const Sidebar: React.FC = () => {
     activeTab,
     setActiveTab,
     selectedHw,
-    isCopilotOpen,
-    setIsCopilotOpen,
   } = useCompiler();
 
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
@@ -83,14 +80,6 @@ export const Sidebar: React.FC = () => {
       items: [
         { id: 'logs', label: 'Compiler logs' },
         { id: 'settings', label: 'Settings' },
-      ],
-    },
-    {
-      title: 'Experimental',
-      items: [
-        { id: 'waveforms', label: 'Waveforms & FFT' },
-        { id: 'signalflow', label: 'Signal flow architecture' },
-        { id: 'tensor', label: 'Tensor inspector' },
       ],
     },
   ];
@@ -195,37 +184,16 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom: Active Hardware & Silicon Copilot Drawer */}
       <div className="p-2 border-t border-border bg-surface space-y-2">
         {!isCollapsed ? (
-          <>
-            <div className="px-2.5 py-1.5 rounded-[6px] bg-surface-raised border border-border flex items-center justify-between text-xs">
-              <span className="text-text-secondary truncate">{selectedHw.name}</span>
-              <span className="font-mono text-text-primary font-medium">{selectedHw.sram_kb} KB</span>
-            </div>
-
-            <button
-              onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-              className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-[6px] text-xs font-medium border transition-colors cursor-pointer ${
-                isCopilotOpen
-                  ? 'bg-primary text-white border-primary'
-                  : 'bg-surface-raised hover:bg-surface-hover border-border text-text-primary'
-              }`}
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span>Silicon Copilot</span>
-            </button>
-          </>
+          <div className="px-2.5 py-1.5 rounded-[6px] bg-surface-raised border border-border flex items-center justify-between text-xs">
+            <span className="text-text-secondary truncate">{selectedHw.name}</span>
+            <span className="font-mono text-text-primary font-medium">{selectedHw.sram_kb} KB</span>
+          </div>
         ) : (
-          <button
-            onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-            title="Toggle Silicon Copilot"
-            className={`w-full p-2 rounded-[6px] flex items-center justify-center transition-colors cursor-pointer ${
-              isCopilotOpen ? 'bg-primary text-white' : 'hover:bg-surface-raised text-text-muted'
-            }`}
-          >
-            <Bot className="w-4 h-4" />
-          </button>
+          <div className="px-1 py-1.5 rounded-[6px] bg-surface-raised border border-border flex items-center justify-center text-[10px]">
+            <span className="font-mono text-text-primary font-medium">{selectedHw.sram_kb}k</span>
+          </div>
         )}
       </div>
     </aside>

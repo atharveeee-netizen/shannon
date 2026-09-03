@@ -5,6 +5,7 @@ import { TopBar } from './components/TopBar';
 import { ContextualInspector } from './components/ContextualInspector';
 import { SiliconCopilotDrawer } from './components/views/SiliconCopilotDrawer';
 import { CommandPalette } from './components/CommandPalette';
+import { Bot } from 'lucide-react';
 
 // Project Views
 import { DashboardView } from './components/views/DashboardView';
@@ -40,7 +41,7 @@ import { LogsView } from './components/views/LogsView';
 import { SettingsView } from './components/views/SettingsView';
 
 function StudioContent() {
-  const { activeTab } = useCompiler();
+  const { activeTab, isCopilotOpen, setIsCopilotOpen } = useCompiler();
   const [isCmdOpen, setIsCmdOpen] = useState<boolean>(false);
 
   return (
@@ -92,6 +93,17 @@ function StudioContent() {
 
       {/* Contextual Right Inspector */}
       <ContextualInspector />
+
+      {/* Floating Copilot Button */}
+      {!isCopilotOpen && (
+        <button
+          onClick={() => setIsCopilotOpen(true)}
+          className="fixed bottom-6 right-6 w-12 h-12 bg-primary hover:bg-primary-hover text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-40 cursor-pointer"
+          title="Open Silicon Copilot"
+        >
+          <Bot className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Silicon Copilot AI Auditor Drawer */}
       <SiliconCopilotDrawer />
