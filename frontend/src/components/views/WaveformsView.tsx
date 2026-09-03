@@ -324,7 +324,7 @@ export const WaveformsView: React.FC = () => {
                   }`}
                 >
                   <span>{l.layer_id}</span>
-                  <span className="ml-1 text-[10px] opacity-70">({l.op_type})</span>
+                  <span className="ml-1 text-xs opacity-70">({l.op_type})</span>
                 </button>
               );
             })}
@@ -343,19 +343,19 @@ export const WaveformsView: React.FC = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono pt-2 border-t border-border">
                 <div className="p-2.5 rounded bg-surface-raised/40 border border-border">
-                  <span className="text-[10px] text-text-muted block">OUT SHAPE:</span>
+                  <span className="text-xs text-text-muted block">OUT SHAPE:</span>
                   <span className="text-text-primary font-bold">{activeLayer.out_shape}</span>
                 </div>
                 <div className="p-2.5 rounded bg-surface-raised/40 border border-border">
-                  <span className="text-[10px] text-text-muted block">PRECISION:</span>
+                  <span className="text-xs text-text-muted block">PRECISION:</span>
                   <span className="text-emerald-400 font-bold">INT{activeLayer.bitwidth} Symmetric</span>
                 </div>
                 <div className="p-2.5 rounded bg-surface-raised/40 border border-border">
-                  <span className="text-[10px] text-text-muted block">QUANT SCALE:</span>
+                  <span className="text-xs text-text-muted block">QUANT SCALE:</span>
                   <span className="text-text-primary font-bold">{activeLayer.scale_factor.toFixed(6)}</span>
                 </div>
                 <div className="p-2.5 rounded bg-surface-raised/40 border border-border">
-                  <span className="text-[10px] text-text-muted block">SRAM OFFSET:</span>
+                  <span className="text-xs text-text-muted block">SRAM OFFSET:</span>
                   <span className="text-cyan-400 font-bold">{activeLayer.sram_offset_hex}</span>
                 </div>
               </div>

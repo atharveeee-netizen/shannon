@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { CompilerProvider, useCompiler } from './context/CompilerContext';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
-import { CommandPalette } from './components/CommandPalette';
+import { ContextualInspector } from './components/ContextualInspector';
 import { SiliconCopilotDrawer } from './components/views/SiliconCopilotDrawer';
+import { CommandPalette } from './components/CommandPalette';
 
 // Project Views
 import { DashboardView } from './components/views/DashboardView';
@@ -88,6 +89,9 @@ function StudioContent() {
           {activeTab === 'settings' && <SettingsView />}
         </main>
       </div>
+
+      {/* Contextual Right Inspector */}
+      <ContextualInspector />
 
       {/* Silicon Copilot AI Auditor Drawer */}
       <SiliconCopilotDrawer />

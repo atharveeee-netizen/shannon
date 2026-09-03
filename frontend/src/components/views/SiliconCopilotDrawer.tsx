@@ -108,7 +108,7 @@ export const SiliconCopilotDrawer: React.FC = () => {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-bold text-xs text-text-primary">Silicon Copilot</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-surface-raised text-text-muted font-mono font-medium border border-border">
+              <span className="text-xs px-1.5 py-0.2 rounded bg-surface-raised text-text-muted font-mono font-medium border border-border">
                 AI AUDITOR
               </span>
             </div>
@@ -140,7 +140,7 @@ export const SiliconCopilotDrawer: React.FC = () => {
             >
               {m.text}
             </div>
-            <span className="text-[10px] font-mono text-text-muted px-1">{m.timestamp}</span>
+            <span className="text-xs font-mono text-text-muted px-1">{m.timestamp}</span>
           </div>
         ))}
 

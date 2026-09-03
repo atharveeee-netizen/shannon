@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-        mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
         canvas: 'var(--bg)',
@@ -18,7 +18,7 @@ export default {
           raised: 'var(--surface-raised)',
           hover: 'var(--surface-hover)',
           elevated: 'var(--surface-elevated)',
-          panel: 'var(--panel)',
+          panel: 'var(--surface)',
         },
         border: {
           DEFAULT: 'var(--border)',
@@ -28,48 +28,49 @@ export default {
           primary: 'var(--text)',
           secondary: 'var(--text-secondary)',
           muted: 'var(--text-muted)',
+          disabled: 'var(--text-disabled)',
         },
         primary: {
-          DEFAULT: '#0ea5e9',
-          hover: '#0284c7',
-          pressed: '#0369a1',
-          subtle: 'rgba(14, 165, 233, 0.12)',
+          DEFAULT: '#0F62FE',
+          hover: '#0043CE',
+          pressed: '#002D9C',
+          subtle: 'var(--primary-subtle)',
         },
         accent: {
-          DEFAULT: '#0ea5e9',
-          hover: '#0284c7',
-          subtle: 'rgba(14, 165, 233, 0.12)',
+          DEFAULT: '#0F62FE',
+          hover: '#0043CE',
+          subtle: 'var(--primary-subtle)',
         },
         success: {
-          DEFAULT: 'var(--success)',
+          DEFAULT: '#24A148',
           subtle: 'var(--success-subtle)',
         },
         warning: {
-          DEFAULT: 'var(--warning)',
+          DEFAULT: '#F1C21B',
           subtle: 'var(--warning-subtle)',
         },
         danger: {
-          DEFAULT: 'var(--danger)',
+          DEFAULT: '#DA1E28',
           subtle: 'var(--danger-subtle)',
         },
         info: {
-          DEFAULT: '#0ea5e9',
-          subtle: 'rgba(14, 165, 233, 0.12)',
+          DEFAULT: '#0F62FE',
+          subtle: 'var(--primary-subtle)',
         },
         code: {
           DEFAULT: 'var(--code-bg)',
-          text: 'var(--code-text)',
+          text: 'var(--text)',
         }
       },
       borderRadius: {
         none: '0px',
         sm: '4px',
         DEFAULT: '6px',
-        md: '8px',
-        lg: '10px',
-        xl: '12px',
-        '2xl': '14px',
-        '3xl': '16px',
+        md: '6px',
+        lg: '8px',
+        xl: '10px',
+        '2xl': '12px',
+        '3xl': '14px',
         full: '9999px',
       },
     },

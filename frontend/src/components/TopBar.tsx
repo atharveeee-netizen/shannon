@@ -6,10 +6,9 @@ import {
   Moon,
   ChevronDown,
   RotateCcw,
-  HardDrive,
-  XCircle,
   CheckCircle2,
   AlertCircle,
+  XCircle,
 } from 'lucide-react';
 import { useCompiler } from '../context/CompilerContext';
 import { PRESET_MODELS } from '../services/api';
@@ -42,28 +41,22 @@ export const TopBar: React.FC = () => {
 
   return (
     <header className="h-14 bg-surface border-b border-border px-4 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
-      {/* Left: Branding & Compiler Engine Status */}
-      <div className="flex items-center gap-3">
+      {/* Left: Product & Workspace Context */}
+      <div className="flex items-center gap-3 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-sm tracking-tight text-text-primary">SHANNON</span>
-          <span className="text-[11px] font-mono text-text-muted hidden md:inline">
-            TinyML Compiler
+          <span className="font-semibold text-sm tracking-tight text-text-primary">
+            Shannon
+          </span>
+          <span className="text-xs text-text-muted hidden md:inline">
+            Silicon Compiler
           </span>
         </div>
 
-        <span className="text-border">|</span>
+        <span className="text-border select-none">/</span>
 
-        <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-surface-raised border border-border text-text-muted">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>CANONICAL ENGINE</span>
-        </span>
-      </div>
-
-      {/* Center: Model, Target, Precision */}
-      <div className="flex items-center gap-2.5">
         {/* Model Selector */}
-        <div className="flex items-center gap-1.5 text-xs font-mono">
-          <span className="text-text-muted hidden sm:inline">model:</span>
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-text-muted hidden sm:inline">Model:</span>
           <div className="relative">
             <select
               value={loadedModel ? loadedModel.id : ''}
@@ -74,10 +67,10 @@ export const TopBar: React.FC = () => {
                   loadPreset(e.target.value, true);
                 }
               }}
-              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans font-medium text-xs py-1.5 pl-2.5 pr-7 rounded-md border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans text-xs py-1.5 pl-2.5 pr-7 rounded-[6px] border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="" disabled>
-                -- Select Model --
+                Select model
               </option>
               {PRESET_MODELS.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -101,25 +94,24 @@ export const TopBar: React.FC = () => {
           {loadedModel && (
             <button
               onClick={clearModel}
-              title="Unload current model"
-              className="p-1 hover:text-rose-400 text-text-muted rounded transition-colors cursor-pointer"
+              title="Unload model"
+              className="p-1 hover:text-danger text-text-muted rounded transition-colors cursor-pointer"
             >
               <XCircle className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
+      </div>
 
-        <span className="text-border">|</span>
-
-        {/* Target Silicon Hardware Selector */}
-        <div className="flex items-center gap-1.5 text-xs font-mono">
-          <HardDrive className="w-3.5 h-3.5 text-text-muted hidden sm:inline" />
-          <span className="text-text-muted hidden sm:inline">target:</span>
+      {/* Center: Target Hardware & Precision */}
+      <div className="hidden lg:flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-text-muted">Target:</span>
           <div className="relative">
             <select
               value={selectedHw.id}
               onChange={(e) => setHardware(e.target.value)}
-              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans font-medium text-xs py-1.5 pl-2.5 pr-7 rounded-md border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
+              className="appearance-none bg-surface-raised hover:bg-surface-hover text-text-primary font-sans text-xs py-1.5 pl-2.5 pr-7 rounded-[6px] border border-border cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary"
             >
               {hardwareList.map((hw) => (
                 <option key={hw.id} value={hw.id}>
@@ -131,37 +123,36 @@ export const TopBar: React.FC = () => {
           </div>
         </div>
 
-        {/* Precision Pill */}
-        <span className="hidden xl:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono font-semibold bg-primary/10 border border-primary/30 text-primary">
+        <span className="text-xs font-mono px-2 py-0.5 rounded-[4px] bg-surface-raised border border-border text-text-secondary">
           INT8
         </span>
-      </div>
 
-      {/* Right: Status, Compile Action & Export */}
-      <div className="flex items-center gap-2.5">
-        {/* Status Badge */}
+        {/* Status */}
         {isTargetInvalidated ? (
-          <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] font-mono">
-            <AlertCircle className="w-3 h-3" />
-            <span>Target Changed</span>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-warning/10 border border-warning/30 text-warning text-xs">
+            <AlertCircle className="w-3.5 h-3.5" />
+            <span>Target modified</span>
           </div>
         ) : compilationResult ? (
-          <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[11px] font-mono">
-            <CheckCircle2 className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-success/10 border border-success/30 text-success text-xs">
+            <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Compiled</span>
           </div>
         ) : null}
+      </div>
 
-        {/* Master Compile Action Button */}
+      {/* Right: Actions with Strict Visual Hierarchy */}
+      <div className="flex items-center gap-2">
+        {/* DOMINANT ACTION: Compile */}
         <button
           onClick={() => triggerCompile()}
           disabled={isCompiling}
-          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-xs font-semibold shadow-sm transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-1.5 rounded-[6px] text-sm font-medium text-white transition-colors cursor-pointer ${
             isCompiling
-              ? 'bg-primary/60 text-white cursor-wait'
-              : 'bg-primary hover:bg-primary-hover text-white active:scale-98'
+              ? 'bg-primary/60 cursor-wait'
+              : 'bg-primary hover:bg-[#0043CE] active:bg-[#002D9C]'
           }`}
-          title="Run compiler pipeline on current model"
+          title="Run compiler pipeline"
         >
           {isCompiling ? (
             <>
@@ -170,13 +161,13 @@ export const TopBar: React.FC = () => {
             </>
           ) : (
             <>
-              <Play className="w-3.5 h-3.5 fill-white text-white" />
+              <Play className="w-3.5 h-3.5 fill-white" />
               <span>Compile</span>
             </>
           )}
         </button>
 
-        {/* Download Standalone Header (.h) */}
+        {/* SUBTLE SECONDARY ACTION: Export .h */}
         <button
           onClick={() => {
             if (compilationResult) {
@@ -186,18 +177,19 @@ export const TopBar: React.FC = () => {
             }
           }}
           disabled={isCompiling}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-surface-raised hover:bg-surface-hover text-text-primary text-xs font-medium transition-colors cursor-pointer"
-          title={compilationResult ? 'Export Standalone C Header (.h)' : 'Compile & Export .h'}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] border border-border bg-surface-raised hover:bg-surface-hover text-text-primary text-xs font-medium transition-colors cursor-pointer"
+          title={compilationResult ? 'Export C Header' : 'Compile & Export'}
         >
-          <Download className="w-3.5 h-3.5 text-primary" />
-          <span className="hidden md:inline">Export .h</span>
+          <Download className="w-3.5 h-3.5 text-text-secondary" />
+          <span className="hidden sm:inline">Export C</span>
         </button>
 
-        {/* Dark / Light Theme Switcher */}
+        {/* TERTIARY / UTILITY: Theme Switcher */}
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-1.5 rounded-md bg-surface-raised hover:bg-surface-hover border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
-          title="Toggle Dark/Light Mode"
+          className="p-1.5 rounded-[6px] bg-surface-raised hover:bg-surface-hover border border-border text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+          title={isDarkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+          aria-label="Toggle theme"
         >
           {isDarkMode ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
         </button>

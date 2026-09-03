@@ -66,7 +66,7 @@ export const CompareView: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <span>{item.hardware_name}</span>
                         {isCurrent && (
-                          <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-[10px] font-bold">
+                          <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 text-xs font-bold">
                             CURRENT
                           </span>
                         )}

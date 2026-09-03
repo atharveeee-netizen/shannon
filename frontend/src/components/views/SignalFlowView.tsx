@@ -54,7 +54,7 @@ export const SignalFlowView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Step 1 */}
           <SpotlightCard className="p-4 space-y-2 border-t-2 border-t-primary">
-            <span className="text-[10px] font-mono font-bold text-primary uppercase">1. SENSOR DMA</span>
+            <span className="text-xs font-mono font-bold text-primary">1. Sensor DMA</span>
             <div className="text-sm font-semibold text-text-primary">Raw Hardware Input</div>
             <p className="text-xs text-text-secondary leading-relaxed">
               Interrupt-driven ring buffer streaming directly to SRAM section <code>0x20000000</code>.
@@ -66,7 +66,7 @@ export const SignalFlowView: React.FC = () => {
 
           {/* Step 2 */}
           <SpotlightCard className="p-4 space-y-2 border-t-2 border-t-amber-500">
-            <span className="text-[10px] font-mono font-bold text-amber-500 uppercase">2. DSP PREPROCESSING</span>
+            <span className="text-xs font-mono font-bold text-amber-500">2. DSP preprocessing</span>
             <div className="text-sm font-semibold text-text-primary">Feature Extraction</div>
             <p className="text-xs text-text-secondary leading-relaxed">
               Fixed-point Hann windowing &amp; integer FFT / spectrogram decomposition.
@@ -78,7 +78,7 @@ export const SignalFlowView: React.FC = () => {
 
           {/* Step 3 */}
           <SpotlightCard className="p-4 space-y-2 border-t-2 border-t-emerald-500">
-            <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase">3. INT8 ARENA INFERENCE</span>
+            <span className="text-xs font-mono font-bold text-emerald-500">3. INT8 arena inference</span>
             <div className="text-sm font-semibold text-text-primary">Quantized Kernel DAG</div>
             <p className="text-xs text-text-secondary leading-relaxed">
               In-place 4-way loop unrolled kernels executing in non-overlapping SRAM arena intervals.
@@ -90,7 +90,7 @@ export const SignalFlowView: React.FC = () => {
 
           {/* Step 4 */}
           <SpotlightCard className="p-4 space-y-2 border-t-2 border-t-cyan-500">
-            <span className="text-[10px] font-mono font-bold text-cyan-500 uppercase">4. CLASSIFICATION</span>
+            <span className="text-xs font-mono font-bold text-cyan-500">4. Classification</span>
             <div className="text-sm font-semibold text-text-primary">Decision &amp; Telemetry</div>
             <p className="text-xs text-text-secondary leading-relaxed">
               Softmax or argmax evaluation dispatched over UART / SPI telemetry ring.

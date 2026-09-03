@@ -37,7 +37,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, className = '' }) => {
             >
               <div className="flex items-center gap-1.5 mb-1">
                 <div
-                  className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono font-bold ${
+                  className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-mono font-bold ${
                     isComplete
                       ? 'bg-emerald-500 text-black'
                       : isCurrent
@@ -49,7 +49,7 @@ export const Stepper: React.FC<StepperProps> = ({ steps, className = '' }) => {
                 >
                   {isComplete ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : idx + 1}
                 </div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-text-muted">
+                <span className="text-xs font-mono tracking-wider text-text-muted">
                   S{idx + 1}
                 </span>
               </div>

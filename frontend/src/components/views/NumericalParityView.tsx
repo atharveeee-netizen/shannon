@@ -103,7 +103,7 @@ export const NumericalParityView: React.FC = () => {
                   <td className="py-3 px-4 text-primary font-bold">{lm.sqnr_db.toFixed(2)} dB</td>
                   <td className="py-3 px-4 text-cyan-400">{lm.max_error.toFixed(5)}</td>
                   <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 text-[10px] font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded">
                       CONVERGED
                     </span>
                   </td>

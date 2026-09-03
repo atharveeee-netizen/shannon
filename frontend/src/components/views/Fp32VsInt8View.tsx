@@ -131,7 +131,7 @@ export const Fp32VsInt8View: React.FC = () => {
                     }`}
                   >
                     <span>{m.layer_id}</span>
-                    <span className="ml-1 text-[10px] text-emerald-400">({m.sqnr_db} dB)</span>
+                    <span className="ml-1 text-xs text-emerald-400">({m.sqnr_db} dB)</span>
                   </button>
                 );
               })}

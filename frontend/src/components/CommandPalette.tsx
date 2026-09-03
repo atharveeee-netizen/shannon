@@ -214,7 +214,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
             placeholder="Type a command or search models, hardware, views..."
             className="w-full bg-transparent text-text-primary text-xs font-medium focus:outline-none placeholder-text-muted"
           />
-          <kbd className="px-1.5 py-0.5 rounded bg-surface border border-border text-[10px] font-mono text-text-muted">
+          <kbd className="px-1.5 py-0.5 rounded bg-surface border border-border text-[11px] font-mono text-text-muted">
             ESC
           </kbd>
         </div>
@@ -240,7 +240,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
                     <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-accent' : 'text-text-muted'}`} />
                     <span className="font-medium">{cmd.title}</span>
                   </div>
-                  <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">
+                  <span className="text-xs font-mono text-text-muted tracking-wider">
                     {cmd.category}
                   </span>
                 </div>
@@ -250,7 +250,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         </div>
 
         {/* Footer shortcuts */}
-        <div className="px-4 py-2 border-t border-border bg-surface-raised/30 flex items-center justify-between text-[10px] font-mono text-text-muted">
+        <div className="px-4 py-2 border-t border-border bg-surface-raised/30 flex items-center justify-between text-[11px] font-mono text-text-muted">
           <div className="flex items-center gap-2">
             <span>↑↓ Navigate</span>
             <span>↵ Select</span>

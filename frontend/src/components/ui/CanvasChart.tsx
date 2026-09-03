@@ -115,7 +115,7 @@ export const CanvasWaveform: React.FC<CanvasWaveformProps> = ({
   return (
     <div className="relative w-full overflow-hidden rounded bg-black/40 border border-border">
       {label && (
-        <div className="absolute top-2 left-3 text-[10px] font-mono text-text-muted select-none z-10">
+        <div className="absolute top-2 left-3 text-[11px] font-mono text-text-muted select-none z-10">
           {label}
         </div>
       )}
@@ -184,7 +184,7 @@ export const CanvasSpectrum: React.FC<CanvasSpectrumProps> = ({
   return (
     <div className="relative w-full overflow-hidden rounded bg-black/40 border border-border">
       {label && (
-        <div className="absolute top-2 left-3 text-[10px] font-mono text-text-muted select-none z-10">
+        <div className="absolute top-2 left-3 text-[11px] font-mono text-text-muted select-none z-10">
           {label}
         </div>
       )}

@@ -130,7 +130,7 @@ export const TestbenchView: React.FC = () => {
                     <td className="py-3 px-4 font-bold text-text-primary">{item.label}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold text-[10px] ${
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold text-xs ${
                           isPass
                             ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                             : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
@@ -160,7 +160,7 @@ export const TestbenchView: React.FC = () => {
                   <Icon className="w-4 h-4 text-primary" />
                   <span className="text-xs font-bold text-text-primary">{cat.category}</span>
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
                   PASS
                 </span>
               </div>
@@ -170,7 +170,7 @@ export const TestbenchView: React.FC = () => {
                   <div key={cIdx} className="p-2.5 rounded-lg bg-surface-raised/60 border border-border space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-text-primary">{chk.label}</span>
-                      <span className="text-emerald-400 font-bold text-[10px]">{chk.status}</span>
+                      <span className="text-emerald-400 font-bold text-xs">{chk.status}</span>
                     </div>
                     <div className="text-[11px] text-text-muted">{chk.detail}</div>
                   </div>

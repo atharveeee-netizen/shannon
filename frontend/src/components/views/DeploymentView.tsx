@@ -103,7 +103,7 @@ export const DeploymentView: React.FC = () => {
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-text-primary">{kit.name}</span>
-                      <span className="text-[10px] font-mono text-primary font-semibold">{kit.chip}</span>
+                      <span className="text-[11px] font-mono text-primary font-semibold">{kit.chip}</span>
                     </div>
                     <p className="text-xs text-text-secondary leading-relaxed">{kit.desc}</p>
                     <div className="text-[11px] font-mono text-text-muted pt-1">
