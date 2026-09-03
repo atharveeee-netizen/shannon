@@ -93,22 +93,16 @@ export const TestbenchView: React.FC = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold">
             <FlaskConical className="w-4 h-4" />
-            <span>RIGOROUS STATIC COMPILER VALIDATION SUITE</span>
+            <span>COMPILER VALIDATION</span>
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">
-            Verification Testbench: {compilationResult.model_name}
+            Validation Matrix: {compilationResult.model_name}
           </h1>
           <p className="text-xs text-text-secondary max-w-4xl">
             Automated verification across graph integrity, quantization noise bounds, interval collision proof, and zero-malloc firmware safety.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-xs font-semibold rounded-md flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            <span>All Verification Gates Passed</span>
-          </span>
-        </div>
       </div>
 
       {/* Part 26: Clean Executive Verification Table */}
@@ -130,10 +124,10 @@ export const TestbenchView: React.FC = () => {
                     <td className="py-3 px-4 font-bold text-text-primary">{item.label}</td>
                     <td className="py-3 px-4">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-bold text-xs ${
+                        className={`inline-flex items-center gap-1 font-mono font-semibold text-xs ${
                           isPass
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                            ? 'text-success'
+                            : 'text-danger'
                         }`}
                       >
                         {isPass ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
@@ -160,19 +154,16 @@ export const TestbenchView: React.FC = () => {
                   <Icon className="w-4 h-4 text-primary" />
                   <span className="text-xs font-bold text-text-primary">{cat.category}</span>
                 </div>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
-                  PASS
+                <span className="text-success text-xs font-mono flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Pass
                 </span>
               </div>
 
               <div className="space-y-2 font-mono text-xs">
                 {cat.checks.map((chk, cIdx) => (
-                  <div key={cIdx} className="p-2.5 rounded-lg bg-surface-raised/60 border border-border space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-text-primary">{chk.label}</span>
-                      <span className="text-emerald-400 font-bold text-xs">{chk.status}</span>
-                    </div>
-                    <div className="text-[11px] text-text-muted">{chk.detail}</div>
+                  <div key={cIdx} className="py-2 border-b border-border/40 last:border-0 flex items-start justify-between gap-2">
+                    <span className="text-text-secondary">{chk.label}</span>
+                    <span className={`font-semibold text-xs shrink-0 ${chk.status === 'PASS' ? 'text-success' : 'text-danger'}`}>{chk.status === 'PASS' ? '✓' : '✗'}</span>
                   </div>
                 ))}
               </div>

@@ -48,7 +48,7 @@ export const ImportView: React.FC = () => {
           </div>
           <h1 className="text-xl font-bold text-text-primary tracking-tight">Import Custom Model</h1>
           <p className="text-xs text-text-secondary max-w-4xl">
-            Upload genuine ONNX computation graphs (<code>.onnx</code>) or structured JSON layer definitions. Graphs are validated strictly with zero silent fallbacks.
+            Upload ONNX / Shannon IR JSON layer definitions. Graphs are validated strictly with zero silent fallbacks.
           </p>
         </div>
 
@@ -78,10 +78,10 @@ export const ImportView: React.FC = () => {
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-text-primary">Click to Browse or Drag File Here</h3>
-                <p className="text-xs text-text-secondary">Genuine ONNX Protobuf parser (.onnx) and JSON layer graphs</p>
+                <p className="text-xs text-text-secondary">ONNX / Shannon IR JSON</p>
               </div>
               <span className="px-2.5 py-1 rounded-md bg-surface border border-border text-[11px] font-mono text-text-muted">
-                Zero Cloud Upload - Parsed & Compiled In-Browser
+                ONNX &rarr; Shannon compiler backend JSON &rarr; local compiler
               </span>
             </div>
 

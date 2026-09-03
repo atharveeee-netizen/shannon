@@ -98,16 +98,16 @@ export const ContextualInspector: React.FC = () => {
 
               <div className="space-y-2 pt-2 border-t border-border text-xs">
                 <div className="flex justify-between py-1 border-b border-border/50">
-                  <span className="text-text-muted">Input shape:</span>
+                  <span className="text-text-muted">Input tensor:</span>
                   <span className="font-mono text-text-primary">{activeNode.in_shape}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
-                  <span className="text-text-muted">Output shape:</span>
+                  <span className="text-text-muted">Output tensor:</span>
                   <span className="font-mono text-text-primary">{activeNode.out_shape}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
-                  <span className="text-text-muted">Precision:</span>
-                  <span className="font-mono text-text-primary">INT8 ({activeNode.bitwidth}-bit)</span>
+                  <span className="text-text-muted">Datatype:</span>
+                  <span className="font-mono text-text-primary">INT8</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border/50">
                   <span className="text-text-muted">MAC operations:</span>
@@ -253,12 +253,9 @@ export const ContextualInspector: React.FC = () => {
       </div>
 
       {/* Bottom Status Bar */}
-      <div className="p-3 border-t border-border bg-surface text-xs text-text-muted flex items-center justify-between">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-success" />
-          <span>Compiler Online</span>
-        </span>
-        <span className="font-mono text-text-secondary">v1.0.0</span>
+      <div className="p-3 border-t border-border bg-surface text-xs text-text-muted flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-success flex-shrink-0" />
+        <span>Online</span>
       </div>
     </aside>
   );

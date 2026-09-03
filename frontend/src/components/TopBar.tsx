@@ -47,9 +47,6 @@ export const TopBar: React.FC = () => {
           <span className="font-semibold text-sm tracking-tight text-text-primary">
             Shannon
           </span>
-          <span className="text-xs text-text-muted hidden md:inline">
-            Silicon Compiler
-          </span>
         </div>
 
         <span className="text-border select-none">/</span>
@@ -129,12 +126,12 @@ export const TopBar: React.FC = () => {
 
         {/* Status */}
         {isTargetInvalidated ? (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-warning/10 border border-warning/30 text-warning text-xs">
+          <div className="flex items-center gap-1.5 text-warning text-xs">
             <AlertCircle className="w-3.5 h-3.5" />
-            <span>Target modified</span>
+            <span>Recompile</span>
           </div>
         ) : compilationResult ? (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-success/10 border border-success/30 text-success text-xs">
+          <div className="flex items-center gap-1.5 text-success text-xs">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Compiled</span>
           </div>

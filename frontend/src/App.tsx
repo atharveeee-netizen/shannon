@@ -9,31 +9,19 @@ import { Bot } from 'lucide-react';
 
 // Project Views
 import { DashboardView } from './components/views/DashboardView';
-import { ModelsView } from './components/views/ModelsView';
-import { InputsView } from './components/views/InputsView';
 import { ImportView } from './components/views/ImportView';
 
 // Compiler Views
 import { GraphView } from './components/views/GraphView';
 import { QuantizationView } from './components/views/QuantizationView';
 import { MemoryArenaView } from './components/views/MemoryArenaView';
-import { OptimizationView } from './components/views/OptimizationView';
 import { CodeGenView } from './components/views/CodeGenView';
-
-// Simulation Views
-import { SignalFlowView } from './components/views/SignalFlowView';
-import { TensorInspectorView } from './components/views/TensorInspectorView';
-import { WaveformsView } from './components/views/WaveformsView';
-import { Fp32VsInt8View } from './components/views/Fp32VsInt8View';
-import { CompareView } from './components/views/CompareView';
 
 // Validation Views
 import { TestbenchView } from './components/views/TestbenchView';
-import { NumericalParityView } from './components/views/NumericalParityView';
 import { BenchmarksView } from './components/views/BenchmarksView';
 
 // Hardware Views
-import { TargetsView } from './components/views/TargetsView';
 import { DeploymentView } from './components/views/DeploymentView';
 
 // System Views
@@ -58,31 +46,19 @@ function StudioContent() {
         <main className="flex-1 overflow-y-auto bg-canvas custom-scrollbar">
           {/* Project */}
           {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab === 'models' && <ModelsView />}
-          {activeTab === 'inputs' && <InputsView />}
           {activeTab === 'import' && <ImportView />}
 
           {/* Compiler */}
           {activeTab === 'graph' && <GraphView />}
           {activeTab === 'quantization' && <QuantizationView />}
           {activeTab === 'memory' && <MemoryArenaView />}
-          {activeTab === 'optimization' && <OptimizationView />}
           {activeTab === 'codegen' && <CodeGenView />}
-
-          {/* Simulation */}
-          {activeTab === 'signalflow' && <SignalFlowView />}
-          {activeTab === 'tensor' && <TensorInspectorView />}
-          {activeTab === 'waveforms' && <WaveformsView />}
-          {activeTab === 'fp32vsint8' && <Fp32VsInt8View />}
-          {activeTab === 'compare' && <CompareView />}
 
           {/* Validation */}
           {activeTab === 'testbench' && <TestbenchView />}
-          {activeTab === 'parity' && <NumericalParityView />}
           {activeTab === 'benchmarks' && <BenchmarksView />}
 
           {/* Hardware */}
-          {activeTab === 'targets' && <TargetsView />}
           {activeTab === 'deployment' && <DeploymentView />}
 
           {/* System */}
@@ -98,10 +74,11 @@ function StudioContent() {
       {!isCopilotOpen && (
         <button
           onClick={() => setIsCopilotOpen(true)}
-          className="fixed bottom-6 right-6 w-12 h-12 bg-primary hover:bg-primary-hover text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-40 cursor-pointer"
+          className="fixed bottom-6 right-6 px-4 py-2 bg-layer-02 hover:bg-layer-03 border border-border text-text-secondary hover:text-text-primary rounded-none shadow-sm flex items-center justify-center transition-colors z-40 cursor-pointer flex-row gap-2"
           title="Open Silicon Copilot"
         >
-          <Bot className="w-5 h-5" />
+          <Bot className="w-4 h-4" />
+          <span className="text-xs font-mono">Ask Shannon</span>
         </button>
       )}
 

@@ -47,7 +47,6 @@ export const Sidebar: React.FC = () => {
       items: [
         { id: 'dashboard', label: 'Overview' },
         { id: 'graph', label: 'Computation graph' },
-        { id: 'models', label: 'Reference models' },
         { id: 'import', label: 'Import model' },
       ],
     },
@@ -56,23 +55,20 @@ export const Sidebar: React.FC = () => {
       items: [
         { id: 'quantization', label: 'Quantization', tag: 'INT8' },
         { id: 'memory', label: 'Memory arena', tag: '0 B' },
-        { id: 'optimization', label: 'MCU optimization' },
         { id: 'codegen', label: 'Generated C', tag: '.h' },
       ],
     },
     {
       title: 'Validate',
       items: [
-        { id: 'parity', label: 'Numerical parity' },
-        { id: 'benchmarks', label: 'Hardware matrix' },
-        { id: 'testbench', label: 'Verification testbench' },
+        { id: 'testbench', label: 'Validation' },
+        { id: 'benchmarks', label: 'Hardware fit' },
       ],
     },
     {
-      title: 'Target',
+      title: 'Deploy',
       items: [
-        { id: 'targets', label: 'Hardware targets' },
-        { id: 'deployment', label: 'Firmware & deployment' },
+        { id: 'deployment', label: 'Firmware' },
       ],
     },
     {
@@ -103,7 +99,7 @@ export const Sidebar: React.FC = () => {
                   Shannon
                 </div>
                 <div className="text-xs text-text-muted truncate">
-                  TinyML Silicon IDE
+                  TinyML Compiler
                 </div>
               </div>
             </div>
@@ -191,7 +187,7 @@ export const Sidebar: React.FC = () => {
             <span className="font-mono text-text-primary font-medium">{selectedHw.sram_kb} KB</span>
           </div>
         ) : (
-          <div className="px-1 py-1.5 rounded-[6px] bg-surface-raised border border-border flex items-center justify-center text-[10px]">
+          <div className="px-1 py-1.5 rounded-[6px] bg-surface-raised border border-border flex items-center justify-center text-[11px]">
             <span className="font-mono text-text-primary font-medium">{selectedHw.sram_kb}k</span>
           </div>
         )}

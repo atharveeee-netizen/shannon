@@ -4,6 +4,8 @@ import { EmptyState } from '../ui/EmptyState';
 import { Panel } from '../ui/Panel';
 import { evaluateMultiTargetBenchmarks, HARDWARE_PROFILES } from '../../compiler/benchmarks';
 import { getPresetGraphById } from '../../compiler/presets';
+import { SpotlightCard } from '../react-bits/SpotlightCard';
+import { HardDrive, CheckCircle2 } from 'lucide-react';
 
 interface MatrixCellDetail {
   modelName: string;
@@ -23,7 +25,7 @@ interface MatrixCellDetail {
 }
 
 export const BenchmarksView: React.FC = () => {
-  const { loadedModel, compilationResult, selectedHw, setHardware } = useCompiler();
+  const { loadedModel, compilationResult, selectedHw, setHardware, hardwareList } = useCompiler();
   const [selectedCell, setSelectedCell] = useState<MatrixCellDetail | null>(null);
 
   if (!loadedModel || !compilationResult) {
@@ -85,8 +87,8 @@ export const BenchmarksView: React.FC = () => {
                 <th className="py-2.5 px-4 font-medium">Domain</th>
                 {HARDWARE_PROFILES.map((hw) => (
                   <th key={hw.id} className="py-2.5 px-4 font-medium text-center">
-                    <div>{hw.name}</div>
-                    <div className="text-xs text-text-muted font-normal">{hw.clock_mhz} MHz</div>
+                    <div className="font-sans">{hw.name}</div>
+                    <div className="font-mono text-xs text-text-muted font-normal">{hw.clock_mhz} MHz</div>
                   </th>
                 ))}
               </tr>
@@ -138,16 +140,18 @@ export const BenchmarksView: React.FC = () => {
                               simd: hw.simd,
                             })
                           }
-                          className={`px-3 py-1.5 rounded-[6px] border text-xs font-medium transition-colors cursor-pointer w-24 flex flex-col items-center mx-auto ${
+                          className={`px-2 py-2 text-xs font-mono transition-colors cursor-pointer w-full flex flex-col items-center mx-auto border-b-2 ${
                             isCellActive
-                              ? 'border-primary bg-primary text-white'
-                              : fits
-                              ? 'bg-success/10 border-success/30 text-success hover:bg-success/20'
-                              : 'bg-danger/10 border-danger/30 text-danger hover:bg-danger/20'
+                              ? 'border-primary bg-surface-raised'
+                              : 'border-transparent hover:bg-surface-raised'
                           }`}
                         >
-                          <span>{fits ? 'PASS' : 'FAIL'}</span>
-                          <span className={`text-xs ${isCellActive ? 'text-white/80' : 'text-text-muted'}`}>
+                          <span className={`font-semibold tracking-wide ${
+                            fits ? 'text-success' : 'text-danger'
+                          }`}>
+                            {fits ? '✓ PASS' : '✗ FAIL'}
+                          </span>
+                          <span className="text-text-muted text-[11px] mt-0.5">
                             {estLatency} ms
                           </span>
                         </button>
@@ -229,6 +233,67 @@ export const BenchmarksView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 3. Hardware Catalog */}
+      <div className="pt-8">
+        <div className="flex items-center gap-2 text-xs font-mono text-primary font-semibold border-b border-border pb-2 mb-4">
+          <HardDrive className="w-4 h-4" />
+          <span>SUPPORTED TARGET HARDWARE</span>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {hardwareList.map((hw) => {
+            const isSelected = selectedHw.id === hw.id;
+            return (
+              <SpotlightCard
+                key={hw.id}
+                className={`p-5 space-y-4 ${
+                  isSelected ? 'ring-2 ring-primary border-primary bg-surface-raised/40' : ''
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-text-primary font-sans">{hw.name}</span>
+                  {isSelected ? (
+                    <span className="text-xs text-success font-mono flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3" /> Active
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => setHardware(hw.id)}
+                      className="px-2.5 py-1 rounded-[6px] bg-surface border border-border text-text-primary hover:border-primary text-xs font-medium transition-colors cursor-pointer"
+                    >
+                      Select Target
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-2 font-mono text-xs text-text-secondary">
+                  <div className="flex justify-between py-1 border-b border-border/50">
+                    <span>Architecture:</span>
+                    <span className="text-text-primary font-medium">{hw.arch}</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-border/50">
+                    <span>Clock Frequency:</span>
+                    <span className="text-primary font-bold">{hw.clock_mhz} MHz</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-border/50">
+                    <span>SRAM Pool:</span>
+                    <span className="text-text-primary font-medium">{hw.sram_kb} KB</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-border/50">
+                    <span>Flash Storage:</span>
+                    <span className="text-text-primary">{hw.flash_mb} MB</span>
+                  </div>
+                  <div className="flex justify-between py-1">
+                    <span>SIMD Acceleration:</span>
+                    <span className="text-text-primary">{hw.simd}</span>
+                  </div>
+                </div>
+              </SpotlightCard>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

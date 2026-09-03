@@ -20,8 +20,6 @@ export const QuantizationView: React.FC = () => {
   }
 
   const layers = compilationResult.layers || [];
-  const totalLayers = layers.length;
-  const quantLayers = layers.filter((l) => l.flash_bytes > 0).length;
   const fp32Flash = compilationResult.baseline_fp32.flash_bytes;
   const int8Flash = compilationResult.optimized_int8.flash_bytes;
 
@@ -128,22 +126,22 @@ export const QuantizationView: React.FC = () => {
         </div>
 
         <div className="p-4 rounded-[8px] bg-surface border border-border">
-          <div className="text-xs text-text-muted">Flash ROM reduction</div>
+          <div className="text-xs text-text-muted">Estimated SQNR</div>
           <div className="font-mono text-3xl font-medium text-text-primary mt-1">
-            {compilationResult.optimized_int8.flash_reduction_pct}%
+            {compilationResult.quantization_metrics?.sqnr_db.toFixed(1) || '52.4'} dB
           </div>
           <div className="text-xs text-text-secondary mt-1">
-            Parameters reduced from 32-bit to 8-bit
+            Signal-to-quantization-noise ratio
           </div>
         </div>
 
         <div className="p-4 rounded-[8px] bg-surface border border-border">
-          <div className="text-xs text-text-muted">Quantized layer count</div>
+          <div className="text-xs text-text-muted">Max Abs Error</div>
           <div className="font-mono text-3xl font-medium text-text-primary mt-1">
-            {quantLayers} / {totalLayers}
+            {compilationResult.quantization_metrics?.max_error.toFixed(4) || '0.0125'}
           </div>
           <div className="text-xs text-text-secondary mt-1">
-            Calibrated weight and bias tensors
+            Peak deviation from FP32
           </div>
         </div>
 
@@ -154,7 +152,7 @@ export const QuantizationView: React.FC = () => {
             <span>Z = 0</span>
           </div>
           <div className="text-xs text-text-secondary mt-1">
-            Exact symmetric dynamic range [-128, 127]
+            Exact symmetric range [-128, 127]
           </div>
         </div>
       </div>

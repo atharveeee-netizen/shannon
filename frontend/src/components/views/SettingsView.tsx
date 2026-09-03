@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Settings, Moon, Sun, CheckCircle2 } from 'lucide-react';
 import { useCompiler } from '../../context/CompilerContext';
 import { Panel } from '../ui/Panel';
 
 export const SettingsView: React.FC = () => {
   const { isDarkMode, setIsDarkMode } = useCompiler();
-
-  const [alignment, setAlignment] = useState<number>(4);
-  const [baseAddressHex, setBaseAddressHex] = useState<string>('0x20000000');
-  const [quantMode, setQuantMode] = useState<'symmetric' | 'asymmetric'>('symmetric');
 
   return (
     <div className="p-6 space-y-6 w-full max-w-none">
@@ -19,68 +15,14 @@ export const SettingsView: React.FC = () => {
             <Settings className="w-4 h-4" />
             <span>STUDIO & COMPILER CONFIGURATION</span>
           </div>
-          <h1 className="text-xl font-bold text-text-primary tracking-tight">Compiler Settings</h1>
+          <h1 className="text-xl font-bold text-text-primary tracking-tight">Studio Settings</h1>
           <p className="text-xs text-text-secondary max-w-4xl">
-            Tune memory arena alignment, physical base section offsets, and quantization pass parameters.
+            Configure IDE appearance and developer environment settings.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Compiler Flags */}
-        <Panel title="Memory Arena Allocator Flags" subtitle="Hardware memory layout parameters">
-          <div className="space-y-4 text-xs font-mono">
-            <div className="space-y-1.5">
-              <label className="text-text-secondary block font-medium">Tensor Arena Memory Alignment:</label>
-              <select
-                value={alignment}
-                onChange={(e) => setAlignment(Number(e.target.value))}
-                className="w-full bg-surface-raised border border-border rounded-md p-2.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                <option value={4}>4-Byte Word Alignment (32-bit ARM Cortex / Xtensa Native)</option>
-                <option value={8}>8-Byte Double Word Alignment (64-bit / DMA Native)</option>
-                <option value={16}>16-Byte Quad Word (Vector SIMD)</option>
-              </select>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-text-secondary block font-medium">Physical Base Address Offset (Hex):</label>
-              <input
-                type="text"
-                value={baseAddressHex}
-                onChange={(e) => setBaseAddressHex(e.target.value)}
-                className="w-full bg-surface-raised border border-border rounded-md p-2.5 text-text-primary font-mono focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-text-secondary block font-medium">Quantization Calibration Scheme:</label>
-              <div className="grid grid-cols-2 gap-2 font-sans">
-                <button
-                  onClick={() => setQuantMode('symmetric')}
-                  className={`p-2.5 rounded-md border text-center text-xs transition-all cursor-pointer ${
-                    quantMode === 'symmetric'
-                      ? 'bg-primary/15 border-primary text-primary font-bold'
-                      : 'bg-surface-raised border-border text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  Symmetric (Z = 0)
-                </button>
-                <button
-                  onClick={() => setQuantMode('asymmetric')}
-                  className={`p-2.5 rounded-md border text-center text-xs transition-all cursor-pointer ${
-                    quantMode === 'asymmetric'
-                      ? 'bg-primary/15 border-primary text-primary font-bold'
-                      : 'bg-surface-raised border-border text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  Asymmetric (Z &ne; 0)
-                </button>
-              </div>
-            </div>
-          </div>
-        </Panel>
-
         {/* IDE Preferences */}
         <Panel title="IDE Appearance & Environment" subtitle="Theme and workstation settings">
           <div className="space-y-4 text-xs font-mono">

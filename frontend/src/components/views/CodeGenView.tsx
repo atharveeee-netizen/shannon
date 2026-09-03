@@ -182,7 +182,7 @@ export const CodeGenView: React.FC = () => {
           <div className="flex items-center gap-2">
             <span>ISO C99 / C++11 STANDALONE EMISSION</span>
             {isEditMode && (
-              <span className="text-cyan-400 font-medium">(Interactive Editor Active - edits will be exported)</span>
+              <span className="text-text-muted">(Edit mode — changes will be exported)</span>
             )}
           </div>
           <span>{lines.length} LINES | {(userCode.length / 1024).toFixed(1)} KB SOURCE</span>
@@ -234,16 +234,16 @@ export const CodeGenView: React.FC = () => {
         )}
 
         {/* 3. Bottom Status Bar */}
-        <div className="px-4 py-2.5 border-t border-border bg-surface-raised/60 flex flex-wrap items-center justify-between text-xs text-text-secondary gap-2 flex-shrink-0">
+        <div className="px-4 py-2.5 border-t border-border bg-surface flex flex-wrap items-center justify-between text-xs text-text-muted gap-2 flex-shrink-0 font-mono">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-emerald-400 font-medium">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Static Memory Arena (0 B Dynamic Allocation)</span>
+            <span className="flex items-center gap-1 text-success">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>0 B dynamic</span>
             </span>
-            <span>Static Arena: <strong className="text-cyan-400 font-mono">{compilationResult.optimized_int8.peak_sram_bytes} Bytes</strong></span>
-            <span>Flash Weights: <strong className="text-text-primary font-mono">{compilationResult.optimized_int8.flash_bytes} Bytes</strong></span>
+            <span>Arena: <strong className="text-text-primary">{(compilationResult.optimized_int8.peak_sram_bytes / 1024).toFixed(2)} KB</strong></span>
+            <span>Flash: <strong className="text-text-primary">{(compilationResult.optimized_int8.flash_bytes / 1024).toFixed(1)} KB</strong></span>
           </div>
-          <span className="font-mono text-[11px] text-text-muted">Target: {compilationResult.target_hardware}</span>
+          <span>{compilationResult.target_hardware}</span>
         </div>
       </div>
     </div>

@@ -41,9 +41,9 @@ export const MemoryArenaView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-[6px] bg-success/10 border border-success/30 text-success text-xs font-medium">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Static BSS Arena (0 B Dynamic Allocation)</span>
+        <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+          <ShieldCheck className="w-3.5 h-3.5 text-success" />
+          <span>Static BSS arena · 0 B dynamic allocation</span>
         </div>
       </div>
 
@@ -315,11 +315,7 @@ export const MemoryArenaView: React.FC = () => {
                   <td className="py-2.5 px-4 text-text-secondary">0x{b.end_bytes.toString(16).toUpperCase().padStart(4, '0')}</td>
                   <td className="py-2.5 px-4 text-text-primary font-medium">{b.hex_address}</td>
                   <td className="py-2.5 px-4 text-text-primary">{b.size_bytes} B</td>
-                  <td className="py-2.5 px-4">
-                    <span className="px-2 py-0.5 rounded-[4px] bg-success/10 border border-success/30 text-success text-xs font-medium">
-                      0-Collision
-                    </span>
-                  </td>
+                  <td className="py-2.5 px-4 text-success text-xs font-mono">✓ 0-Collision</td>
                 </tr>
               ))}
             </tbody>
