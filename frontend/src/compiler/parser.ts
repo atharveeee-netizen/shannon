@@ -1,5 +1,4 @@
 import { ModelGraph, Tensor, Layer } from './ir';
-import { getKeywordSpottingModel, getVisionClassifierModel, getAnomalyDetectionModel } from './presets';
 
 export class ModelParser {
   /**
@@ -23,6 +22,10 @@ export class ModelParser {
 
     // 2. Parse Layers
     const layersData: any[] = Array.isArray(data.layers) ? data.layers : [];
+    if (layersData.length === 0) {
+      throw new Error(`Model '${name}' contains no layers. Provide a valid 'layers' array.`);
+    }
+
     for (let idx = 0; idx < layersData.length; idx++) {
       const lInfo = layersData[idx];
       const layerId = lInfo.layer_id || lInfo.name || `layer_${idx}`;
@@ -74,13 +77,14 @@ export class ModelParser {
   }
 
   /**
-   * Parses an uploaded file (JSON text or simulated ONNX binary structure) into a Shannon ModelGraph.
+   * Parses an uploaded model file into a Shannon ModelGraph.
+   * Strictly enforces explicit errors - never silently substitutes another model based on filename.
    */
   static async parseFile(file: File): Promise<ModelGraph> {
-    const text = await file.text();
     const fileName = file.name.toLowerCase();
 
     if (fileName.endsWith('.json')) {
+      const text = await file.text();
       try {
         const parsed = JSON.parse(text);
         return ModelParser.parseDict(parsed);
@@ -88,28 +92,15 @@ export class ModelParser {
         throw new Error(`JSON Syntax Error in ${file.name}: ${err.message}`);
       }
     } else if (fileName.endsWith('.onnx')) {
-      // Create a dedicated Custom Model Graph representing the uploaded ONNX file topology
-      const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_]/g, '_');
-
-      // Parse simulated ONNX nodes based on filename hints or default depthwise topology
-      const isVision = fileName.includes('vision') || fileName.includes('yolo') || fileName.includes('mobilenet') || fileName.includes('image');
-      const isAudio = fileName.includes('audio') || fileName.includes('speech') || fileName.includes('kws') || fileName.includes('voice');
-
-      if (isVision) {
-        const base = getVisionClassifierModel();
-        base.name = `ONNX_${cleanName}`;
-        return base;
-      } else if (isAudio) {
-        const base = getKeywordSpottingModel();
-        base.name = `ONNX_${cleanName}`;
-        return base;
-      } else {
-        const base = getAnomalyDetectionModel();
-        base.name = `ONNX_${cleanName}`;
-        return base;
-      }
+      // In the browser client without server ONNX protobuf runtime, never silently fall back
+      // to another model. Always raise an explicit descriptive error.
+      throw new Error(
+        `Unsupported ONNX model format in '${file.name}'. Client-side parser requires Shannon IR JSON. Please export your model using the Shannon Python exporter (compiler/api.py) or upload a Shannon JSON graph.`
+      );
     } else {
-      throw new Error(`Unsupported file extension for '${file.name}'. Please upload .json or .onnx.`);
+      throw new Error(
+        `Unsupported file format '${file.name}'. Please upload a Shannon IR model JSON file (.json).`
+      );
     }
   }
 }

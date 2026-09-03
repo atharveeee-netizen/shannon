@@ -185,7 +185,7 @@ def train_vision():
 
     with open(header_path, "w") as f:
         f.write("/* ===========================================================================\n")
-        f.write(" * SHANNON AUTONOMOUS COMPILER — PRODUCTION MICROVISION FIRMWARE HEADER\n")
+        f.write(" * SHANNON AUTONOMOUS COMPILER -  PRODUCTION MICROVISION FIRMWARE HEADER\n")
         f.write(f" * Target: MobileNet-Tiny Grayscale 48x48 Person Detection\n")
         f.write(f" * Validation Accuracy: {best_val_acc:.2f}%\n")
         f.write(f" * Memory: Flash ROM = {total_flash_bytes} Bytes | Static SRAM Arena = {peak_sram_bytes} Bytes\n")

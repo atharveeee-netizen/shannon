@@ -149,10 +149,13 @@ class ShannonAgent:
         hw = self.target_hw
         hw_data = self.hw_info
         ctx = context or {}
+        flash_b = ctx.get("flash_bytes")
+        sram_b = ctx.get("sram_bytes")
+        macs = ctx.get("total_macs")
 
-        flash_b = ctx.get("flash_bytes", 24576)
-        sram_b = ctx.get("sram_bytes", 1120)
-        macs = ctx.get("total_macs", 46368)
+        if flash_b is None or sram_b is None:
+            return f"Compile the model to generate optimization insights for **{hw}**. Real compilation telemetry is required for bottleneck auditing and memory analysis."
+
         sram_pct = (sram_b / (hw_data["sram_kb"] * 1024)) * 100.0
 
         # 1. Live LLM Generation if configured

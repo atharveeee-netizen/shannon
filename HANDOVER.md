@@ -1,6 +1,6 @@
-# 📜 Shannon AI Studio — Master Project Handover Document
+# 📜 Shannon AI Studio -  Master Project Handover Document
 ### **Autonomous TinyML Compiler & Silicon Optimization Studio**
-*Target: AI Builders Hackathon 2026 — Best SaaS Product ($4,000 Cash Prize)*
+*Target: AI Builders Hackathon 2026 -  Best SaaS Product ($4,000 Cash Prize)*
 
 ---
 
@@ -94,17 +94,17 @@ compiler/
 ## 🎛️ 5. Multi-Microcontroller Production Firmware Kits ([firmware/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware))
 
 1. **ESP32 & ESP32-CAM ([firmware/esp32_arduino/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware/esp32_arduino)):**
-   * `shannon_esp32_inmp441_audio.ino` — I2S DMA microphone audio sampling $\to$ MFCC $\to$ wake-word inference.
-   * `shannon_esp32_cam_vision.ino` — OV2640 camera frame capture $\to$ 48x48 downsampling $\to$ person detection.
-   * `shannon_esp32_mpu6050_vibration.ino` — MPU6050 accelerometer I2C reading $\to$ 128-FFT anomaly autoencoder.
+   * `shannon_esp32_inmp441_audio.ino` -  I2S DMA microphone audio sampling $\to$ MFCC $\to$ wake-word inference.
+   * `shannon_esp32_cam_vision.ino` -  OV2640 camera frame capture $\to$ 48x48 downsampling $\to$ person detection.
+   * `shannon_esp32_mpu6050_vibration.ino` -  MPU6050 accelerometer I2C reading $\to$ 128-FFT anomaly autoencoder.
 2. **Universal Arduino ([firmware/arduino_universal/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware/arduino_universal)):**
-   * `arduino_shannon_kws_demo.ino` — Compatible with Uno R4, Nano ESP32, Portenta H7, and Mega.
+   * `arduino_shannon_kws_demo.ino` -  Compatible with Uno R4, Nano ESP32, Portenta H7, and Mega.
 3. **Raspberry Pi Pico RP2040 ([firmware/rp2040_pico/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware/rp2040_pico)):**
-   * `main.c` & `CMakeLists.txt` — Bare-metal C-SDK application with 0-malloc inference.
+   * `main.c` & `CMakeLists.txt` -  Bare-metal C-SDK application with 0-malloc inference.
 4. **Seeed Xiao BLE Sense / Nordic nRF52840 ([firmware/nrf52_xiao/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware/nrf52_xiao)):**
-   * `xiao_ble_sense_shannon.ino` — Low-power Bluetooth LE sensor inference.
+   * `xiao_ble_sense_shannon.ino` -  Low-power Bluetooth LE sensor inference.
 5. **Teensy 4.1 ([firmware/teensy41/](file:///C:/Users/25beevdt047/.gemini/antigravity-ide/scratch/shannon/firmware/teensy41)):**
-   * `teensy_shannon_benchmark.ino` — 600MHz ARM Cortex-M7 DWT hardware cycle benchmark.
+   * `teensy_shannon_benchmark.ino` -  600MHz ARM Cortex-M7 DWT hardware cycle benchmark.
 
 ---
 

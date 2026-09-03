@@ -95,7 +95,7 @@ def run_research():
 
     # Generate Markdown Compendium
     with open(OUTPUT_DOC, "w", encoding="utf-8") as f:
-        f.write("# 📚 Shannon AI Studio — 250+ Research Papers Compendium\n")
+        f.write("# 📚 Shannon AI Studio -  250+ Research Papers Compendium\n")
         f.write("### **State-of-the-Art Literature Survey & Architectural Adaptation Analysis**\n")
         f.write("*Compiled for AI Builders Hackathon 2026 judging panel and enterprise technical diligence.*\n\n")
         f.write("---\n\n")

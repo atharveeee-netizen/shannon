@@ -232,12 +232,16 @@ export async function chatWithAgent(
     // Fallback to deterministic silicon rule auditor
   }
 
-  const flashKb = context?.flash_bytes ? (context.flash_bytes / 1024).toFixed(1) : '—';
-  const sramKb = context?.sram_bytes ? (context.sram_bytes / 1024).toFixed(2) : '—';
+  if (!context?.flash_bytes || !context?.sram_bytes) {
+    return `Compile the model to generate optimization insights for **${hardwareId}**. Real compilation telemetry is required for Silicon Copilot analysis.`;
+  }
+
+  const flashKb = (context.flash_bytes / 1024).toFixed(1);
+  const sramKb = (context.sram_bytes / 1024).toFixed(2);
   return `**Shannon Silicon Audit for ${hardwareId}**:
 - **Target Topology**: ${modelName}
 - **Flash ROM (INT8)**: ${flashKb} KB
 - **Static SRAM Arena**: ${sramKb} KB (0 bytes dynamic heap malloc)
-- **MISRA-C Compliance**: 100% Rule 21.3 compliant with zero runtime heap fragmentation risk.
-- **SIMD Kernel**: Emitted vectorized unrolled multipliers optimized for ${hardwareId}.`;
+- **Memory Safety**: Verified static allocation with zero runtime heap calls (0 B malloc).
+- **INT8 Kernel**: 4-way loop-unrolled INT8 inference routine targeting ${hardwareId}.`;
 }

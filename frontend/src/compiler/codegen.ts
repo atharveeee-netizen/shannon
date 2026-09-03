@@ -21,7 +21,7 @@ export class CCodeGenerator {
 
     return `/*
  * =========================================================================================
- * SHANNON AUTONOMOUS TINYML COMPILER — SILICON C CODE EMISSION
+ * SHANNON AUTONOMOUS TINYML COMPILER - SILICON C CODE EMISSION
  * Standard: MISRA-C:2012 Rule 21.3 Certified (0 Dynamic Heap Malloc / Fixed Static Arena)
  * Model Graph: ${graph.name}
  * Target Silicon: ${this.targetMcu}

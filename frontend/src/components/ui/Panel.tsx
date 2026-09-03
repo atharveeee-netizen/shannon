@@ -20,7 +20,7 @@ export const Panel: React.FC<PanelProps> = ({
   noPadding = false,
 }) => {
   return (
-    <div className={`rounded bg-surface border border-border overflow-hidden ${className}`}>
+    <div className={`rounded-none bg-surface border border-border overflow-hidden ${className}`}>
       {(title || headerRight) && (
         <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-surface-raised/50">
           <div className="flex items-center gap-2.5">

@@ -1,158 +1,167 @@
 <div align="center">
 
-# ⚡ Shannon AI Studio
-### **Autonomous TinyML Compiler & Silicon Optimization Studio**
-*Compressing deep learning intelligence into micro-scale silicon with zero dynamic malloc.*
+# Shannon TinyML Compiler & Silicon Studio
+### Autonomous Static Compiler for Constrained Microcontrollers
+*Zero dynamic memory allocation (0 B malloc), INT8 quantization, and SRAM interval arena planning.*
 
-[![Hackathon: DevNetwork API, Cloud & AI 2026](https://img.shields.io/badge/Hackathon-DevNetwork%20API%20Cloud%20AI%202026-blueviolet.svg?style=for-the-badge)](https://devpost.com/submit-to/29242-devnetwork-api-cloud-ai-hackathon-2026)
-[![Target Track: AI Developer Tools](https://img.shields.io/badge/Track-AI%20Developer%20Tools%20%26%20APIs-00FFA3.svg?style=for-the-badge)](https://devpost.com/submit-to/29242-devnetwork-api-cloud-ai-hackathon-2026)
-[![MISRA-C:2012](https://img.shields.io/badge/Compliance-MISRA--C%3A2012%20Rule%2021.3-0EA5E9.svg?style=for-the-badge)](https://www.misra.org.uk/)
+[![Compiler Tests](https://img.shields.io/badge/Pytest-14%20Passed-emerald.svg)](compiler/)
+[![Static Safety](https://img.shields.io/badge/Safety-0%20B%20Heap%20(No%20Malloc)-0f62fe.svg)](frontend/src/compiler/)
+[![Design System](https://img.shields.io/badge/UI-IBM%20Carbon%200px%20Flat-black.svg)](frontend/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
-[![React 18](https://img.shields.io/badge/React-18-cyan.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.0-purple.svg)](https://vitejs.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-teal.svg)](https://fastapi.tiangolo.com/)
-
-[**10-Slide Pitch Deck**](docs/DECK_OUTLINE.md) • [**3-Min Demo Video Script**](docs/DEMO_SCRIPT.md) • [**Model Zoo & Training**](compiler/training/) • [**Compiler Tests**](compiler/test_compiler.py) • [**Firmware Starters**](firmware/)
+[**Live Compiler Studio**](https://atharveeee-netizen.github.io/shannon/) • [**Regression Tests**](compiler/test_regression.py) • [**Firmware Starters**](firmware/) • [**Architecture Docs**](docs/ARCHITECTURE.md)
 
 </div>
 
 ---
 
-## 🏆 Official Hackathon Submission Details
+## 3-Minute Judge Evaluation Guide
 
-| Parameter | Details |
-| :--- | :--- |
-| **Hackathon Name** | **DevNetwork [API + Cloud + AI] Hackathon 2026** (Co-located with API World 2026) |
-| **Theme** | *API-First Systems, Cloud & Edge Infrastructure, and Autonomous AI Agents* |
-| **Target Track & Awards** | 🥇 **Overall Winner / Best Developer Tool & API**<br>🚀 **Best Use of AI / Autonomous Optimization Engine** |
-| **Primary Category** | **AI Developer Tools**, **API Platforms**, **TinyML / Edge AI** |
-| **Team** | **Team Shannon** ([@atharveeee-netizen](https://github.com/atharveeee-netizen)) |
-| **Live App** | [https://atharveeee-netizen.github.io/shannon/](https://atharveeee-netizen.github.io/shannon/) |
+If you are evaluating Shannon in 3 to 5 minutes, follow these exact steps:
+
+1. **Open the Live Web Application:**  
+   Visit [https://atharveeee-netizen.github.io/shannon/](https://atharveeee-netizen.github.io/shannon/).
+2. **Review the Executive Matrix:**  
+   The primary dashboard immediately answers the 8 core compiler questions:
+   - **Model**: Neural network topology (e.g. Keyword Spotting, MicroVision, Anomaly Autoencoder).
+   - **Target**: Selected microcontroller (ESP32-S3, STM32H7, RP2040, NRF52840).
+   - **Precision**: Symmetric signed INT8.
+   - **Status**: Compilation state (Compiled / Ready).
+   - **SRAM**: Exact peak activation arena bytes vs target chip SRAM.
+   - **Flash**: Quantized weights array size vs target chip Flash.
+   - **Heap**: Formally verified **0 B** dynamic allocation.
+   - **Latency**: Static cycle estimate based on clock MHz and MAC pipeline.
+3. **Inspect the Physical Memory Hierarchy:**  
+   Scroll down to view the **SRAM Memory Arena**:
+   - `FLASH`: Read-only weight constants stored in microsecond ROM.
+   - `SRAM`: Input buffer + lifetime-reused activation arena + output buffer.
+   - `HEAP`: 0 B (No `malloc`, `calloc`, `realloc`, or `free`).
+4. **Inspect & Edit the Generated C Header:**  
+   Click **Code Generation** in the sidebar to view the emitted `shannon_model.h`. Edit lines in real time to verify the interactive workstation.
+5. **Run Backend Regression Tests:**  
+   Run `python -m pytest compiler/ -v` to verify model differences, collision freedom, zero dynamic allocations, and bit-exact determinism.
 
 ---
 
-## 🎯 The Problem: "The Edge AI Wall"
-Modern deep learning models are multi-gigabyte structures requiring power-hungry cloud GPUs. Yet, over 30 billion edge devices (smart health monitors, industrial vibration sensors, security cameras, and drones) run on **$2 to $5 microcontrollers with less than 1 MB of RAM**.
+## What is Shannon?
 
-Existing runtime frameworks like TensorFlow Lite Micro (TFLM) or ONNX Runtime introduce **40–80 KB of engine overhead** and risk runtime heap fragmentation (`malloc` crashes). Manually writing bare-metal C++ firmware and quantizing weights takes embedded engineering teams **3 to 6 weeks of tedious manual labor per model**.
+Shannon is a specialized TinyML static compiler designed for bare-metal microcontrollers with severe memory constraints (tens of kilobytes of SRAM).
 
----
+Existing ML runtimes like TensorFlow Lite Micro or ONNX Runtime introduce 40 to 80 KB of runtime interpreter overhead and rely on manual arena sizing. Shannon eliminates runtime interpreters altogether by compiling neural networks directly into **standalone, static C headers** with pre-planned, collision-free memory addresses.
 
-## 🚀 The Solution: Shannon AI Studio
-**Shannon** is an autonomous SaaS optimization studio and compiler that bridges deep learning with bare-metal microchips:
+### Core Technical Pillars
 
-```mermaid
-flowchart LR
-    A[1. Upload Model<br>ONNX / PyTorch] --> B[2. Symmetric INT8 PTQ<br>75-90% Flash Savings]
-    B --> C[3. Tensor Arena Planner<br>0-Malloc Interval Graph]
-    C --> D[4. Standalone C/C++ Emitter<br>Vectorized SIMD Kernels]
-    D --> E[5. Flash to Hardware<br>ESP32 / Arduino / Pico / STM32]
+```text
+MODEL GRAPH (ONNX / Shannon IR)
+       │
+       ▼
+SYMMETRIC INT8 QUANTIZATION  ──> S = max(|W|) / 127, Z = 0
+       │
+       ▼
+GREEDY INTERVAL GRAPH COLORING ──> Overlapping lifetimes reuse identical SRAM offsets
+       │
+       ▼
+HARDWARE FIT VERIFICATION    ──> Static Flash & SRAM boundary checks
+       │
+       ▼
+STANDALONE C HEADER EMISSION ──> 4-way loop unrolling, 0 B dynamic heap allocation
 ```
 
-1. **1-Click Model Ingestion:** Upload any standard ONNX/JSON model or select from our pre-trained TinyML model zoo.
-2. **Symmetric INT8 Quantization:** Automatically scales and quantizes weights with zero overflow ($S = \frac{\max(|W|)}{127}$, $Z = 0$).
-3. **Zero-Malloc Tensor Arena:** Maps intermediate activations to a single contiguous memory arena in SRAM using greedy interval graph coloring. Formally verified for **MISRA-C:2012 Rule 21.3 compliance ($0\text{ Bytes dynamic malloc}$)**.
-4. **Standalone C/C++ Header Export:** Emits ready-to-flash, self-contained headers (`shannon_model.h`) with 4-way SIMD loop unrolling.
-5. **Multi-MCU Production Firmware:** Complete, tested starter sketches for ESP32, Arduino Uno R4/Nano ESP32, Raspberry Pi Pico RP2040, Nordic nRF52840, and Teensy 4.1.
+1. **Symmetric INT8 Quantization:**  
+   Quantizes weights and activation scaling factors symmetrically ($S = \max(|W|) / 127, Z = 0$). Computes exact mathematical metrics: Mean Squared Error (MSE), Signal-to-Quantization-Noise Ratio (SQNR in dB), and vector cosine similarity.
+2. **SRAM Memory Arena (Hero Feature):**  
+   Analyzes tensor lifetimes across sequential layer executions. Uses greedy interval graph coloring to assign overlapping activation buffers to shared physical memory offsets, ensuring peak SRAM usage is minimized with mathematical proof of zero collisions.
+3. **Zero Dynamic Allocation (0 B Malloc):**  
+   All tensors are mapped to either static Flash constants or a fixed BSS segment activation buffer (`static uint8_t shannon_tensor_arena[ARENA_SIZE] __attribute__((aligned(4)))`). No `malloc`, `calloc`, `realloc`, or `free` calls exist in the emitted firmware.
+4. **Truthful Telemetry:**  
+   Estimated latencies are clearly identified as static estimates based on core clock frequencies and multiply-accumulate operations, not physical silicon measurements.
 
 ---
 
-## 🧠 Production Model Zoo Benchmarks (10-Epoch Plateau Verified)
+## What is Real vs What is Planned
 
-All models in the Shannon Model Zoo are trained with PyTorch using AdamW and a strict **10-epoch sliding window plateau convergence stopping rule** ($|\Delta\text{Val Loss}| \le 0.002$):
+To maintain absolute technical truthfulness:
 
-| Benchmark Model | Domain | Target Silicon | Validation Metric | INT8 Flash | Flash Savings | Peak SRAM Arena | Total MACs |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Audio Keyword Spotter** | Voice Wake-Word | ESP32-S3 | **96.6% Acc (12 Classes)** | 24.0 KB | **74.5% (4x)** | **1.12 KB** | 46,368 |
-| **MicroVision Person** | Edge Vision | STM32H7 | **96.4% Acc (48x48)** | 18.1 KB | **75.0% (4x)** | **18.0 KB** | 239,680 |
-| **Vibration Autoencoder** | Industrial IoT | RP2040 Pico | **MSE 0.000133 (Normal)** | 19.5 KB | **72.9%** | **0.19 KB** | 18,432 |
+| Feature | Status | Implementation Details |
+| :--- | :--- | :--- |
+| **Symmetric INT8 Quantization** | **Real** | Implemented in `compiler/engine/quantizer.py` and `frontend/src/compiler/quantizer.ts`. Computes real MSE, SQNR, and cosine similarity. |
+| **SRAM Arena Lifetime Planning** | **Real** | Implemented in `compiler/engine/memory_planner.py` and `frontend/src/compiler/memory_planner.ts`. Verified collision-free. |
+| **Zero-Malloc C Code Emission** | **Real** | Emits complete, standalone C headers with 4-way loop-unrolled INT8 inference loops. |
+| **Automated Regression Suite** | **Real** | 14 pytest unit and regression tests in `compiler/test_compiler.py` and `compiler/test_regression.py`. |
+| **Client-Side Workstation** | **Real** | Standalone browser compiler runs with zero cloud backend required, using identical IR algorithms. |
+| **Live Silicon Telemetry** | **Estimated** | Latency and energy numbers are static approximations calculated from hardware datasheets, not physical oscilloscope traces. |
+| **Streaming Sensor Signals** | **Simulated** | Waveforms located under the Experimental tab are synthetic signal simulations for offline testing. |
 
 ---
 
-## 🏗️ Repository Architecture
+## Repository Structure
 
 ```text
 shannon/
-├── compiler/                         # Python Core Optimization Engine & API
+├── compiler/                         # Python Compiler Core & Test Suite
 │   ├── engine/
-│   │   ├── ir.py                     # Shannon Intermediate Representation
-│   │   ├── parser.py                 # ONNX / JSON Graph Parser
-│   │   ├── quantizer.py              # Post-Training INT8/INT4 Quantization
-│   │   ├── memory_planner.py         # Peak SRAM Arena Allocator & Collision Proof
-│   │   ├── codegen.py                # Standalone Zero-Dependency C/C++ Header Emitter
-│   │   └── presets.py                # Converged Benchmark Graphs (KWS, Vision, Anomaly)
-│   ├── training/                     # PyTorch Real Training & Parity Evaluation
-│   │   ├── train_real_kws.py         # Google Speech Commands 12-Class Trainer
-│   │   ├── train_real_vision.py      # MicroVision MobileNet-Tiny 48x48 Trainer
-│   │   ├── train_real_anomaly.py     # Bearing Vibration Defect Autoencoder Trainer
-│   │   └── evaluate_all.py           # Benchmark Parity & Verification Suite
-│   ├── models/                       # Generated Production C Headers
-│   │   ├── shannon_kws_model.h       # Quantized Audio Model Header
-│   │   ├── shannon_vision_model.h    # Quantized Vision Model Header
-│   │   └── shannon_anomaly_model.h   # Quantized Anomaly Autoencoder Header
+│   │   ├── ir.py                     # Computational Graph & Tensor IR
+│   │   ├── parser.py                 # Shannon IR & Dictionary Parser with Schema Validation
+│   │   ├── quantizer.py              # Symmetric INT8 Post-Training Quantizer
+│   │   ├── memory_planner.py         # Greedy Interval Graph Coloring Arena Allocator
+│   │   ├── codegen.py                # Standalone Static C Header Emitter
+│   │   └── presets.py                # Reference Benchmark Topologies (KWS, Vision, Anomaly)
 │   ├── agent/
-│   │   └── optimizer_agent.py        # Silicon Copilot Reasoner (Gemini LLM + Telemetry)
-│   ├── api.py                        # Production FastAPI REST Backend
-│   ├── Dockerfile                    # Containerized Backend Deployment
-│   ├── render.yaml                   # Render Cloud Deployment Blueprint
-│   ├── requirements.txt              # Production Python Dependencies
-│   └── test_compiler.py              # Comprehensive Unit Test Suite (8/8 Passed)
+│   │   └── optimizer_agent.py        # Silicon Copilot Reasoner (Telemetry Grounded)
+│   ├── api.py                        # FastAPI Backend Service
+│   ├── test_compiler.py              # Functional Unit Test Suite (8 Tests)
+│   └── test_regression.py            # Edge Case Regression Test Suite (6 Tests)
 │
-├── frontend/                         # Developer Silicon Studio Web UI (Vite + React + TS)
+├── frontend/                         # IBM Carbon UI Studio (React 18 + TypeScript + Vite)
 │   ├── src/
-│   │   ├── components/               # Arena Map, Inspector, Command Palette, Controls
-│   │   ├── services/                 # Live FastAPI Compiler & ONNX Upload Client
-│   │   └── App.tsx                   # Studio Dashboard
-│   ├── vercel.json                   # Vercel Deployment Configuration
-│   └── package.json
+│   │   ├── compiler/                 # TypeScript Compiler Port (IR, Quantizer, Memory, Codegen)
+│   │   ├── components/views/         # Dashboard, Graph, Arena, Codegen, Validation, Targets
+│   │   └── context/                  # Compiler State Management
+│   ├── index.html                    # IBM Plex Sans / Mono Fonts
+│   └── tailwind.config.js            # 0px Flat Geometry Configuration
 │
-├── firmware/                         # Multi-Microcontroller Production Firmware Kits
-│   ├── esp32_arduino/                # ESP32 I2S INMP441, ESP32-CAM, MPU6050 Sketches
-│   ├── arduino_universal/            # Uno R4, Nano ESP32, Portenta Universal Sketch
-│   ├── rp2040_pico/                  # Raspberry Pi Pico C-SDK Template & CMakeLists
-│   ├── nrf52_xiao/                   # Seeed Xiao BLE Sense / nRF52840 Sketch
-│   └── teensy41/                     # Teensy 4.1 600MHz ARM Cycle Benchmark
+├── firmware/                         # Multi-Target Firmware Starter Kits
+│   ├── esp32_arduino/                # ESP32 / ESP32-S3 Firmware
+│   ├── rp2040_pico/                  # Raspberry Pi Pico C-SDK Template
+│   ├── nrf52_xiao/                   # Nordic nRF52840 BLE Template
+│   └── teensy41/                     # ARM Cortex-M7 Firmware Starter
 │
-└── docs/                             # Hackathon Pitch Deck & Demo Script
-    ├── ARCHITECTURE.md               # Technical Architecture Deep Dive
-    ├── DECK_OUTLINE.md               # 10-Slide Investor & Judge Presentation Deck
-    └── DEMO_SCRIPT.md                # 3-Minute Video Recording Walkthrough Script
+└── docs/                             # Technical Documentation
+    └── ARCHITECTURE.md               # Compiler Architecture Deep Dive
 ```
 
 ---
 
-## ⚡ Quick Start
+## Running the Compiler
 
-### 1. Run the Python Compiler Backend & Tests
+### 1. Run Python Tests
 ```bash
-cd compiler
-pytest test_compiler.py
+# Install dependencies
+pip install -r compiler/requirements.txt
+
+# Run the complete test suite (14 tests passed)
+python -m pytest compiler/ -v
 ```
 
-### 2. Run the Benchmark Evaluator
+### 2. Start the FastAPI Service (Optional)
 ```bash
-cd compiler/training
-python evaluate_all.py
+python -m uvicorn compiler.api:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Start the FastAPI REST Server
-```bash
-cd compiler
-uvicorn api:app --host 0.0.0.0 --port 8000 --reload
-```
-
-### 4. Launch the Web Studio
+### 3. Run the Frontend Development Server
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser to experience **Shannon AI Studio**.
+### 4. Build Production Bundle
+```bash
+cd frontend
+npm run build
+```
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## License
+MIT License. Created for the DevNetwork Hackathon 2026.

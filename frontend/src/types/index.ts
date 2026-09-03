@@ -105,6 +105,7 @@ export interface LayerQuantMetric {
   mse: number;
   sqnr_db: number;
   max_error: number;
+  cosine_similarity: number;
   sample_fp32: number[];
   sample_int8: number[];
 }
@@ -113,6 +114,7 @@ export interface QuantizationMetrics {
   sqnr_db: number;
   mse: number;
   max_error: number;
+  cosine_similarity: number;
   layer_metrics: LayerQuantMetric[];
 }
 

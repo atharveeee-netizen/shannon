@@ -195,7 +195,7 @@ export const Fp32VsInt8View: React.FC = () => {
                     <td className="py-3 px-4 text-accent font-bold">{l.flash_bytes} B</td>
                     <td className="py-3 px-4 text-text-primary">{l.scale_factor.toFixed(6)}</td>
                     <td className="py-3 px-4 text-cyan-400 font-mono">
-                      {metric && metric.mse > 0 ? metric.mse.toExponential(2) : '—'}
+                      {metric && metric.mse > 0 ? metric.mse.toExponential(2) : '-'}
                     </td>
                     <td className="py-3 px-4 text-emerald-400 font-bold">
                       {metric && metric.sqnr_db < 90 ? `${metric.sqnr_db.toFixed(1)} dB` : 'Lossless'}

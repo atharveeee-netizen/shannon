@@ -1,5 +1,5 @@
 """
-Shannon Autonomous Compiler — Comprehensive Test & Verification Suite
+Shannon Autonomous Compiler -  Comprehensive Test & Verification Suite
 Verifies 100% test coverage across Quantization, Zero-Malloc Memory Arena, C/C++ CodeGen,
 Agent Hardware Auditing, and FastAPI REST endpoints.
 """
@@ -157,10 +157,16 @@ class TestShannonCompiler(unittest.TestCase):
 
     def test_agent_chat_reasoning(self):
         agent = ShannonAgent(target_hw="ESP32-S3")
-        res_sram = agent.chat_reasoning("Explain why zero malloc SRAM arena is important for stability", "KWS")
+        # 1. Missing context informs user to compile model
+        res_uncompiled = agent.chat_reasoning("Explain memory usage", "KWS")
+        self.assertIn("Compile the model to generate optimization insights", res_uncompiled)
+
+        # 2. Real telemetry context generates deep analytical reasoning
+        context = {"flash_bytes": 24576, "sram_bytes": 1120, "total_macs": 46368}
+        res_sram = agent.chat_reasoning("Explain why zero malloc SRAM arena is important for stability", "KWS", context=context)
         self.assertIn("Zero Dynamic Allocation", res_sram)
         
-        res_flash = agent.chat_reasoning("How much flash does INT8 quantization save?", "KWS")
+        res_flash = agent.chat_reasoning("How much flash does INT8 quantization save?", "KWS", context=context)
         self.assertIn("75%", res_flash)
 
     def test_fastapi_rest_endpoints(self):

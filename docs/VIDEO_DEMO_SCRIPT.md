@@ -1,8 +1,8 @@
-# 🎬 SHANNON — 5-MINUTE VIDEO DEMO SCRIPT & OPERATOR PLAYBOOK
+# 🎬 SHANNON -  5-MINUTE VIDEO DEMO SCRIPT & OPERATOR PLAYBOOK
 ### *Master Submission Walkthrough for Judges & Hackathon Evaluators*
 
 **Live Studio URL:** [https://atharveeee-netizen.github.io/shannon/](https://atharveeee-netizen.github.io/shannon/)  
-**Target Duration:** 5:00 – 6:30 Minutes  
+**Target Duration:** 5:00 - 6:30 Minutes  
 **Resolution:** 1080p / 4K Full-Screen Browser (F11 / Clean Desktop)  
 
 ---
@@ -11,13 +11,13 @@
 
 | Time | Stage | View / Feature | Key Value Highlight |
 | :--- | :--- | :--- | :--- |
-| **0:00 – 0:45** | **1. The Problem & Introduction** | **Dashboard** | Why Edge ML fails (memory fragmentation, dynamic malloc crashes) and Shannon's 0-malloc solution. |
-| **0:45 – 1:30** | **2. Model Zoo & Sensory DSP** | **Models & Inputs** | 3 Production TinyML models (Audio, Vision, Anomaly) & multi-stage DSP feature pipelines. |
-| **1:30 – 2:30** | **3. Computational IR Graph** | **Graph Workspace** | Interactive AST DAG with pan, zoom, minimap, upstream/downstream tracing, and verified operator telemetry. |
-| **2:30 – 3:30** | **4. Quantization & Memory Arena** | **Quantization & Memory Arena** | Jacob symmetric INT8/INT4 PTQ & 2D greedy interval graph coloring memory reuse map at `0x20000000`. |
-| **3:30 – 4:30** | **5. Native Simulation & Parity** | **Signal Flow & FP32 vs INT8** | Live sensor-to-silicon signal streaming & layer-by-layer float-vs-int numerical error verification. |
-| **4:30 – 5:15** | **6. Firmware Generation & Deployment** | **Deployment & CodeGen** | Standalone MISRA-C:2012 C header, Arduino `.ino`, and bare-metal `.c` starter packages. |
-| **5:15 – 5:45** | **7. Summary & Vision** | **Dashboard / Settings** | Fully autonomous edge AI compiler ready for real silicon deployment. |
+| **0:00 - 0:45** | **1. The Problem & Introduction** | **Dashboard** | Why Edge ML fails (memory fragmentation, dynamic malloc crashes) and Shannon's 0-malloc solution. |
+| **0:45 - 1:30** | **2. Model Zoo & Sensory DSP** | **Models & Inputs** | 3 Production TinyML models (Audio, Vision, Anomaly) & multi-stage DSP feature pipelines. |
+| **1:30 - 2:30** | **3. Computational IR Graph** | **Graph Workspace** | Interactive AST DAG with pan, zoom, minimap, upstream/downstream tracing, and verified operator telemetry. |
+| **2:30 - 3:30** | **4. Quantization & Memory Arena** | **Quantization & Memory Arena** | Jacob symmetric INT8/INT4 PTQ & 2D greedy interval graph coloring memory reuse map at `0x20000000`. |
+| **3:30 - 4:30** | **5. Native Simulation & Parity** | **Signal Flow & FP32 vs INT8** | Live sensor-to-silicon signal streaming & layer-by-layer float-vs-int numerical error verification. |
+| **4:30 - 5:15** | **6. Firmware Generation & Deployment** | **Deployment & CodeGen** | Standalone MISRA-C:2012 C header, Arduino `.ino`, and bare-metal `.c` starter packages. |
+| **5:15 - 5:45** | **7. Summary & Vision** | **Dashboard / Settings** | Fully autonomous edge AI compiler ready for real silicon deployment. |
 
 ---
 
@@ -25,7 +25,7 @@
 
 ---
 
-### ⏱️ SECTION 1: THE HOOK & INTRODUCTION (0:00 – 0:45)
+### ⏱️ SECTION 1: THE HOOK & INTRODUCTION (0:00 - 0:45)
 **Active Page:** `PROJECT` $\to$ **Dashboard**
 
 #### 🖱️ Screen Actions:
@@ -43,7 +43,7 @@
 
 ---
 
-### ⏱️ SECTION 2: MODEL CATALOG & SENSORY DSP (0:45 – 1:30)
+### ⏱️ SECTION 2: MODEL CATALOG & SENSORY DSP (0:45 - 1:30)
 **Active Page:** `PROJECT` $\to$ **Models** $\to$ **Inputs**
 
 #### 🖱️ Screen Actions:
@@ -59,11 +59,11 @@
 #### 🎙️ Spoken Narration:
 > *"Let’s look at the model zoo. Shannon includes production-trained reference topologies across three fundamental edge AI domains: acoustic keyword spotting, computer vision person detection, and 3-axis industrial vibration anomaly detection.*
 >
-> *In the Inputs view, we can inspect the sensory digital signal processing pipeline. Before a model ever executes, Shannon models the hardware DSP stages—from analog microphone sampling at 16 kHz, through a 32-millisecond Hanning window, into a 10-bin Mel Filterbank spectrogram that directly feeds our static input tensor."*
+> *In the Inputs view, we can inspect the sensory digital signal processing pipeline. Before a model ever executes, Shannon models the hardware DSP stages - from analog microphone sampling at 16 kHz, through a 32-millisecond Hanning window, into a 10-bin Mel Filterbank spectrogram that directly feeds our static input tensor."*
 
 ---
 
-### ⏱️ SECTION 3: COMPILER AST & INTERACTIVE GRAPH (1:30 – 2:30)
+### ⏱️ SECTION 3: COMPILER AST & INTERACTIVE GRAPH (1:30 - 2:30)
 **Active Page:** `COMPILER` $\to$ **Graph**
 
 #### 🖱️ Screen Actions:
@@ -77,15 +77,15 @@
 #### 🎙️ Spoken Narration:
 > *"Now let's enter the compiler workspace. This is the Shannon Computational Graph representing our verified Internal Representation AST.*
 >
-> *Every node here is a real compiler operator—there are zero placeholder nodes. We have full interactive pan, zoom, and a real-time minimap tracking our position.*
+> *Every node here is a real compiler operator - there are zero placeholder nodes. We have full interactive pan, zoom, and a real-time minimap tracking our position.*
 >
-> *When I click on `conv1`, Shannon immediately highlights dataflow dependencies—tracing upstream producers with cyan connections and downstream consumers with emerald connections.*
+> *When I click on `conv1`, Shannon immediately highlights dataflow dependencies - tracing upstream producers with cyan connections and downstream consumers with emerald connections.*
 >
 > *On the right-hand inspector, we see ground-truth compiler telemetry: 46,368 MACs, verified Flash weight ROM sizes, and the exact physical memory offset `0x20000000` with 4-byte word bus alignment."*
 
 ---
 
-### ⏱️ SECTION 4: QUANTIZATION & ZERO-MALLOC MEMORY ARENA (2:30 – 3:30)
+### ⏱️ SECTION 4: QUANTIZATION & ZERO-MALLOC MEMORY ARENA (2:30 - 3:30)
 **Active Page:** `COMPILER` $\to$ **Quantization** $\to$ **Memory Arena**
 
 #### 🖱️ Screen Actions:
@@ -106,7 +106,7 @@
 
 ---
 
-### ⏱️ SECTION 5: REAL-TIME SIMULATION & BIT-ACCURATE PARITY (3:30 – 4:30)
+### ⏱️ SECTION 5: REAL-TIME SIMULATION & BIT-ACCURATE PARITY (3:30 - 4:30)
 **Active Page:** `SIMULATION` $\to$ **Signal Flow** $\to$ **FP32 vs INT8**
 
 #### 🖱️ Screen Actions:
@@ -123,11 +123,11 @@
 >
 > *Under FP32 vs INT8, Shannon verifies bit-accurate numerical parity. Here we compare reference PyTorch floating-point logits against Shannon's fixed-point INT8 engine. The maximum absolute error is bounded at 0.00312, with a 100% Top-1 classification match across all test tensors.*
 >
-> *Notice that every metric is labeled with clear provenance—such as `[SIMULATED]` or `[MEASURED]`—ensuring complete technical truthfulness."*
+> *Notice that every metric is labeled with clear provenance - such as `[SIMULATED]` or `[MEASURED]` - ensuring complete technical truthfulness."*
 
 ---
 
-### ⏱️ SECTION 6: FIRMWARE GENERATION & DEPLOYMENT (4:30 – 5:15)
+### ⏱️ SECTION 6: FIRMWARE GENERATION & DEPLOYMENT (4:30 - 5:15)
 **Active Page:** `COMPILER` $\to$ **Code Generation** $\to$ `HARDWARE` $\to$ **Deployment**
 
 #### 🖱️ Screen Actions:
@@ -150,7 +150,7 @@
 
 ---
 
-### ⏱️ SECTION 7: WRAP-UP & CONCLUSION (5:15 – 5:45)
+### ⏱️ SECTION 7: WRAP-UP & CONCLUSION (5:15 - 5:45)
 **Active Page:** `PROJECT` $\to$ **Dashboard**
 
 #### 🖱️ Screen Actions:
@@ -168,6 +168,6 @@
 ## 💡 Quick Tips for a Flawless Recording
 
 1. **Browser Zoom:** Set your browser zoom to $100\%$ or $90\%$ so all panels and navigation fit without scrolling awkwardness.
-2. **Smooth Mouse Movement:** Move the cursor deliberately to the buttons, give 1–2 seconds for each view to display clearly, and avoid rapid fidgeting.
+2. **Smooth Mouse Movement:** Move the cursor deliberately to the buttons, give 1-2 seconds for each view to display clearly, and avoid rapid fidgeting.
 3. **Audio Quality:** Use a clean microphone with noise cancellation enabled. Speak with a confident, clear pace.
 4. **Shortcut Demo:** Using `Cmd+K` / `Ctrl+K` once during the intro or outro shows off the IDE-grade engineering feel of the studio.

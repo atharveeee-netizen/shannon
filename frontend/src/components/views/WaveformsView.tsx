@@ -148,15 +148,15 @@ export const WaveformsView: React.FC = () => {
       {/* 1. Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-accent">
-            <Activity className="w-4 h-4" />
-            <span>SENSOR DMA WAVEFORMS & SPECTRAL ANALYSIS</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
+            <Activity className="w-3.5 h-3.5" />
+            <span>EXPERIMENTAL SIMULATION ENVIRONMENT</span>
           </div>
-          <h1 className="text-xl font-bold text-text-primary tracking-tight">
-            Streaming Signal Telemetry: {compilationResult.model_name}
+          <h1 className="text-xl font-light text-text-primary tracking-tight">
+            Synthetic Signal Visualization: {compilationResult.model_name}
           </h1>
           <p className="text-xs text-text-secondary">
-            Continuous real-time DMA ingestion waveform simulation, FFT frequency waterfall, and layer activation probe.
+            Continuous synthetic sensor DMA waveform simulation, FFT waterfall, and layer activation response probe.
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export const WaveformsView: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsPlaying((p) => !p)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-bold transition-all ${
               isPlaying
                 ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
                 : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
@@ -176,12 +176,18 @@ export const WaveformsView: React.FC = () => {
 
           <button
             onClick={() => setTimeStep(0)}
-            className="p-1.5 rounded bg-surface-raised border border-border text-text-muted hover:text-text-primary transition-colors"
+            className="p-1.5 rounded-none bg-surface-raised border border-border text-text-muted hover:text-text-primary transition-colors"
             title="Reset simulation step"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* Explicit Disclaimer per Submission Requirements */}
+      <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-xs rounded-none flex items-center gap-2.5">
+        <Info className="w-4 h-4 flex-shrink-0" />
+        <span>NOTICE: Synthetic signal visualization for offline testing - not measured hardware telemetry.</span>
       </div>
 
       {/* Mode / Profile Notice */}
@@ -289,7 +295,7 @@ export const WaveformsView: React.FC = () => {
             />
             <div className="flex items-center justify-between text-[11px] font-mono text-text-muted">
               <span>Resolution: 48 FFT Bins</span>
-              <span>Range: {isAudio ? '0 Hz — 8,000 Hz' : '0 Hz — 500 Hz'}</span>
+              <span>Range: {isAudio ? '0 Hz - 8,000 Hz' : '0 Hz - 500 Hz'}</span>
               <span className="text-cyan-400 font-semibold">CMSIS-DSP RFFT</span>
             </div>
           </div>

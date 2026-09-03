@@ -182,7 +182,7 @@ export const CodeGenView: React.FC = () => {
           <div className="flex items-center gap-2">
             <span>ISO C99 / C++11 STANDALONE EMISSION</span>
             {isEditMode && (
-              <span className="text-cyan-400 font-medium">(Interactive Editor Active — edits will be exported)</span>
+              <span className="text-cyan-400 font-medium">(Interactive Editor Active - edits will be exported)</span>
             )}
           </div>
           <span>{lines.length} LINES | {(userCode.length / 1024).toFixed(1)} KB SOURCE</span>

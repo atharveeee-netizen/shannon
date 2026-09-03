@@ -97,7 +97,7 @@ export const ImportView: React.FC = () => {
                 <p className="text-xs text-text-secondary">Supports .onnx binary graphs and .json layer definitions</p>
               </div>
               <span className="px-2.5 py-1 rounded bg-surface border border-border text-[11px] font-mono text-text-muted">
-                Zero Cloud Upload — Compiled In-Browser / Local Server
+                Zero Cloud Upload - Compiled In-Browser / Local Server
               </span>
             </div>
 

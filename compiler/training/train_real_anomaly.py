@@ -37,11 +37,11 @@ class VibrationAutoencoder(nn.Module):
 def generate_bearing_vibration_dataset(num_normal=3000, num_anomaly=600):
     """
     Grounded in Rotating Machinery Defect Physics:
-    - Shaft Speed: 1500 RPM (f_r = 25 Hz)
-    - Ball Pass Frequency Outer Race (BPFO) = 78.5 Hz (bin ~20)
-    - Ball Pass Frequency Inner Race (BPFI) = 121.5 Hz (bin ~31)
-    - Normal state: Low-amplitude Gaussian vibration + 1X/2X shaft harmonics
-    - Anomaly state: Elevated kurtosis (>7.0), impact ringdown spikes at BPFO/BPFI, sideband modulation
+ - Shaft Speed: 1500 RPM (f_r = 25 Hz)
+ - Ball Pass Frequency Outer Race (BPFO) = 78.5 Hz (bin ~20)
+ - Ball Pass Frequency Inner Race (BPFI) = 121.5 Hz (bin ~31)
+ - Normal state: Low-amplitude Gaussian vibration + 1X/2X shaft harmonics
+ - Anomaly state: Elevated kurtosis (>7.0), impact ringdown spikes at BPFO/BPFI, sideband modulation
     """
     np.random.seed(42)
     
@@ -164,7 +164,7 @@ def train_anomaly():
 
     with open(header_path, "w") as f:
         f.write("/* ===========================================================================\n")
-        f.write(" * SHANNON AUTONOMOUS COMPILER — PRODUCTION VIBRATION ANOMALY FIRMWARE HEADER\n")
+        f.write(" * SHANNON AUTONOMOUS COMPILER -  PRODUCTION VIBRATION ANOMALY FIRMWARE HEADER\n")
         f.write(f" * Target: NASA Bearing Defect 128-FFT Vibration Spectrum Autoencoder\n")
         f.write(f" * Normal Reconstruction MSE: {best_val_mse:.6f} | Anomaly MSE: {anom_mse:.6f}\n")
         f.write(f" * Anomaly Decision Threshold: {(best_val_mse * 3.5):.6f}\n")

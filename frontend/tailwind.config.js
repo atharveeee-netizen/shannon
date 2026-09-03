@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        sans: ['"IBM Plex Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"IBM Plex Mono"', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       colors: {
         canvas: 'var(--bg)',
@@ -29,13 +29,15 @@ export default {
           muted: 'var(--text-muted)',
         },
         primary: {
-          DEFAULT: 'var(--primary)',
-          hover: 'var(--primary-hover)',
-          subtle: 'var(--primary-subtle)',
+          DEFAULT: '#0f62fe',
+          hover: '#0353e9',
+          pressed: '#002d9c',
+          subtle: 'rgba(15, 98, 254, 0.12)',
         },
         accent: {
-          DEFAULT: 'var(--primary)',
-          hover: 'var(--primary-hover)',
+          DEFAULT: '#0f62fe',
+          hover: '#0353e9',
+          subtle: 'rgba(15, 98, 254, 0.12)',
         },
         success: {
           DEFAULT: 'var(--success)',
@@ -50,8 +52,8 @@ export default {
           subtle: 'var(--danger-subtle)',
         },
         info: {
-          DEFAULT: 'var(--info)',
-          subtle: 'var(--info-subtle)',
+          DEFAULT: '#0f62fe',
+          subtle: 'rgba(15, 98, 254, 0.12)',
         },
         code: {
           DEFAULT: 'var(--code-bg)',
@@ -59,11 +61,14 @@ export default {
         }
       },
       borderRadius: {
-        DEFAULT: '6px',
-        sm: '4px',
-        md: '6px',
-        lg: '8px',
-        xl: '12px',
+        none: '0px',
+        DEFAULT: '0px',
+        sm: '0px',
+        md: '0px',
+        lg: '0px',
+        xl: '0px',
+        '2xl': '0px',
+        full: '0px',
       },
     },
   },

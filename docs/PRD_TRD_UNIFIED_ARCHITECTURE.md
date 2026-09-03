@@ -1,4 +1,4 @@
-# 🏛️ Shannon AI Studio — Unified PRD & TRD Master Architecture
+# 🏛️ Shannon AI Studio -  Unified PRD & TRD Master Architecture
 ### **The Definitive TinyML Compiler & Hardware Optimization Engine**
 *Synthesized from 291 Peer-Reviewed Research Publications for the AI Builders Hackathon 2026 ($4,000 Best SaaS Prize)*
 
@@ -8,7 +8,7 @@
 
 ### 1.1 Problem Statement & Market Opportunity
 * **The "Edge AI Wall":** Over 30 billion deployed edge devices (smart healthcare monitors, industrial vibration sensors, security cameras, drones) run on **$2 to $5 microcontrollers with less than 1 MB of RAM**.
-* **The Runtime Penalty:** Conventional runtimes like TensorFlow Lite Micro (TFLM) or ONNX Runtime introduce **40–80 KB of engine overhead** and risk runtime heap fragmentation (`malloc` crashes in real-time loops).
+* **The Runtime Penalty:** Conventional runtimes like TensorFlow Lite Micro (TFLM) or ONNX Runtime introduce **40-80 KB of engine overhead** and risk runtime heap fragmentation (`malloc` crashes in real-time loops).
 * **The Embedded Bottleneck:** Manually quantizing neural networks, writing bare-metal CMSIS-NN kernels, and debugging memory overlaps takes embedded engineering teams **3 to 6 weeks per model**.
 * **Total Addressable Market (TAM):** $18.5B Edge AI & TinyML Developer Tooling Market by 2030.
 
@@ -18,7 +18,7 @@
 3. **Hardware Product Managers:** Require accurate memory, latency, and battery energy estimations across multiple silicon targets before spinning custom PCBs.
 
 ### 1.3 Core Value Propositions
-* **75–90% Flash Footprint Reduction** via symmetric INT8/INT4 PTQ without accuracy loss.
+* **75-90% Flash Footprint Reduction** via symmetric INT8/INT4 PTQ without accuracy loss.
 * **100% Deterministic Zero-Malloc SRAM Arena** using interval graph coloring.
 * **1-Click Standalone C/C++ Header Export** with hardware SIMD vectorization.
 * **Autonomous Silicon Copilot** providing compiler-aware embedded engineering advice.

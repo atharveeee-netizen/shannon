@@ -122,7 +122,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenCommandPalette }) => {
         {isTargetInvalidated && (
           <div className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] font-mono">
             <AlertTriangle className="w-3 h-3" />
-            <span>Target Changed — Recompile Required</span>
+            <span>Target Changed - Recompile Required</span>
           </div>
         )}
       </div>

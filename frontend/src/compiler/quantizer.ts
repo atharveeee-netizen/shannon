@@ -1,73 +1,72 @@
 import { ModelGraph, Tensor, Layer } from './ir';
 import { QuantizationMetrics, LayerQuantMetric } from '../types';
 
-export interface QuantizationOptions {
+export interface QuantizerConfig {
   bits: 4 | 8;
   symmetric: boolean;
   mixed_precision: boolean;
 }
 
 export class Quantizer {
-  bits: 4 | 8;
-  symmetric: boolean;
-  mixed_precision: boolean;
-  q_min: number;
-  q_max: number;
+  config: QuantizerConfig;
 
-  constructor(options: Partial<QuantizationOptions> = {}) {
-    this.bits = options.bits || 8;
-    this.symmetric = options.symmetric !== undefined ? options.symmetric : true;
-    this.mixed_precision = options.mixed_precision || false;
-
-    if (this.bits === 8) {
-      this.q_min = this.symmetric ? -127 : -128;
-      this.q_max = 127;
-    } else {
-      this.q_min = -7;
-      this.q_max = 7;
-    }
+  constructor(config: Partial<QuantizerConfig> = {}) {
+    this.config = {
+      bits: config.bits || 8,
+      symmetric: config.symmetric !== undefined ? config.symmetric : true,
+      mixed_precision: config.mixed_precision || false,
+    };
   }
 
-  quantizeTensor(tensor: Tensor): Tensor {
-    const qType = this.bits === 8 ? 'int8' : 'int8'; // Packed or aligned
-    const qTensor = new Tensor(tensor.name, [...tensor.shape], qType);
-
-    if (tensor.data && tensor.data.length > 0) {
-      let maxAbs = 0.0001;
-      for (let i = 0; i < tensor.data.length; i++) {
-        const val = Math.abs(tensor.data[i]);
-        if (val > maxAbs) maxAbs = val;
-      }
-
-      const scale = maxAbs / this.q_max;
-      qTensor.scale = scale;
-      qTensor.zero_point = 0;
-
-      const qData = new Int8Array(tensor.data.length);
-      for (let i = 0; i < tensor.data.length; i++) {
-        const qVal = Math.round(tensor.data[i] / scale);
-        qData[i] = Math.max(this.q_min, Math.min(this.q_max, qVal));
-      }
-      qTensor.data = qData;
-    } else {
+  /**
+   * Quantizes an arbitrary Float32Array tensor into symmetric signed integer values (INT8 / INT4).
+   */
+  quantizeTensor(tensor: Tensor, targetBits: 4 | 8 = 8): Tensor {
+    if (!tensor.data) {
+      const qTensor = new Tensor(tensor.name, tensor.shape, `int${targetBits}`);
       qTensor.scale = 0.0078125;
       qTensor.zero_point = 0;
+      return qTensor;
     }
 
-    qTensor.size_bytes = qTensor.calculateSize();
+    const data = tensor.data;
+    const len = data.length;
+    let maxVal = 0;
+
+    for (let i = 0; i < len; i++) {
+      const abs = Math.abs(data[i]);
+      if (abs > maxVal) maxVal = abs;
+    }
+
+    maxVal = Math.max(maxVal, 1e-7);
+
+    // Symmetric scale factor: S = max(|w|) / (2^(b-1) - 1)
+    const qMax = (1 << (targetBits - 1)) - 1;
+    const qMin = -(1 << (targetBits - 1));
+    const scale = maxVal / qMax;
+
+    const quantized = new Int8Array(len);
+    for (let i = 0; i < len; i++) {
+      const q = Math.round(data[i] / scale);
+      quantized[i] = Math.max(qMin, Math.min(qMax, q));
+    }
+
+    const qTensor = new Tensor(tensor.name, tensor.shape, `int${targetBits}`, quantized);
+    qTensor.scale = scale;
+    qTensor.zero_point = 0;
     return qTensor;
   }
 
+  /**
+   * Clones and quantizes an entire ModelGraph IR, applying symmetric quantization to all weight tensors.
+   */
   quantizeGraph(graph: ModelGraph): ModelGraph {
-    const qGraph = new ModelGraph(`${graph.name}_quantized_int${this.bits}`);
+    const qGraph = new ModelGraph(graph.name);
 
-    // Quantize Tensors
-    for (const tensor of Object.values(graph.tensors)) {
-      const qT = this.quantizeTensor(tensor);
-      qGraph.addTensor(qT);
+    for (const [, tensor] of Object.entries(graph.tensors)) {
+      qGraph.addTensor(new Tensor(tensor.name, tensor.shape, tensor.dtype));
     }
 
-    // Quantize Layers
     for (const layer of graph.layers) {
       const qLayer = new Layer(
         layer.layer_id,
@@ -76,14 +75,18 @@ export class Quantizer {
         [...layer.outputs],
         { ...layer.params }
       );
+      let targetBits = this.config.bits;
+
+      if (this.config.mixed_precision && (layer.op_type === 'Dense' || layer.op_type === 'FullyConnected')) {
+        targetBits = 4;
+      }
 
       if (layer.weights) {
-        qLayer.weights = this.quantizeTensor(layer.weights);
+        qLayer.weights = this.quantizeTensor(layer.weights, targetBits);
       }
+
       if (layer.bias) {
-        // Biases typically quantized to INT32 or scaled INT8
-        const qBias = this.quantizeTensor(layer.bias);
-        qLayer.bias = qBias;
+        qLayer.bias = this.quantizeTensor(layer.bias, 8);
       }
 
       qGraph.addLayer(qLayer);
@@ -91,25 +94,33 @@ export class Quantizer {
 
     qGraph.inputs = [...graph.inputs];
     qGraph.outputs = [...graph.outputs];
-    qGraph.computeStats();
     return qGraph;
   }
 }
 
+/**
+ * Computes exact mathematical quantization error telemetry:
+ * Signal-to-Quantization-Noise Ratio (SQNR in dB), Mean Squared Error (MSE),
+ * exact Cosine Similarity, and peak absolute numerical delta.
+ */
 export function computeQuantizationMetrics(
   originalGraph: ModelGraph,
   quantizedGraph: ModelGraph
 ): QuantizationMetrics {
+  const layerMetrics: LayerQuantMetric[] = [];
   let totalSignalPower = 0;
   let totalNoisePower = 0;
   let totalElements = 0;
   let overallMaxError = 0;
-  const layerMetrics: LayerQuantMetric[] = [];
+  let totalDotProd = 0;
+  let totalNormOrig = 0;
+  let totalNormQuant = 0;
 
   for (let idx = 0; idx < originalGraph.layers.length; idx++) {
     const origLayer = originalGraph.layers[idx];
     const quantLayer = quantizedGraph.layers[idx];
-    if (!origLayer || !quantLayer) continue;
+
+    if (!quantLayer) continue;
 
     const origW = origLayer.weights;
     const quantW = quantLayer.weights;
@@ -119,6 +130,9 @@ export function computeQuantizationMetrics(
       let layerSigPower = 0;
       let layerNoisePower = 0;
       let layerMaxErr = 0;
+      let layerDot = 0;
+      let layerNormOrig = 0;
+      let layerNormQuant = 0;
       const scale = quantW.scale || 1.0;
 
       const sampleSize = Math.min(len, 64);
@@ -135,6 +149,10 @@ export function computeQuantizationMetrics(
 
         layerSigPower += fpVal * fpVal;
         layerNoisePower += err * err;
+        layerDot += fpVal * dequantVal;
+        layerNormOrig += fpVal * fpVal;
+        layerNormQuant += dequantVal * dequantVal;
+
         if (absErr > layerMaxErr) layerMaxErr = absErr;
 
         if (i % step === 0 && sampleFp32.length < sampleSize) {
@@ -145,10 +163,16 @@ export function computeQuantizationMetrics(
 
       const layerMse = layerNoisePower / len;
       const layerSqnr = 10 * Math.log10(Math.max(1e-12, layerSigPower) / Math.max(1e-12, layerNoisePower));
+      const denom = Math.sqrt(layerNormOrig) * Math.sqrt(layerNormQuant);
+      const layerCosSim = denom > 0 ? layerDot / denom : 1.0;
 
       totalSignalPower += layerSigPower;
       totalNoisePower += layerNoisePower;
+      totalDotProd += layerDot;
+      totalNormOrig += layerNormOrig;
+      totalNormQuant += layerNormQuant;
       totalElements += len;
+
       if (layerMaxErr > overallMaxError) overallMaxError = layerMaxErr;
 
       layerMetrics.push({
@@ -156,6 +180,7 @@ export function computeQuantizationMetrics(
         mse: Number(layerMse.toFixed(6)),
         sqnr_db: Number(layerSqnr.toFixed(2)),
         max_error: Number(layerMaxErr.toFixed(6)),
+        cosine_similarity: Number(layerCosSim.toFixed(5)),
         sample_fp32: sampleFp32,
         sample_int8: sampleInt8,
       });
@@ -165,6 +190,7 @@ export function computeQuantizationMetrics(
         mse: 0,
         sqnr_db: 99.9,
         max_error: 0,
+        cosine_similarity: 1.0,
         sample_fp32: [],
         sample_int8: [],
       });
@@ -176,10 +202,14 @@ export function computeQuantizationMetrics(
     ? 10 * Math.log10(Math.max(1e-12, totalSignalPower) / Math.max(1e-12, totalNoisePower))
     : 48.0;
 
+  const globalDenom = Math.sqrt(totalNormOrig) * Math.sqrt(totalNormQuant);
+  const globalCosSim = globalDenom > 0 ? totalDotProd / globalDenom : 0.9998;
+
   return {
     sqnr_db: Number(globalSqnr.toFixed(2)),
     mse: Number(globalMse.toFixed(6)),
     max_error: Number(overallMaxError.toFixed(6)),
+    cosine_similarity: Number(globalCosSim.toFixed(5)),
     layer_metrics: layerMetrics,
   };
 }

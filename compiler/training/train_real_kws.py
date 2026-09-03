@@ -199,7 +199,7 @@ def train_kws():
 
     with open(header_path, "w") as f:
         f.write("/* ===========================================================================\n")
-        f.write(" * SHANNON AUTONOMOUS COMPILER — PRODUCTION KWS FIRMWARE HEADER\n")
+        f.write(" * SHANNON AUTONOMOUS COMPILER -  PRODUCTION KWS FIRMWARE HEADER\n")
         f.write(f" * Target: Google Speech Commands 12-Class Voice Wake-Word\n")
         f.write(f" * Validation Accuracy: {best_val_acc:.2f}%\n")
         f.write(f" * Quantization: Symmetric INT8 (Scale: conv1={c1_scale:.6f}, fc1={fc1_scale:.6f})\n")

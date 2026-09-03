@@ -1,4 +1,4 @@
-# 🚀 Shannon AI Studio — 50 Elite Technical Adaptations Blueprint
+# 🚀 Shannon AI Studio -  50 Elite Technical Adaptations Blueprint
 ### **Synthesized from 291 Peer-Reviewed Research Publications for AI Builders Hackathon 2026**
 *Target: Best SaaS Product ($4,000 Cash Prize) & NexFellow Special Awards*
 
@@ -25,7 +25,7 @@ graph TD
 
 ## 📊 The 50 Elite Research Adaptations Matrix
 
-### Pillar 1: Quantization & Integer Arithmetic (Adaptations 1–10)
+### Pillar 1: Quantization & Integer Arithmetic (Adaptations 1-10)
 *Grounding: Jacob et al. (CVPR 2018), Nagel et al. (ICML 2020), Xiao et al. (SmoothQuant 2023), Hubara et al. (2016)*
 
 1. **Integer Fixed-Point Multiplier Scaling (`(acc * M0) >> n`):** Replaces all floating-point scaling with 32-bit integer multipliers ($M_0 \in [2^{30}, 2^{31}-1]$) and arithmetic right shifts, eliminating FPU emulation on Cortex-M0+ and ESP32.
@@ -41,7 +41,7 @@ graph TD
 
 ---
 
-### Pillar 2: Memory Planning & Static SRAM Compaction (Adaptations 11–20)
+### Pillar 2: Memory Planning & Static SRAM Compaction (Adaptations 11-20)
 *Grounding: Lin et al. (MCUNet / NeurIPS 2020), Banbury et al. (MLPerf Tiny / IEEE 2021), Chaitin (1982)*
 
 11. **Greedy Interval Graph Lifetime Reuse:** Maps intermediate activation tensors to a 1D contiguous static array (`uint8_t shannon_tensor_arena[]`), achieving $>70\%$ SRAM footprint reduction.
@@ -57,7 +57,7 @@ graph TD
 
 ---
 
-### Pillar 3: Hardware SIMD & Bare-Metal Kernel Vectorization (Adaptations 21–30)
+### Pillar 3: Hardware SIMD & Bare-Metal Kernel Vectorization (Adaptations 21-30)
 *Grounding: Lai et al. (CMSIS-NN / IEEE 2018), ARM DWT Architecture, Espressif Xtensa PIE Manual*
 
 21. **ARM CMSIS-NN `__SMLAD` Dual 16-Bit MAC Vectorization:** Emits dual 16-bit packed multiply-accumulate assembly instructions for Cortex-M7/M4F targets.
@@ -73,7 +73,7 @@ graph TD
 
 ---
 
-### Pillar 4: Autonomous Silicon Copilot & Agentic Intelligence (Adaptations 31–40)
+### Pillar 4: Autonomous Silicon Copilot & Agentic Intelligence (Adaptations 31-40)
 *Grounding: Gulli (66 Agentic Design Patterns), DeepSeek Harness, Google Gemini 2.0*
 
 31. **Telemetry-Injected System Reasoning:** Injects exact compilation metrics (SRAM utilization $\%$, Flash bytes, MAC hotspot distribution) into LLM context.
@@ -89,7 +89,7 @@ graph TD
 
 ---
 
-### Pillar 5: Product Reality, UI Studio & Sensory Ecosystem (Adaptations 41–50)
+### Pillar 5: Product Reality, UI Studio & Sensory Ecosystem (Adaptations 41-50)
 *Grounding: Vercel Design System, Apple Developer Tools, MLCommons Tiny Benchmark Suite*
 
 41. **Pure Live Backend API (Zero Mock Fakers):** Replaces client-side fallbacks with resilient error boundaries and live FastAPI REST compiler communication.

@@ -1,5 +1,5 @@
 # 🎯 Shannon Hackathon Presentation Deck Outline (10 Slides)
-### **Target Prize: Best SaaS Product ($4,000 Cash) — AI Builders Hackathon 2026**
+### **Target Prize: Best SaaS Product ($4,000 Cash) -  AI Builders Hackathon 2026**
 
 ---
 
@@ -7,21 +7,21 @@
 - **Product Name:** **Shannon AI Studio**
 - **Headline:** *The Autonomous TinyML Compiler & Silicon Optimization Studio.*
 - **Sub-headline:** Compressing deep learning intelligence into $2 microcontrollers with 0 bytes dynamic malloc.
-- **Traction & Validation:** 75–90% Flash reduction, 100% MISRA-C:2012 compliant, ready-to-flash C/C++ in <60 seconds.
+- **Traction & Validation:** 75-90% Flash reduction, 100% MISRA-C:2012 compliant, ready-to-flash C/C++ in <60 seconds.
 - **Presenter:** Team Shannon ([@atharveeee-netizen](https://github.com/atharveeee-netizen))
 
 ---
 
 ### Slide 2: The Billion-Dollar Problem ("The Edge AI Wall")
 - **Cloud AI is Expensive & High-Latency:** Running sensor streams on cloud GPUs drains battery, introduces 200ms+ network delays, and leaks sensitive user privacy.
-- **Silicon Constraints are Brutal:** Over 30 billion microcontrollers deployed globally run on 256 KB – 1 MB of SRAM and cannot execute giant FP32 models.
+- **Silicon Constraints are Brutal:** Over 30 billion microcontrollers deployed globally run on 256 KB - 1 MB of SRAM and cannot execute giant FP32 models.
 - **The Embedded Developer Bottleneck:** Manually quantizing neural networks, writing bare-metal CMSIS-NN kernels, and preventing heap crashes takes embedded teams **3 to 6 weeks of tedious labor per model**.
 
 ---
 
-### Slide 3: The Solution — Shannon AI Studio
+### Slide 3: The Solution -  Shannon AI Studio
 - **1-Click Model Ingestion:** Upload any standard ONNX model or select from our pre-trained TinyML model zoo.
-- **Autonomous Quantization:** Automated Symmetric INT8/INT4 PTQ compresses weights by 75–90% with zero overflow.
+- **Autonomous Quantization:** Automated Symmetric INT8/INT4 PTQ compresses weights by 75-90% with zero overflow.
 - **Zero-Malloc Memory Arena:** Greedy interval graph coloring assigns activation buffers to a single static SRAM array.
 - **Zero-Dependency Header Export:** Download self-contained, standalone C/C++ code with hardware SIMD acceleration.
 
@@ -61,17 +61,17 @@
 - **Total Addressable Market (TAM):** $18.5B Edge AI & TinyML Developer Tooling Market by 2030.
 - **Target Customers:** Smart device OEMs, wearable medical companies, industrial automation vendors, automotive tier-1s.
 - **SaaS Pricing Tiers:**
-  - **Community Tier ($0/mo):** Free for tinkerers, standard presets, up to 3 custom model compilations/month.
-  - **Pro Developer ($79/mo):** Unlimited ONNX optimizations, full C/C++ and Rust export, simulator test bench.
-  - **Enterprise ($499/mo / seat):** Custom silicon PDK integration, automated CI/CD firmware compilation, priority MISRA-C audit reports.
+ - **Community Tier ($0/mo):** Free for tinkerers, standard presets, up to 3 custom model compilations/month.
+ - **Pro Developer ($79/mo):** Unlimited ONNX optimizations, full C/C++ and Rust export, simulator test bench.
+ - **Enterprise ($499/mo / seat):** Custom silicon PDK integration, automated CI/CD firmware compilation, priority MISRA-C audit reports.
 
 ---
 
 ### Slide 9: Competitive Moat & Advantages
 - **vs. TensorFlow Lite Micro / Edge Impulse:**
-  - Shannon generates **standalone zero-dependency C++ code** without bulky runtime library dependencies.
-  - Guarantees **true zero runtime malloc** with formal interval collision proofs.
-  - Integrated with **live browser webcam/mic simulation** for instant sensory testing before flashing hardware.
+ - Shannon generates **standalone zero-dependency C++ code** without bulky runtime library dependencies.
+ - Guarantees **true zero runtime malloc** with formal interval collision proofs.
+ - Integrated with **live browser webcam/mic simulation** for instant sensory testing before flashing hardware.
 
 ---
 
