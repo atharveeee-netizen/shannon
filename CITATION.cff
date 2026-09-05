@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use Shannon in your research, embedded projects, or benchmarking, please cite it as below."
+title: "Shannon: Autonomous TinyML Static Compiler & Silicon Studio for Constrained Microcontrollers"
+authors:
+  - family-names: "Netizen"
+    given-names: "Atharva"
+date-released: 2026-09-04
+version: 1.0.0
+license: MIT
+repository-code: "https://github.com/atharveeee-netizen/shannon"
+url: "https://atharveeee-netizen.github.io/shannon/"
+keywords:
+  - "tinyml"
+  - "compiler"
+  - "edge-ai"
+  - "quantization"
+  - "embedded-systems"
+  - "microcontrollers"
+  - "arm-cortex-m"
+  - "esp32"
+  - "sram-optimization"
+  - "misra-c"
+abstract: "Shannon is an ahead-of-time (AOT) static compiler designed for bare-metal microcontrollers with severe SRAM constraints (16 KB to 1024 KB). Shannon lowers ONNX neural network graphs into standalone, collision-free C99 firmware headers with mathematically verified zero dynamic memory allocation (0 B heap / malloc), post-training symmetric INT8 quantization, and greedy interval memory graph coloring."

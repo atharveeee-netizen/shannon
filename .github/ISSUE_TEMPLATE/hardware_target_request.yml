@@ -1,0 +1,43 @@
+name: New Microcontroller Target Request
+description: Propose adding support for a new MCU architecture, development board, or SIMD accelerator.
+labels: ["enhancement", "hardware-profile"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request a new microcontroller profile in the Shannon hardware registry.
+  - type: input
+    id: mcu_name
+    attributes:
+      label: Microcontroller / Board Name
+      placeholder: e.g. Ambiq Apollo4 Plus or Raspberry Pi Pico 2 (RP2350)
+    validations:
+      required: true
+  - type: input
+    id: architecture
+    attributes:
+      label: CPU Core & Clock Frequency
+      placeholder: e.g. ARM Cortex-M33 @ 150 MHz or RISC-V RV32IMAC @ 160 MHz
+    validations:
+      required: true
+  - type: input
+    id: memory
+    attributes:
+      label: On-Chip SRAM & Flash Capacity
+      placeholder: e.g. 2048 KB SRAM, 2 MB Flash
+    validations:
+      required: true
+  - type: input
+    id: simd
+    attributes:
+      label: Hardware Acceleration / SIMD Extensions
+      placeholder: e.g. ARM Helium (MVE-I), CMSIS-NN, or RISC-V Vector
+    validations:
+      required: false
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Deployment Rationale
+      description: Describe why this target is important for edge machine learning applications.
+    validations:
+      required: true

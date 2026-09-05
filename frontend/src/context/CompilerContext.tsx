@@ -57,8 +57,22 @@ interface CompilerContextType {
 const CompilerContext = createContext<CompilerContextType | null>(null);
 
 export const CompilerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const getUrlParam = (key: string, fallback: string) => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const val = params.get(key);
+      if (val) return val;
+      const hash = window.location.hash.replace('#', '');
+      if (key === 'tab' && hash) return hash;
+    }
+    return fallback;
+  };
+
+  const initialHwId = getUrlParam('hw', 'esp32s3');
+  const defaultHw = HARDWARE_PROFILES.find((h) => h.id === initialHwId) || HARDWARE_PROFILES[0];
+
   const [hardwareList, setHardwareList] = useState<HardwareProfile[]>(HARDWARE_PROFILES);
-  const [selectedHw, setSelectedHw] = useState<HardwareProfile>(HARDWARE_PROFILES[0]);
+  const [selectedHw, setSelectedHw] = useState<HardwareProfile>(defaultHw);
   const [loadedModel, setLoadedModel] = useState<LoadedModelInfo | null>(null);
   const [modelStatus, setModelStatus] = useState<ModelStatus>('EMPTY');
   const [compilationResult, setCompilationResult] = useState<CompilationResult | null>(null);
@@ -68,8 +82,14 @@ export const CompilerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [compilerLogs, setCompilerLogs] = useState<CompilerLogEntry[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isTargetInvalidated, setIsTargetInvalidated] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
-  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>(() => getUrlParam('tab', 'dashboard'));
+  const [isCopilotOpen, setIsCopilotOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('copilot') === 'true';
+    }
+    return false;
+  });
   const [apiConnected, setApiConnected] = useState<boolean>(true);
 
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -100,8 +120,9 @@ export const CompilerProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setApiConnected(false);
       });
 
-    // Auto-load default benchmark model on mount so studio is instantly functional
-    loadPreset('kws', true);
+    // Auto-load benchmark model on mount
+    const modelToLoad = getUrlParam('model', 'kws');
+    loadPreset(modelToLoad, true);
   }, []);
 
   const setHardware = (hwId: string) => {

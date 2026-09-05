@@ -1,0 +1,44 @@
+name: Bug Report
+description: Report a compiler regression, memory collision, or code generation issue.
+labels: ["bug", "compiler"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue in the Shannon TinyML Compiler. Please provide reproducible details below.
+  - type: input
+    id: model
+    attributes:
+      label: Model Topology / File
+      description: Name of the reference model (e.g., Keyword Spotter) or link/paste of your custom ONNX / JSON graph.
+      placeholder: e.g. KWS 1D-CNN or custom_resnet.onnx
+    validations:
+      required: true
+  - type: dropdown
+    id: target
+    attributes:
+      label: Target Microcontroller
+      description: Selected edge hardware architecture.
+      options:
+        - STM32H7 (ARM Cortex-M7)
+        - ESP32-S3 (Xtensa Dual LX7)
+        - Raspberry Pi RP2040 (Cortex-M0+)
+        - Nordic nRF52840 (Cortex-M4F)
+        - Teensy 4.1 (Cortex-M7)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What was the expected memory layout, precision metric, or generated C code?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Observed Behavior / Traceback
+      description: Paste any compiler error message, terminal traceback, or memory collision warning.
+    validations:
+      required: true
